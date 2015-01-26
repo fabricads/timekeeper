@@ -1,0 +1,30 @@
+<script src="js/lib/jquery.dataTables.js"></script>
+<h1>Projects</h1>
+
+<a href="#/project-new">Add a project</a>
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered table-hover" ng-controller="project_list_ctrl" ng-cloak>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Start date</th>
+                <th>End date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="prj in projects">
+            
+                <td style="vertical-align: middle;"><a ng-href="#/project/{{prj.id}}">{{prj.name}} {{prj.enabled === true ? "" : "(DISABLED)"}}</a></td>
+                <td style="vertical-align: middle;">{{ prj.initialDate | date:'dd-MMMM-yyyy'}}</td>
+                <td style="vertical-align: middle;">{{ prj.endDate | date:'dd-MMMM-yyyy'}}</td>
+                <td style="vertical-align: middle;">
+                    <a class="btn btn-default" ng-show="prj.enabled" ng-click="disable(prj.id)">Disable</a> 
+                    <a class="btn btn-default" ng-show="!prj.enabled" ng-click="enable(prj.id)">Enable</a>
+                    <a class="btn btn-danger" ng-show="prj.consultants == null || prj.consultants.length == 0" ng-click="delete(prj.id)">Delete</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,70 @@
+<h1>Profile</h1>
+
+<form class="form-horizontal">
+    <div class="form-group">
+        <label for="prj_name" class="col-md-2 control-label">Name</label>
+        <div class="col-md-2">
+            <input type="text" class="form-control" required ng-model="person.name">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="prj_name" class="col-md-2 control-label">e-mail</label>
+        <div class="col-md-2">
+            <input type="email" class="form-control" required ng-model="person.email">
+        </div>
+        <div class="col-md-4">
+            <p class="help-block">Write the corporate e-mail. Do not write personal email address.</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="prj_name" class="col-md-2 control-label">Password</label>
+        <div class="col-md-2">
+            <input type="password" class="form-control" ng-model="person.password">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="prj_name" class="col-md-2 control-label">City</label>
+        <div class="col-md-2">
+            <input type="text" class="form-control" required ng-model="person.city">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="prj_name" class="col-md-2 control-label">State</label>
+        <div class="col-md-2">
+            <select class="form-control" required ng-model="person.state" ng-options="state.id as state.name for state in states">
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="prj_name" class="col-md-2 control-label">Country</label>
+        <div class="col-md-2">
+            <input type="text" class="form-control" required ng-model="person.country">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="prj_name" class="col-md-2 control-label">Telephone 1</label>
+        <div class="col-md-2">
+            <input type="text" id="telephone1" class="form-control" ng-model="person.telephone1">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="prj_name" class="col-md-2 control-label">Telephone 2</label>
+        <div class="col-md-2">
+            <input type="text" id="telephone2" class="form-control" ng-model="person.telephone2">
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <button type="submit" class="btn btn-primary" ng-click="person_submit(person)">Save</button>
+        </div>
+    </div>
+</form>
+
+<script>
+$(function() {
+    $("#telephone1").mask("(00)00000-0000");
+    $("#telephone2").mask("(00)00000-0000");
+});
+</script>
+

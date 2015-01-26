@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+        http://java.sun.com/xml/ns/persistence
+        http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+        
+    <persistence-unit name="partner_timekeeper_test" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.ejb.HibernatePersistence</provider>
+        <class>br.com.redhat.consulting.model.PartnerOrganization</class>
+        <class>br.com.redhat.consulting.model.Person</class>
+        <class>br.com.redhat.consulting.model.Project</class>
+        <class>br.com.redhat.consulting.model.Role</class>
+        <class>br.com.redhat.consulting.model.Timecard</class>
+        <class>br.com.redhat.consulting.model.TimecardEntry</class>
+        <properties>
+            <property name="hibernate.hbm2ddl.auto" value="update" />
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
+            <property name="org.hibernate.envers.audit_table_prefix" value="audit_" />
+            <property name="org.hibernate.envers.audit_table_suffix" value="" />
+
+            <property name="javax.persistence.jdbc.url"     value="jdbc:postgresql://localhost/postgres" />
+            <property name="javax.persistence.jdbc.driver"  value="org.postgresql.Driver" />
+            <property name="javax.persistence.jdbc.user"    value="timekeeper" />
+            <property name="javax.persistence.jdbc.password" value="admin123" />
+
+        </properties>
+    </persistence-unit>
+</persistence>
+

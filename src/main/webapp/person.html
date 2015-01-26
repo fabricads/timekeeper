@@ -1,0 +1,111 @@
+<h1>New person</h1>
+
+<form class="form-horizontal">
+    <div class="form-group">
+        <label for="prj_name" class="col-md-2 control-label">Name</label>
+        <div class="col-md-2">
+            <input type="text" class="form-control" required ng-model="person.name">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="prj_name" class="col-md-2 control-label">e-mail</label>
+        <div class="col-md-2">
+            <input type="email" class="form-control" required ng-model="person.email">
+        </div>
+        <div class="col-md-4">
+            <p class="help-block">Write the corporate e-mail. Do not write personal email address.</p>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="prj_name" class="col-md-2 control-label">Password</label>
+        <div class="col-md-2">
+            <input type="password" class="form-control" ng-model="person.password">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="prj_name" class="col-md-2 control-label">Person Type</label>
+        <div class="col-md-2">
+            <select class="form-control" required ng-model="person.personType" >
+              <option data-ng-repeat="type in personTypes" value="{{type.id}}">{{type.name}}</option>
+            </select>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <label for="prj_name" class="col-md-2 control-label">Oracle PA ID</label>
+        <div class="col-md-2">
+            <input type="text" class="form-control" ng-model="person.oraclePAId">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="prj_name" class="col-md-2 control-label">City</label>
+        <div class="col-md-2">
+            <input type="text" class="form-control" required ng-model="person.city">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="prj_name" class="col-md-2 control-label">State</label>
+        <div class="col-md-2">
+            <select class="form-control" required ng-model="person.state" ng-options="state.id as state.name for state in states">
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="prj_name" class="col-md-2 control-label">Country</label>
+        <div class="col-md-2">
+            <input type="text" class="form-control" required ng-model="person.country">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="prj_name" class="col-md-2 control-label">Telephone 1</label>
+        <div class="col-md-2">
+            <input type="text" id="telephone1" class="form-control" ng-model="person.telephone1">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="prj_name" class="col-md-2 control-label">Telephone 2</label>
+        <div class="col-md-2">
+            <input type="text" id="telephone2" class="form-control" ng-model="person.telephone2">
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="prj_name" class="col-md-2 control-label">Organization</label>
+        <div class="col-md-2">
+            <select class="form-control" required ng-model="person.partnerOrganization.id" ng-options="org.id as org.name for org in orgs">
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="prj_name" class="col-md-2 control-label">Role</label>
+        <div class="col-md-2">
+            <select class="form-control" required ng-model="person.role.id" ng-options="role.id as role.name for role in roles">
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <div class="checkbox">
+                <label> <input type="checkbox" ng-model="person.enabled"> Enable ?
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <button type="submit" class="btn btn-primary" ng-click="person_submit(person)">Save</button>
+        </div>
+    </div>
+</form>
+
+
+<a class="btn btn-default" href="#/persons">Go to main person list page.</a>
+
+<script>
+$(function() {
+    $("#telephone1").mask("(00)00000-0000");
+    $("#telephone2").mask("(00)00000-0000");
+});
+</script>
+

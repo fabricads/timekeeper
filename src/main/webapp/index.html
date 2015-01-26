@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<!--[if IE 8]><html class="ie8"><![endif]-->
+<!--[if IE 9]><html class="ie9"><![endif]-->
+<!--[if gt IE 9]><!-->
+<html lang="en_US" ng-app="timekeeperApp">
+<!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+    <title>Red Hat Consulting Services - Partner timekeeper</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="img/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="img/apple-touch-icon-57-precomposed.png">
+    <link href="css/rcue.min.css" rel="stylesheet" media="screen, print">
+    <link href="css/smoothness/jquery-ui-1.10.3.custom.min.css" rel="stylesheet">
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="js/lib/html5shiv.min.js"></script>
+    <script src="js/lib/respond.min.js"></script>
+    <![endif]-->
+    <!-- IE8 requires jQuery and Bootstrap JS to load in head to prevent rendering bugs -->
+    <!-- IE8 requires jQuery v1.x -->
+    <script src="js/lib/jquery-1.10.2.min.js"></script>
+    <script src="js/lib/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="js/lib/jquery.ui.datepicker-pt-BR.min.js"></script>
+    <script src="js/lib/jquery.mask.min.js"></script>
+    <script src="js/lib/bootstrap.min.js"></script>
+    <script src="js/lib/angular.js"></script>
+    <script src="js/lib/angular-resource.min.js"></script>
+    <script src="js/lib/angular-route.min.js"></script>
+    <script src="js/lib/patternfly.min.js"></script>
+    <script src="js/lib/ui-bootstrap-tpls-0.12.0.min.js"></script>
+    <script src="js/app.js"></script>
+
+  </head>
+  <body>
+    <nav class="navbar navbar-default navbar-pf" role="navigation">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="/">
+          <img src="img/brand.svg" alt="Red Hat&reg; Common User Experience" />
+        </a>
+      </div>
+      <div class="collapse navbar-collapse navbar-collapse-1">
+
+        <ul class="nav navbar-nav navbar-utility">
+          <li>
+            <a href="#/profile/1">
+              <span class="pficon pficon-user"></span>
+              Profile
+            </a>
+          </li>
+          <li>
+            <a href="#">Logout</a>
+          </li>
+        </ul>
+      
+        <ul class="nav navbar-nav navbar-primary">
+          <li>
+            <a href="#/persons" >Person</a>
+          </li>
+          <li>
+            <a  href="#/organizations">Organization</a>
+          </li>
+          <li class="active">
+            <a href="#/projects">Project</a>
+          </li>
+          <li>
+            <a href="#/timecards">Timecard</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+    <div class="container-fluid">
+      <div class="row">
+        <div ng-view class="col-md-12">
+        </div><!-- /col -->
+      </div><!-- /row -->
+    </div><!-- /container -->
+    
+<script type="text/javascript">
+
+$( document ).ready(function() {
+
+    $('ul.navbar-primary li a').click(
+
+        function(e) {
+            $(this).closest('ul').find('.active').removeClass('active');
+            $(this).parent().addClass('active');
+        });
+});
+</script>    
+  </body>
+</html>
