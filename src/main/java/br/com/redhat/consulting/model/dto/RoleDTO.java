@@ -15,6 +15,10 @@ public class RoleDTO  {
         return id;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public String getName() {
         return name;
     }
@@ -35,7 +39,7 @@ public class RoleDTO  {
         return persons;
     }
 
-    public void setPersons(List<PersonDTO> persons) {
+    public void setPersonsDTO(List<PersonDTO> persons) {
         this.persons = persons;
     }
 

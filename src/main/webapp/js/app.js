@@ -8,12 +8,10 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 		templateUrl : "persons.html",
 	}).
 	when("/person-new", {
-	    templateUrl : "person.html",
-	    controller: "person_new_ctrl"
+	    templateUrl : "person-new.html",
 	}).
 	when("/person/:personId", {
-	    templateUrl: "person.html",
-	    controller: "person_edit_ctrl"
+	    templateUrl: "person-edit.html",
 	}).
 	when("/profile/:personId", {
 	    templateUrl: "profile.html",
@@ -41,12 +39,10 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 		templateUrl : "organizations.html",
 	}).
 	when("/organization-new", {
-		templateUrl : "organization.html",
-		controller: "organization_new_ctrl"
+		templateUrl : "organization-new.html",
 	}).
     when("/organization/:orgId", {
-    	templateUrl: "organization.html",
-    	controller: "organization_edit_ctrl"
+    	templateUrl: "organization-edit.html",
     }).
 	
     otherwise({
@@ -211,46 +207,57 @@ timekeeperApp.controller("organization_new_ctrl", function($scope, $http) {
 	
 	$scope.org = {};
 	$scope.org.enabled = true;
+	$scope.saved = false;
 	
 	$scope.org_submit = function(org) {
+//	    org.name = org.name.trim();
 		$http.post("/timekeeper/svc/organization/save", org)
-			.success(
-				function(data, status, header, config) {
-					
-				}
-			)
-			.error(
-				function(data, status, header, config) {
-					alert("Error to submit new organization: " + status);
-
-				}
-			);
+			.success(function(data, status, header, config) {
+				$scope.saved = true;
+				$scope.error_msg = null;
+				$scope.org_name = org.name;
+			}).
+			error(function(data, status, header, config) {
+			    $scope.error_msg = data;
+			});
 	};
 
 });
 
 timekeeperApp.controller("organization_edit_ctrl", function($scope, $http, $routeParams) {
 	
-	$http.get('/timekeeper/svc/organization/'+$routeParams.orgId).success(function(data) {
-		$scope.org = data;
-	});
+    $scope.saved = false;
+    
+	$http.get('/timekeeper/svc/organization/'+$routeParams.orgId).
+	    success(function(data) {
+    		$scope.org = data;
+    	}).
+    	error(function(data, status, header, config) {
+    	    $scope.error_msg = data;
+        });
 
 	
 	$scope.org_submit = function(org) {
-		$http.post("/timekeeper/svc/organization/save", org).success(
-				function(data, status, header, config) {
-					
-				}).error(function(data, status, header, config) {
-					alert("Error to submit new organization: " + status);
-				});
+//	    org.name = org.name.trim();
+		$http.post("/timekeeper/svc/organization/save", org).
+	        success(function(data, status, header, config) {
+	            $scope.saved = true;
+	            $scope.error_msg = null;
+	            $scope.org_name = org.name;
+			}).
+			error(function(data, status, header, config) {
+			    $scope.error_msg = data;
+			});
 	};
 	
 });
 
 timekeeperApp.controller("org_listing_ctrl", function($scope, $http, $route, $routeParams) {
 	
+    $scope.loading = true;
 	$http.get('/timekeeper/svc/organization/list').success(function(data) {
 		$scope.orgs = data;
+		$scope.loading = false;
 	});
 	
 	$scope.disable = function(orgId) {
@@ -275,8 +282,10 @@ timekeeperApp.controller("org_listing_ctrl", function($scope, $http, $route, $ro
 
 timekeeperApp.controller("person_listing_ctrl", function($scope, $http, $route, $routeParams) {
 	
+    $scope.loading = true;
 	$http.get('/timekeeper/svc/person/list').success(function(data) {
 		$scope.persons = data;
+		$scope.loading = false;
 	});
 	
 	$scope.disable = function(personId) {
@@ -314,27 +323,28 @@ timekeeperApp.controller("person_new_ctrl", function($scope, $http, $rootScope) 
 	});
 	
 	$scope.person_submit = function(person) {
-		$http.post("/timekeeper/svc/person/save", person)
-		.success(
-				function(data, status, header, config) {
-					
-				}
-		)
-		.error(
-				function(data, status, header, config) {
-					alert("Error to save organization: " + status);
-					
-				}
-		);
+		$http.post("/timekeeper/svc/person/save", person).
+		    success(function(data, status, header, config) {
+			    $scope.saved = true;
+                $scope.error_msg = null;
+                $scope.person_name = person.name;
+			}).
+			error(function(data, status, header, config) {
+			    $scope.error_msg = data;
+			});
 	};
 	
 });
 
 timekeeperApp.controller("person_edit_ctrl", function($scope, $http, $routeParams, $rootScope) {
 	
-	$http.get('/timekeeper/svc/person/'+$routeParams.personId).success(function(data) {
-		$scope.person = data;
-	});
+	$http.get('/timekeeper/svc/person/'+$routeParams.personId).
+	    success(function(data) {
+    		$scope.person = data;
+    	}).
+    	error(function(data, status, header, config) {
+            $scope.error_msg = data;
+        });
 	
 	$scope.states = $rootScope.states;	
 	
@@ -351,16 +361,15 @@ timekeeperApp.controller("person_edit_ctrl", function($scope, $http, $routeParam
 	
 	$scope.person_submit = function(person) {
 		$http.post("/timekeeper/svc/person/save", person)
-		.success(
-				function(data, status, header, config) {
-				}
-		)
-		.error(
-				function(data, status, header, config) {
-					alert("Error to save organization: " + status);
+		    .success(function(data, status, header, config) {
+		        $scope.saved = true;
+                $scope.error_msg = null;
+                $scope.org_name = org.name;
+			}).
+			error(function(data, status, header, config) {
+			    $scope.error_msg = data;
 					
-				}
-		);
+			});
 	};
 	
 });

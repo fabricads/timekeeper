@@ -29,8 +29,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 @Entity
 @Table(name="partner_org")
 @Audited
-@JsonIgnoreProperties(ignoreUnknown=true)
-//@JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property="@id", scope=PartnerOrganization.class)
 public class PartnerOrganization extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
@@ -56,6 +54,7 @@ public class PartnerOrganization extends AbstractEntity {
     }
 
     @NotNull
+    @Column(unique=true)
     public String getName() {
         return name;
     }
@@ -73,7 +72,6 @@ public class PartnerOrganization extends AbstractEntity {
     }
 
     @OneToMany(mappedBy="partnerOrganization")
-    @JsonSerialize(using=PartnerOrganizationJsonSerializer.class)
     public List<Person> getPersons() {
         return persons;
     }

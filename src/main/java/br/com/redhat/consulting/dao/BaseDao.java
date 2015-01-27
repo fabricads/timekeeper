@@ -105,6 +105,7 @@ public class BaseDao<ENTITY, SEARCH_FILTER> {
         return em;
     }
     
+    @TransactionalMode
     public List<ENTITY> find(SEARCH_FILTER filter) throws GeneralException {
         List<Object> params = new ArrayList<Object>();
         StringBuilder queryBuffer = new StringBuilder();

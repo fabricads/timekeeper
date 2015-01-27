@@ -11,7 +11,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -22,16 +21,11 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import br.com.redhat.consulting.model.dto.PersonDTO;
 
 @Entity
 @Table(name="person")
 @Audited
-@JsonIgnoreProperties(ignoreUnknown=true)
-@JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property="@id", scope=Person.class)
 public class Person extends AbstractEntity {
 
 	private static final long serialVersionUID = 1L;
@@ -61,6 +55,21 @@ public class Person extends AbstractEntity {
 	private Date lastModification;
 	
 	public Person() {}
+	
+	public Person(PersonDTO dto) {
+	    setId(dto.getId());
+	    this.name = dto.getName();
+	    this.oraclePAId = dto.getOraclePAId();
+        this.email = dto.getEmail();
+        this.password = dto.getPassword();
+        this.city = dto.getCity();
+        this.state = dto.getState();
+        this.country = dto.getCountry();
+        this.telephone1 = dto.getTelephone1();
+        this.telephone2 = dto.getTelephone2();
+        this.personType = dto.getPersonType();
+        this.enabled = dto.isEnabled();
+	}
 	
     public Person(String oraclePAId, String name, String email, String city, String state, PartnerOrganization partnerOrganization) {
         super();
@@ -238,7 +247,6 @@ public class Person extends AbstractEntity {
     
     // consultant is the attribute name in the TimecardEntry class
     @OneToMany(mappedBy="consultant")
-    @JsonIgnore
     public List<Timecard> getTimecards() {
         return timecards;
     }
@@ -248,7 +256,6 @@ public class Person extends AbstractEntity {
     }
 
     @ManyToMany(mappedBy="consultants")
-    @JsonIgnore
     public List<Project> getProjects() {
         return projects;
     }
@@ -267,7 +274,4 @@ public class Person extends AbstractEntity {
 				+ ", email=" + email + ", id=" + getId() + "]";
 	}
 
-    
-    
-	
 }

@@ -1,11 +1,16 @@
 <script src="js/lib/jquery.dataTables.js"></script>
 <h1>Organizations</h1>
 
-<a href="#/organization-new">Add a organization</a>
+<p><a class="btn btn-primary" href="#/organization-new">Add an organization</a></p>
 
-<div class="table-responsive">
-    <table class="table table-striped table-bordered table-hover" ng-controller="org_listing_ctrl" ng-cloak>
-        <thead>
+<div class="table-responsive" ng-controller="org_listing_ctrl" ng-cloak>
+    <div ng-show="loading">Loading..</div>
+    <div class="alert alert-info" ng-show="orgs.orgs.length == 0">
+        <span class="pficon pficon-info"></span> There is no organization to list, do you want to <a href="#/organization-new">add an
+            organization</a> ?.<br> {{orgs.msg}}<br>
+    </div>
+    <table class="table table-striped table-bordered table-hover" ng-hide="orgs.orgs.length == 0">
+        <thead >
             <tr>
                 <th>Name</th>
                 <th>Actions</th>
@@ -13,13 +18,16 @@
         </thead>
         <tbody>
             <tr ng-repeat="org in orgs">
-                <td style="vertical-align: middle;"><a ng-href="#/organization/{{org.id}}">{{org.name}} {{org.enabled === true ? "" : "(DISABLED)"}}</a></td>
                 <td style="vertical-align: middle;">
-                    <a class="btn btn-default" ng-show="org.enabled" ng-click="disable(org.id)">Disable</a> 
-                    <a class="btn btn-default" ng-show="!org.enabled" ng-click="enable(org.id)">Enable</a>
-                    <a class="btn btn-danger" ng-show="org.persons.length == 0" ng-click="delete(org.id)">Delete</a>
+                    <a ng-href="#/organization/{{org.id}}">{{org.name}} {{org.enabled === true ? "" : "(DISABLED)"}}</a>
+                </td>
+                <td style="vertical-align: middle;">
+                    <a class="btn btn-default" ng-show="org.enabled" ng-click="disable(org.id)">Disable</a>
+                    <a class="btn btn-default" ng-show="!org.enabled" ng-click="enable(org.id)">Enable</a> 
+                    <a class="btn btn-danger" ng-show="org.numberOfPersons == 0" ng-click="delete(org.id)">Delete</a>
                 </td>
             </tr>
         </tbody>
     </table>
 </div>
+

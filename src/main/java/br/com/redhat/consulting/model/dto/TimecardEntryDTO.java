@@ -23,6 +23,10 @@ public class TimecardEntryDTO  {
         return id;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public Date getDay() {
         return day;
     }

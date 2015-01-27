@@ -10,6 +10,7 @@ public class PartnerOrganizationDTO  {
     private String name;
     private boolean enabled;
     private List<PersonDTO> persons = new ArrayList<>();
+    private int numberOfPersons;
     
     private Date registered;
     
@@ -22,6 +23,10 @@ public class PartnerOrganizationDTO  {
 
     public Integer getId() {
         return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -40,20 +45,28 @@ public class PartnerOrganizationDTO  {
         this.enabled = enabled;
     }
 
-    public List<PersonDTO> getPersons() {
+    public List<PersonDTO> getPersons2() {
         return persons;
     }
 
-    public void setPersons(List<PersonDTO> persons) {
+    public void setPersons2(List<PersonDTO> persons) {
         this.persons = persons;
     }
-
+    
     public Date getRegistered() {
         return registered;
     }
 
     public void setRegistered(Date registered) {
         this.registered = registered;
+    }
+
+    public int getNumberOfPersons() {
+        return numberOfPersons;
+    }
+
+    public void setNumberOfPersons(int numberOfPersons) {
+        this.numberOfPersons = numberOfPersons;
     }
 
     @Override

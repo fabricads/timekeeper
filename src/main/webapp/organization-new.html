@@ -1,0 +1,44 @@
+<h1>New Organization</h1>
+
+<div ng-controller="organization_new_ctrl">
+
+    <div class="alert alert-warning" ng-show="error_msg != null">
+        <span class="pficon-layered">
+          <span class="pficon pficon-warning-triangle"></span>
+          <span class="pficon pficon-warning-exclamation"></span>
+        </span> 
+            {{error_msg.error}}
+    </div>
+    
+    <div class="alert alert-success" ng-show="saved">
+      <span class="pficon pficon-ok"></span>
+            Organization {{org_name}} was successful.
+    </div>
+    
+    
+    <form class="form-horizontal">
+        <div class="form-group">
+            <label for="prj_name" class="col-md-2 control-label">Organization name</label>
+            <div class="col-md-2">
+                <input type="text" class="form-control" required ng-model="org.name" ng-trim>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <div class="checkbox">
+                    <label> <input type="checkbox" ng-model="org.enabled"> Enable organization to associate consultants ?
+                    </label>
+                </div>
+            </div>
+        </div>
+    
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" class="btn btn-primary" ng-click="org_submit(org)" ng-disabled="saved">Save</button>
+            </div>
+        </div>
+    </form>
+    
+    
+    <a class="btn btn-default" href="#/organizations">Go to main organization list page.</a>
+</div>

@@ -21,8 +21,13 @@ public class PersonDao extends BaseDao<Person, PersonSearchFilter> {
         }
         
         if (StringUtils.isNotBlank(filter.getName())) {
-            query.append(" and lower(ENT.name) like '%'||?||'%' ");
+            query.append(" and lower(ENT.name) = ? ");
             params.add(filter.getName().toLowerCase());
+        }
+        
+        if (StringUtils.isNotBlank(filter.getPartialName())) {
+            query.append(" and lower(ENT.name) like '%'||?||'%' ");
+            params.add(filter.getPartialName().toLowerCase());
         }
 
         if (StringUtils.isNotBlank(filter.getEmail())) {

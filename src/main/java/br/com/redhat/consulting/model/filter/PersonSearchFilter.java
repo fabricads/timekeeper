@@ -7,6 +7,7 @@ public class PersonSearchFilter extends Person {
     private static final long serialVersionUID = 1L;
     
     private int[] types;
+    private String partialName;
     
     public void setPersonTypes(int[] _types) {
         this.types = _types;
@@ -14,5 +15,13 @@ public class PersonSearchFilter extends Person {
 
     public int[] getPersonTypes() {
         return types;
+    }
+
+    public String getPartialName() {
+        return partialName;
+    }
+
+    public void setPartialName(String partialName) {
+        this.partialName = partialName;
     }
 }

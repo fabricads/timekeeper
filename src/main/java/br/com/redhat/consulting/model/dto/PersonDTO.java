@@ -20,7 +20,7 @@ public class PersonDTO  {
 	private String country;
 	private String telephone1;
 	private String telephone2;
-	private PartnerOrganizationDTO partnerOrganization;
+	private PartnerOrganizationDTO organization;
 	
 	private RoleDTO role;
 	
@@ -44,11 +44,15 @@ public class PersonDTO  {
         this.email = email;
         this.city = city;
         this.state = state;
-        this.partnerOrganization = partnerOrganization;
+        this.organization = partnerOrganization;
     }
 
     public Integer getId() {
         return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
 	public String getOraclePAId() {
@@ -139,19 +143,19 @@ public class PersonDTO  {
 		this.lastModification = lastModification;
 	}
 	
-    public PartnerOrganizationDTO getPartnerOrganization() {
-        return partnerOrganization;
+    public PartnerOrganizationDTO getOrganization() {
+        return organization;
     }
 
-    public void setPartnerOrganization(PartnerOrganizationDTO partnerOrganization) {
-        this.partnerOrganization = partnerOrganization;
+    public void setOrganization(PartnerOrganizationDTO partnerOrganization) {
+        this.organization = partnerOrganization;
     }
 
     public RoleDTO getRole() {
         return role;
     }
 
-    public void setRole(RoleDTO role) {
+    public void setRoleDTO(RoleDTO role) {
         this.role = role;
     }
     
@@ -161,18 +165,6 @@ public class PersonDTO  {
 
     public void setPersonType(Integer personType) {
         this.personType = personType;
-    }
-    
-    public PersonType getPersonTypeEnum() {
-        return PersonType.find(getPersonType());
-    }
-    
-    public String getPersonTypeEnumDescription() {
-        return PersonType.find(getPersonType()).getDescription();
-    }
-    
-    public void setPersonTypeEnum(PersonType _personType) {
-        setPersonType(_personType.getId());
     }
     
     public boolean isEnabled() {
@@ -188,7 +180,7 @@ public class PersonDTO  {
         return timecards;
     }
 
-    public void setTimecards(List<TimecardDTO> timecards) {
+    public void setTimecardsDTO(List<TimecardDTO> timecards) {
         this.timecards = timecards;
     }
 
@@ -196,7 +188,7 @@ public class PersonDTO  {
         return projects;
     }
 
-    public void setProjects(List<ProjectDTO> projects) {
+    public void setProjectsDTO(List<ProjectDTO> projects) {
         this.projects = projects;
     }
     

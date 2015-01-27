@@ -21,6 +21,10 @@ public class TimecardDTO  {
         return id;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     public ProjectDTO getProject() {
         return project;
     }

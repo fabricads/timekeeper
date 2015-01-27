@@ -82,4 +82,15 @@ public class PersonService {
         }
     }
 
+    public Person findByName(String name) throws GeneralException {
+        List<Person> res = null;
+        PersonSearchFilter filter = new PersonSearchFilter();
+        filter.setName(name);
+        res = personDao.find(filter);
+        Person person = null;
+        if (res.size() > 0)
+            person = res.get(0);
+        return person;
+    }
+
 }

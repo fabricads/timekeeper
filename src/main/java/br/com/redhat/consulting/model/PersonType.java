@@ -35,9 +35,9 @@ public enum PersonType {
         return null;
     }
     
-    public Map<String, String> toMap() {
-        Map<String, String> map1 = new HashMap<>(1);
-        map1.put("id", getId()+ "");
+    public Map<String, Object> toMap() {
+        Map<String, Object> map1 = new HashMap<>(1);
+        map1.put("id", getId());
         map1.put("name", getDescription());
         return map1;
     }
