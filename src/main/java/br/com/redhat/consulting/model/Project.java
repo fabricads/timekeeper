@@ -21,15 +21,9 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.envers.Audited;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
 @Entity
 @Table(name="project")
 @Audited
-@JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property="@id", scope=Project.class)
 public class Project extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
@@ -91,7 +85,6 @@ public class Project extends AbstractEntity {
     @OneToOne
     @JoinColumn(name="id_project_manager")
     @NotNull
-//    @Json
     public Person getProjectManager() {
         return projectManager;
     }
@@ -102,12 +95,10 @@ public class Project extends AbstractEntity {
 
     @ManyToMany
     @JoinTable(name="person_project", joinColumns=@JoinColumn(name="id_project"), inverseJoinColumns=@JoinColumn(name="id_person"))
-    @JsonIgnore
     public List<Person> getConsultants() {
         return consultants;
     }
 
-    @JsonProperty
     public void setConsultants(List<Person> consultants) {
         this.consultants = consultants;
     }
@@ -142,7 +133,6 @@ public class Project extends AbstractEntity {
     }
 
     @OneToMany(mappedBy="project")
-    @JsonIgnore
     public List<Timecard> getTimecards() {
         return timecards;
     }

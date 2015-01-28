@@ -65,7 +65,7 @@ public class ProjectDTO  {
         return projectManager;
     }
 
-    public void setProjectManager(PersonDTO projectManager) {
+    public void setProjectManagerDTO(PersonDTO projectManager) {
         this.projectManager = projectManager;
     }
 
@@ -73,7 +73,7 @@ public class ProjectDTO  {
         return consultants;
     }
 
-    public void setConsultants(List<PersonDTO> consultants) {
+    public void setConsultantsDTO(List<PersonDTO> consultants) {
         this.consultants = consultants;
     }
     
@@ -109,7 +109,7 @@ public class ProjectDTO  {
         return timecards;
     }
 
-    public void setTimecards(List<TimecardDTO> timecards) {
+    public void setTimecardsDTO(List<TimecardDTO> timecards) {
         this.timecards = timecards;
     }
 

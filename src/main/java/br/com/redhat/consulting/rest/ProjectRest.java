@@ -1,5 +1,7 @@
 package br.com.redhat.consulting.rest;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -23,12 +25,14 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.Project;
+import br.com.redhat.consulting.model.dto.PersonDTO;
+import br.com.redhat.consulting.model.dto.ProjectDTO;
 import br.com.redhat.consulting.services.ProjectService;
 import br.com.redhat.consulting.util.GeneralException;
 
@@ -47,18 +51,40 @@ public class ProjectRest {
     @Path("/list")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public List<Project> listProjects(@QueryParam("by-pm") String pm) {
+    public Response listProjects(@QueryParam("by-pm") Integer pmId) {
         List<Project> projects = null;
+        List<ProjectDTO> projectsDto = null;
+        Response.ResponseBuilder response = null;
+       
         try {
-            if (StringUtils.isNotBlank(pm))
-                projects = projectService.findByPM(pm);
+            if (pmId != null)
+                projects = projectService.findByPM(pmId);
             else 
                 projects = projectService.findAll();
-        } catch (GeneralException e) {
-            String msg = "Error searching for projects.";
-            LOG.error(msg, e);
+            if (projects.size() == 0) {
+                Map<String, Object> responseObj = new HashMap<>();
+                responseObj.put("msg", "No projects found");
+                responseObj.put("orgs", new ArrayList());
+                response = Response.ok(responseObj);
+            } else {
+                projectsDto = new ArrayList<ProjectDTO>(projects.size());
+                for (Project project: projects) {
+                    ProjectDTO prjDto = new ProjectDTO();
+                    PersonDTO pmDto = new PersonDTO();
+                    BeanUtils.copyProperties(prjDto, project);
+//                    BeanUtils.copyProperties(pmDto, project.getProjectManager());
+//                    prjDto.setProjectManagerDTO(pmDto);
+                    projectsDto.add(prjDto);
+                }
+                response = Response.ok(projectsDto);
+            }
+        } catch (GeneralException | IllegalAccessException | InvocationTargetException e) {
+            LOG.error("Error to find projects.", e);
+            Map<String, String> responseObj = new HashMap<>();
+            responseObj.put("error", e.getMessage());
+            response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
         }
-        return projects;
+        return response.build();
     }
     
     @Path("/count-by-pm")
@@ -130,6 +156,59 @@ public class ProjectRest {
         return builder.build();
     }
 
+    @Path("/{pd}/disable")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public Response disable(@PathParam("pd") @DefaultValue("-1") int projectId) {
+        Response.ResponseBuilder response = null;
+        try {
+            projectService.disable(projectId);
+            response = Response.ok();
+        } catch (GeneralException e) {
+            LOG.error("Error to disable organization.", e);
+            Map<String, String> responseObj = new HashMap<String, String>();
+            responseObj.put("error", e.getMessage());
+            response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+        }
+        return response.build();
+    }
+    
+    @Path("/{pd}/enable")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public Response enable(@PathParam("pd") @DefaultValue("-1") int projectId) {
+        Response.ResponseBuilder response = null;
+        try {
+            projectService.enable(projectId);
+            response = Response.ok();
+        } catch (GeneralException e) {
+            LOG.error("Error to insert organization.", e);
+            Map<String, String> responseObj = new HashMap<String, String>();
+            responseObj.put("error", e.getMessage());
+            response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+        }
+        return response.build();
+    }
+    
+    @Path("/{pd}/delete")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public Response delete(@PathParam("pd") @DefaultValue("-1") int projectId) {
+        Response.ResponseBuilder response = null;
+        try {
+            projectService.delete(projectId);
+            response = Response.ok();
+        } catch (GeneralException e) {
+            LOG.error("Error to insert organization.", e);
+            Map<String, String> responseObj = new HashMap<String, String>();
+            responseObj.put("error", e.getMessage());
+            response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+        }
+        return response.build();
+    }
+
+
+    
     private void validate(Project project) throws ConstraintViolationException, ValidationException {
         // Create a bean validator and check for issues.
         Set<ConstraintViolation<Project>> violations = validator.validate(project);

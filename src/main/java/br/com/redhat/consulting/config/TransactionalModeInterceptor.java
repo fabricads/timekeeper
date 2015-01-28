@@ -38,22 +38,21 @@ public class TransactionalModeInterceptor implements Serializable {
             try {
                 ret = ic.proceed();
 
-                if (startedTransaction)
+                if (startedTransaction) {
                     LOG.debug("Transaction commit: " + utx);
                     utx.commit();
+                }
             } catch (Throwable t) {
-                LOG.error("Error continuing business application or in transaction commit. Prepare to rollback", t);
+//                LOG.error("Error continuing business application or in transaction commit. Prepare to rollback", t);
                 if (startedTransaction) {
                     LOG.debug("Transaction rollback: " + utx);
                     utx.rollback();
                 }
-
                 throw t;
             }
         } else {
             LOG.error("UserTransaction is null");
         }
-
         return ret;
     }
 }

@@ -15,7 +15,6 @@
                 <th>Name</th>
                 <th>e-mail</th>
                 <th>Organization</th>
-                <th>Type</th>
                 <th>City</th>
                 <th>Actions</th>
             </tr>
@@ -25,7 +24,6 @@
                 <td style="vertical-align: middle;"><a ng-href="#/person/{{person.id}}">{{person.name}} {{person.enabled === true ? "" : "(DISABLED)"}}</a></td>
                 <td style="vertical-align: middle;">{{person.email}}</td>
                 <td style="vertical-align: middle;">{{person.organization.name}}</td>
-                <td style="vertical-align: middle;">{{person.personTypeEnumDescription}}</td>
                 <td style="vertical-align: middle;">{{person.city}}</td>
                 <td style="vertical-align: middle;">
                     <a class="btn btn-default" ng-show="person.enabled" ng-click="disable(person.id)">Disable</a> 

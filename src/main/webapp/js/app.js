@@ -15,7 +15,6 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 	}).
 	when("/profile/:personId", {
 	    templateUrl: "profile.html",
-	    controller: "profile_ctrl"
 	}).
 	
 	when("/timecards", {
@@ -26,12 +25,10 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 		templateUrl : "projects.html",
 	}).
 	when("/project-new", {
-	    templateUrl : "project.html",
-	    controller: "project_new_ctrl"
+	    templateUrl : "project-new.html",
 	}).
 	when("/project/:projectId", {
-	    templateUrl: "project.html",
-	    controller: "project_edit_ctrl"
+	    templateUrl: "project-edit.html",
 	}).
 	
 	
@@ -62,11 +59,28 @@ timekeeperApp.controller("TimecardCtrl", function($scope, $http, $routeParams) {
  * 
  */
 
-timekeeperApp.controller("project_list_ctrl", function($scope, $http) {
+timekeeperApp.controller("project_list_ctrl", function($scope, $http, $route) {
 
-	$http.get('/timekeeper/svc/project/list').success(function(data) {
-		$scope.projects = data;
-	});
+    $scope.loading = true;
+	$http.get('/timekeeper/svc/project/list').
+	    success(function(data) {
+        	$scope.projects = data;
+        	$scope.loading = false;
+        });
+	
+	$scope.disable = function(projectId) {
+        $http.get("/timekeeper/svc/project/"+projectId+"/disable");
+        $route.reload();
+    };
+    $scope.enable = function(projectId) {
+        $http.get("/timekeeper/svc/project/"+projectId+"/enable");
+        $route.reload();
+    };
+    $scope.delete = function(projectId) {
+        $http.get("/timekeeper/svc/project/"+projectId+"/delete");
+        $route.reload();
+    };
+
 
 });
 
@@ -87,10 +101,13 @@ timekeeperApp.controller("project_new_ctrl", function($scope, $http) {
 		project.consultants = $scope.selected_consultants;
 		$http.post("/timekeeper/svc/project/save", project).success(
 				function(data, status, header, config) {
-				}).error(function(data, status, header, config) {
-					alert("Error to save project: " + status);
-					
-				});
+				    $scope.saved = true;
+	                $scope.error_msg = null;
+	                $scope.prj_name = project.name;
+	            }).
+	            error(function(data, status, header, config) {
+	                $scope.error_msg = data;
+	            });
 	};
     
 	$scope.open = function($event) {
@@ -376,24 +393,22 @@ timekeeperApp.controller("person_edit_ctrl", function($scope, $http, $routeParam
 
 timekeeperApp.controller("profile_ctrl", function($scope, $http, $routeParams, $rootScope) {
     
-    $http.get('/timekeeper/svc/person/'+$routeParams.personId).success(function(data) {
+    $http.get('/timekeeper/svc/profile/'+$routeParams.personId).success(function(data) {
         $scope.person = data;
     });
     
     $scope.states = $rootScope.states;	
     
     $scope.person_submit = function(person) {
-        $http.post("/timekeeper/svc/person/save", person)
-        .success(
-                function(data, status, header, config) {
-                }
-        )
-        .error(
-                function(data, status, header, config) {
-                    alert("Error to save person: " + status);
-                    
-                }
-        );
+        $http.post("/timekeeper/svc/profile/save", person).
+            success(function(data, status, header, config) {
+                $scope.saved = true;
+                $scope.error_msg = null;
+                $scope.person_name = person.name;
+            }).
+            error(function(data, status, header, config) {
+                $scope.error_msg = data;
+            });
     };
     
 });

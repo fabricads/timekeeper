@@ -7,6 +7,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import br.com.redhat.consulting.dao.ProjectDao;
+import br.com.redhat.consulting.model.PartnerOrganization;
 import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.Project;
 import br.com.redhat.consulting.model.filter.ProjectSearchFilter;
@@ -17,11 +18,11 @@ public class ProjectService {
     @Inject
     private ProjectDao projectDao;
     
-    public List<Project> findByPM(String pmName) throws GeneralException {
+    public List<Project> findByPM(Integer pmId) throws GeneralException {
         List<Project> res = Collections.emptyList();
         ProjectSearchFilter filter = new ProjectSearchFilter();
         Person pm = new Person();
-        pm.setName(pmName);
+        pm.setId(pmId);
         filter.setProjectManager(pm);
 //        projectDao.setFetchCollection(new String[]{"consultants"});
         res = projectDao.find(filter);
@@ -64,6 +65,21 @@ public class ProjectService {
         }
     }
     
+    public void disable(Integer projectId) throws GeneralException {
+        Project org = findById(projectId);
+        org.setEnabled(false);
+        projectDao.update(org);
+    }
     
+    public void enable(Integer projectId) throws GeneralException {
+        Project org = findById(projectId);
+        org.setEnabled(true);
+        projectDao.update(org);
+    }
+    
+    public void delete(Integer projectId) throws GeneralException {
+        projectDao.remove(projectId);
+    }
+
 
 }
