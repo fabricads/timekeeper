@@ -29,9 +29,11 @@ import org.slf4j.LoggerFactory;
 import br.com.redhat.consulting.model.PartnerOrganization;
 import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.PersonType;
+import br.com.redhat.consulting.model.Project;
 import br.com.redhat.consulting.model.Role;
 import br.com.redhat.consulting.model.dto.PartnerOrganizationDTO;
 import br.com.redhat.consulting.model.dto.PersonDTO;
+import br.com.redhat.consulting.model.dto.ProjectDTO;
 import br.com.redhat.consulting.model.dto.RoleDTO;
 import br.com.redhat.consulting.services.PersonService;
 import br.com.redhat.consulting.util.GeneralException;
@@ -94,6 +96,8 @@ public class PersonRest {
                     PartnerOrganization org = p.getPartnerOrganization();
                     PartnerOrganizationDTO orgDto = new PartnerOrganizationDTO();
                     Role role = p.getRole();
+                    if (type == FIND_ALL) 
+                        personDto.setNumberOfProjects(p.getProjects().size());
                     RoleDTO roleDto = new RoleDTO();
                     BeanUtils.copyProperties(orgDto, org);
                     BeanUtils.copyProperties(roleDto, role);

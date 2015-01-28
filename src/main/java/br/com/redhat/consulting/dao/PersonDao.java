@@ -71,9 +71,9 @@ public class PersonDao extends BaseDao<Person, PersonSearchFilter> {
         query.append(" order by ENT.name");
     }
     
-    public String[] getFetchCollection() {
-        return new String[]{"partnerOrganization","projects"};
-    }
+//    public String[] getFetchCollection() {
+//        return new String[]{"partnerOrganization","projects"};
+//    }
 
 /*    public List<Person> findConsultants() {
         List<Person> l = null;
