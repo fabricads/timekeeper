@@ -61,7 +61,7 @@ public class ProjectDTO  {
         this.paNumber = paNumber;
     }
 
-    public PersonDTO getProjectManager() {
+    public PersonDTO getProjectManagerDTO() {
         return projectManager;
     }
 

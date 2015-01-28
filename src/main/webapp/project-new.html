@@ -43,7 +43,7 @@
     <div class="form-group" ng-class="{'has-error': form.pm.$invalid}">
         <label for="prj_pm" class="col-md-2 control-label">Project manager</label>
         <div class="col-md-2">
-            <select class="form-control" required name="pm" ng-model="project.projectManager.id" ng-options="pm.id as pm.name for pm in pms">
+            <select class="form-control" required name="pm" ng-model="project.projectManagerDTO.id" ng-options="pm.id as pm.name for pm in pms">
             </select>
         </div>
         <div class="col-md-4">
@@ -62,8 +62,8 @@
         <label for="inputEmail3" class="col-md-2 control-label">Start date</label>
         <div class="col-md-2">
             <p class="input-group">
-                <input type="text" class="form-control" name="startdate" datepicker-popup="{{format}}" ng-model="project.initialDate" is-open="opened"
-                    ng-required="true" close-text="Close" datepicker-options="dateOptions"/> 
+                <input type="text" class="form-control" name="startdate" datepicker-popup="dd-MMMM-yyyy" ng-model="project.initialDate" is-open="opened"
+                    required close-text="Close" datepicker-options="dateOptions"/> 
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default" ng-click="open($event)">
                         <i class="glyphicon glyphicon-calendar"></i>
@@ -79,8 +79,8 @@
         <label for="inputEmail3" class="col-md-2 control-label">End date</label>
         <div class="col-md-2">
             <p class="input-group">
-                <input type="text" class="form-control" name="enddate" datepicker-popup="{{format}}" ng-model="project.endDate" is-open="opened2"
-                    ng-required="true" close-text="Close" datepicker-options="dateOptions"/> 
+                <input type="text" class="form-control" name="enddate" datepicker-popup="dd-MMMM-yyyy" ng-model="project.endDate" is-open="opened2"
+                    required close-text="Close" datepicker-options="dateOptions"/> 
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default" ng-click="open2($event)">
                         <i class="glyphicon glyphicon-calendar"></i>
@@ -92,11 +92,11 @@
             <span class="help-block" ng-show="form.enddate.$error.required">Required field</span>
         </div>
     </div>
-    <div class="form-group" ng-class="{'has-error': form.name.$invalid}">
+    <div class="form-group" >
         <label for="prj_consultants" class="col-md-2 control-label">Consultants</label>
         <div class="col-md-2">
             <select class="form-control" ng-model="temp_consultant"
-                ng-options="consultant.name + ' - ' + consultant.partnerOrganization.name for consultant in consultants">
+                ng-options="consultant.name + ' - ' + consultant.organization.name for consultant in consultants track by consultant.id">
             </select>
         </div>
         <button type="button" class="btn btn-primary" ng-click="add_consultant()">Add consultant</button>
@@ -106,8 +106,7 @@
             <div class="com-sm-2">
                 <label> Selected consultants:</label>
                 <ul>
-                    <li data-ng-repeat="c in selected_consultants">{{c.name}} - {{c.partnerOrganization.name}} - <a href=""
-                        ng-click="remove_consultant(c)">Remove</a></li>
+                    <li data-ng-repeat="c in selected_consultants">{{c.name}} - {{c.organization.name}} - <a href="" ng-click="remove_consultant(c)">Remove</a></li>
                 </ul>
 
             </div>
@@ -116,9 +115,11 @@
 
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <button type="submit" class="btn btn-primary" ng-click="project_submit(project)">Save</button>
+            <button type="submit" class="btn btn-primary" ng-click="project_submit(project)" ng-disabled="saved || form.$invalid">Save</button>
         </div>
     </div>
 </form>
+
+</div>
 
 <a class="btn btn-default" href="#/projects">Go to main project list page.</a>

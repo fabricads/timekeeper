@@ -35,6 +35,18 @@ public class PersonDao extends BaseDao<Person, PersonSearchFilter> {
             params.add(filter.getEmail().toUpperCase());
         }
         
+        if (filter.getPersonIds() != null && filter.getPersonIds().size() > 0) {
+            query.append(" and ENT.id in ( ");
+            for (int i = 0; i< filter.getPersonIds().size(); i++) {
+                Integer id = filter.getPersonIds().get(i);
+                query.append("?");                
+                params.add(id);
+                if (i+1 < filter.getPersonIds().size())
+                    query.append(",");
+            }
+            query.append(" ) ");
+        }
+        
         if (filter.getPersonType() != null) {
             query.append(" and ENT.personType = ? ");
             params.add(filter.getPersonType());

@@ -136,19 +136,18 @@
         </div>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <button type="submit" class="btn btn-primary" ng-click="person_submit(person)" ng-disabled="saved || form.$invalid" >Save</button>
+                <button type="submit" class="btn btn-primary" ng-click="person_submit(person)" ng-disabled="saved || form.$invalid">Save</button>
             </div>
         </div>
     </form>
     
-    
-    <a class="btn btn-default" href="#/persons">Go to main person list page.</a>
-    
-    <script>
-    $(function() {
-        $("#telephone1").mask("(00)00000-0000");
-        $("#telephone2").mask("(00)00000-0000");
-    });
-    </script>
-
 </div>
+    
+<a class="btn btn-default" href="#/persons">Go to main person list page.</a>
+
+<script>
+$(function() {
+    $("#telephone1").mask("(00)00000-0000");
+    $("#telephone2").mask("(00)00000-0000");
+});
+</script>

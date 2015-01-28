@@ -26,13 +26,19 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import br.com.redhat.consulting.model.PartnerOrganization;
 import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.Project;
+import br.com.redhat.consulting.model.Role;
+import br.com.redhat.consulting.model.dto.PartnerOrganizationDTO;
 import br.com.redhat.consulting.model.dto.PersonDTO;
 import br.com.redhat.consulting.model.dto.ProjectDTO;
+import br.com.redhat.consulting.model.dto.RoleDTO;
+import br.com.redhat.consulting.services.PersonService;
 import br.com.redhat.consulting.services.ProjectService;
 import br.com.redhat.consulting.util.GeneralException;
 
@@ -44,6 +50,9 @@ public class ProjectRest {
     
     @Inject
     private ProjectService projectService;
+    
+    @Inject
+    private PersonService personService;
     
     @Inject
     private Validator validator;
@@ -64,7 +73,7 @@ public class ProjectRest {
             if (projects.size() == 0) {
                 Map<String, Object> responseObj = new HashMap<>();
                 responseObj.put("msg", "No projects found");
-                responseObj.put("orgs", new ArrayList());
+                responseObj.put("projects", new ArrayList());
                 response = Response.ok(responseObj);
             } else {
                 projectsDto = new ArrayList<ProjectDTO>(projects.size());
@@ -104,55 +113,86 @@ public class ProjectRest {
     @Path("/{pr}")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Project get(@PathParam("pr") @DefaultValue("-1") int projectId) {
-        Project project = null;
+    public Response get(@PathParam("pr") @DefaultValue("-1") int projectId) {
+        ProjectDTO projectDto = new ProjectDTO();
+        Project projectEnt = null;
+        Response.ResponseBuilder response = null;
         try {
-            project = projectService.findById(projectId);
-            Person p = project.getProjectManager();
-            p.setPassword(null);
-//            p.setPersonType(null);
-            p.setOraclePAId(null);
-            p.setPartnerOrganization(null);
-            p.setRole(null);
-            p.setEnabled(false);
-            p.setRegistered(null);
-            p.setLastModification(null);
+            projectEnt = projectService.findByIdWithConsultants(projectId);
+            if (projectEnt == null) {
+                Map<String, String> responseObj = new HashMap<>();
+                responseObj.put("error", "Project " + projectId + " not found.");
+                response = Response.status(Response.Status.NOT_FOUND).entity(responseObj);
+            } else {
+                Person pm = projectEnt.getProjectManager();
+                pm.nullifyAttributes();
+                
+                PersonDTO pmDto = new PersonDTO();
+                BeanUtils.copyProperties(pmDto, pm);
+                BeanUtils.copyProperties(projectDto, projectEnt);
+                projectDto.setProjectManagerDTO(pmDto);
+                for (Person consultant: projectEnt.getConsultants()) {
+                    consultant.nullifyAttributes();
+                    PersonDTO consultantDto = new PersonDTO();
+                    PartnerOrganizationDTO orgDto = new PartnerOrganizationDTO();
+                    BeanUtils.copyProperties(consultantDto, consultant);
+                    BeanUtils.copyProperties(orgDto, consultant.getPartnerOrganization());
+                    consultantDto.setOrganization(orgDto);
+                    projectDto.addConsultant(consultantDto);
+                    
+                }
+                response = Response.ok(projectDto);
+            }
         } catch (Exception e) {
-            LOG.error("Error to get project id="+projectId, e);
-            Map<String, String> responseObj = new HashMap<String, String>();
+            LOG.error("Error to find project.", e);
+            Map<String, String> responseObj = new HashMap<>();
             responseObj.put("error", e.getMessage());
-//            builder = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+            response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
         }
-        return project;
+        return response.build();
     }
-
     
     @Path("/save")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
-    public Response savePedido(Project project) {
-
+    public Response save(ProjectDTO projectDto) {
         Response.ResponseBuilder builder = null;
         try {
-            validate(project);
-            projectService.persist(project);
-            builder = Response.ok();
-        } catch (ConstraintViolationException ce) {
-            ce.printStackTrace();
-            builder = createViolationResponse(project.getName(), ce.getConstraintViolations());
-        } catch (ValidationException e) {
-            e.printStackTrace();
-            Map<String, String> responseObj = new HashMap<String, String>();
-            responseObj.put("email", "Email taken");
-            builder = Response.status(Response.Status.CONFLICT).entity(responseObj);
+            if (projectDto != null && StringUtils.isBlank(projectDto.getName())) {
+                Map<String, String> responseObj = new HashMap<String, String>();
+                responseObj.put("error", "Project name must not be empty.");
+                builder = Response.status(Response.Status.CONFLICT).entity(responseObj);
+                return builder.build();
+            }
+            Project projectEnt = projectService.findByName(projectDto.getName());
+            if (projectEnt != null && (projectEnt.getId() != projectDto.getId())) {
+                Map<String, String> responseObj = new HashMap<String, String>();
+                responseObj.put("error", "Project with duplicated name: " + projectDto.getName());
+                builder = Response.status(Response.Status.CONFLICT).entity(responseObj);
+            } else {
+                projectEnt = new Project();
+                Person pm = personService.findById(projectDto.getProjectManagerDTO().getId());
+                List<Integer> consultantsId = new ArrayList<>(projectDto.getConsultants().size());
+                for (PersonDTO pdto: projectDto.getConsultants()) {
+                    consultantsId.add(pdto.getId());
+                }
+                List<Person> consultants = personService.findPersonsById(consultantsId);
+                projectDto.setConsultantsDTO(null);
+                BeanUtils.copyProperties(projectEnt, projectDto);
+                projectEnt.setProjectManager(pm);
+                projectEnt.setConsultants(consultants);
+                projectService.persist(projectEnt);
+                builder = Response.ok(projectDto);
+            }
+        } catch (ConstraintViolationException e) {
+            builder = createViolationResponse("Error to insert project.", e.getConstraintViolations());
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error("Error to insert project.", e);
             Map<String, String> responseObj = new HashMap<String, String>();
             responseObj.put("error", e.getMessage());
             builder = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
         }
-
         return builder.build();
     }
 

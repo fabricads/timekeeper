@@ -84,7 +84,7 @@ timekeeperApp.controller("project_list_ctrl", function($scope, $http, $route) {
 
 });
 
-timekeeperApp.controller("project_new_ctrl", function($scope, $http) {
+timekeeperApp.controller("project_new_ctrl", function($scope, $http, $filter) {
 	
 	$scope.project = {};
 	$scope.project.enabled = true;
@@ -125,14 +125,12 @@ timekeeperApp.controller("project_new_ctrl", function($scope, $http) {
 		"show-weeks": false	
 	};
 
-	$scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
-	$scope.format = $scope.formats[0];
-	
 	$scope.selected_consultants = [];
 	$scope.temp_consultant = {};
 	
 	$scope.add_consultant = function() {
-		if ($scope.selected_consultants.indexOf($scope.temp_consultant) < 0 && $scope.temp_consultant.toSource() != "({})" ) {
+	    found = $filter('findById')($scope.selected_consultants, $scope.temp_consultant.id);
+        if (found == null && $scope.temp_consultant.toSource() != "({})" ) {
 			$scope.selected_consultants.push($scope.temp_consultant);
 // console.log($scope.selected_consultants);
 		}
@@ -149,12 +147,17 @@ timekeeperApp.controller("project_new_ctrl", function($scope, $http) {
 	
 });
 
-timekeeperApp.controller("project_edit_ctrl", function($scope, $http, $routeParams, $rootScope) {
+timekeeperApp.controller("project_edit_ctrl", function($scope, $http, $routeParams, $rootScope, $filter) {
 
     
-    $http.get('/timekeeper/svc/project/'+$routeParams.projectId).success(function(data) {
-        $scope.project = data;
-    });
+    $http.get('/timekeeper/svc/project/'+$routeParams.projectId).
+        success(function(data) {
+            $scope.project = data;
+            $scope.selected_consultants = $scope.project.consultants;
+        }).
+        error(function(data, status, header, config) {
+            $scope.error_msg = data;
+        });
 
     $http.get('/timekeeper/svc/person/pms').success(function(data) {
         $scope.pms = data;
@@ -167,10 +170,14 @@ timekeeperApp.controller("project_edit_ctrl", function($scope, $http, $routePara
     $scope.project_submit = function(project) {
         project.consultants = $scope.selected_consultants;
         $http.post("/timekeeper/svc/project/save", project).success(
-            function(data, status, header, config) {
-            }).error(function(data, status, header, config) {
-                alert("Error to save project: " + status);
-            });
+                function(data, status, header, config) {
+                    $scope.saved = true;
+                    $scope.error_msg = null;
+                    $scope.prj_name = project.name;
+                }).
+                error(function(data, status, header, config) {
+                    $scope.error_msg = data;
+                });
     };
     
     $scope.open = function($event) {
@@ -188,16 +195,13 @@ timekeeperApp.controller("project_edit_ctrl", function($scope, $http, $routePara
         "show-weeks": false 
     };
 
-    $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
-    $scope.format = $scope.formats[0];
-    
-    $scope.selected_consultants = [];
     $scope.temp_consultant = {};
     
     $scope.add_consultant = function() {
-        if ($scope.selected_consultants.indexOf($scope.temp_consultant) < 0 && $scope.temp_consultant.toSource() != "({})" ) {
+        found = $filter('findById')($scope.selected_consultants, $scope.temp_consultant.id);
+        if (found == null && $scope.temp_consultant.toSource() != "({})" ) {
             $scope.selected_consultants.push($scope.temp_consultant);
-// console.log($scope.selected_consultants);
+            console.log($scope.selected_consultants);
         }
     };
     
@@ -381,7 +385,7 @@ timekeeperApp.controller("person_edit_ctrl", function($scope, $http, $routeParam
 		    .success(function(data, status, header, config) {
 		        $scope.saved = true;
                 $scope.error_msg = null;
-                $scope.org_name = org.name;
+                $scope.person_name = person.name;
 			}).
 			error(function(data, status, header, config) {
 			    $scope.error_msg = data;
@@ -438,6 +442,19 @@ timekeeperApp.directive('float', function() {
 		}
 	};
 });
+
+timekeeperApp.filter('findById', function() {
+    return function(input, id) {
+      var i=0, len=input.length;
+      for (; i<len; i++) {
+        if (+input[i].id == +id) {
+          return input[i];
+        }
+      }
+      return null;
+    }
+  });
+
 
 timekeeperApp.run(function($rootScope) {
 	

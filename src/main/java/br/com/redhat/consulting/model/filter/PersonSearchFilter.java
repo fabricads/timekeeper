@@ -1,5 +1,7 @@
 package br.com.redhat.consulting.model.filter;
 
+import java.util.List;
+
 import br.com.redhat.consulting.model.Person;
 
 public class PersonSearchFilter extends Person {
@@ -8,6 +10,7 @@ public class PersonSearchFilter extends Person {
     
     private int[] types;
     private String partialName;
+    private List<Integer> personIds;
     
     public void setPersonTypes(int[] _types) {
         this.types = _types;
@@ -24,4 +27,13 @@ public class PersonSearchFilter extends Person {
     public void setPartialName(String partialName) {
         this.partialName = partialName;
     }
+
+    public List<Integer> getPersonIds() {
+        return personIds;
+    }
+
+    public void setPersonIds(List<Integer> personIds) {
+        this.personIds = personIds;
+    }
+    
 }

@@ -19,15 +19,23 @@ public class ProjectService {
     private ProjectDao projectDao;
     
     public List<Project> findByPM(Integer pmId) throws GeneralException {
-        List<Project> res = Collections.emptyList();
         ProjectSearchFilter filter = new ProjectSearchFilter();
         Person pm = new Person();
         pm.setId(pmId);
         filter.setProjectManager(pm);
 //        projectDao.setFetchCollection(new String[]{"consultants"});
-        res = projectDao.find(filter);
+        List<Project> res = projectDao.find(filter);
         return res;
-        
+    }
+    
+    public Project findByName(String name) throws GeneralException {
+        Project prj = null;
+        ProjectSearchFilter filter = new ProjectSearchFilter();
+        filter.setName(name);
+        List<Project> res = projectDao.find(filter);
+        if (res.size() > 0) 
+            prj = res.get(0);
+        return prj;
     }
     
     public List<Project> findAll() throws GeneralException {
@@ -44,6 +52,17 @@ public class ProjectService {
         return project;
     }
     
+    public Project findByIdWithConsultants(Integer pid) throws GeneralException {
+        Project prj = null;
+        ProjectSearchFilter filter = new ProjectSearchFilter();
+        filter.setId(pid);
+        projectDao.setFetchCollection(new String[]{"consultants"});
+        List<Project> res = projectDao.find(filter);
+        if (res.size() > 0) 
+            prj = res.get(0);
+        return prj;
+    }
+    
     public Integer countProjectsByPM(Integer pmId) throws GeneralException {
         Integer count = projectDao.countProjectsByPM(pmId);
         return count;
@@ -51,14 +70,13 @@ public class ProjectService {
     
     public void persist(Project project) throws GeneralException {
         Date today = new Date();
+        for (Person p: project.getConsultants()) {
+            p.getProjects().add(project);
+        }
         if (project.getId() != null) {
             project.setLastModification(today);
             projectDao.update(project);
         } else {
-            for (Person p: project.getConsultants()) {
-                p.getProjects().add(project);
-            }
-            
             project.setRegistered(today);
             project.setLastModification(today);
             projectDao.insert(project);

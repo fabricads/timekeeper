@@ -18,6 +18,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
@@ -266,6 +267,25 @@ public class Person extends AbstractEntity {
     
     public void addProject(Project project) {
         projects.add(project);
+    }
+    
+    /**
+     *  null some attributes, so whey this person is copied to a personDTO some attributes are not sent to the rest responde for security reasons.
+     */
+    public void nullifyAttributes() {
+        setPassword(null);
+        setOraclePAId(null);
+        getPartnerOrganization().setPersons(null);
+        setRole(null);
+        setEnabled(false);
+        setRegistered(null);
+        setLastModification(null);
+        setCity(null);
+        setCountry(null);
+        setProjects(null);
+        setTelephone1(null);
+        setTelephone2(null);
+        setTimecards(null);
     }
 
     @Override

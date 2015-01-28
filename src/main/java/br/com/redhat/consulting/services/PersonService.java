@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import br.com.redhat.consulting.dao.PersonDao;
 import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.PersonType;
+import br.com.redhat.consulting.model.dto.PersonDTO;
 import br.com.redhat.consulting.model.filter.PersonSearchFilter;
 import br.com.redhat.consulting.util.GeneralException;
 
@@ -91,6 +92,15 @@ public class PersonService {
         if (res.size() > 0)
             person = res.get(0);
         return person;
+    }
+
+    public List<Person> findPersonsById(List<Integer> consultantsId) throws GeneralException {
+        List<Person> res = null;
+        PersonSearchFilter filter = new PersonSearchFilter();
+        filter.setPersonIds(consultantsId);
+        filter.setEnabled(true);
+        res = personDao.find(filter);
+        return res;
     }
 
 }

@@ -227,7 +227,7 @@ public class PersonRest {
                 return builder.build();
             }
             Person personEnt = personService.findByName(personDto.getName());
-            if (personEnt != null) {
+            if (personEnt != null && (personEnt.getId() != personDto.getId())) {
                 Map<String, String> responseObj = new HashMap<String, String>();
                 responseObj.put("error", "Person with duplicated name: " + personDto.getName());
                 builder = Response.status(Response.Status.CONFLICT).entity(responseObj);
