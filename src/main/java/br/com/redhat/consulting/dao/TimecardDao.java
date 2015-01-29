@@ -12,12 +12,12 @@ public class TimecardDao extends BaseDao<Timecard, TimecardSearchFilter> {
 
     protected void configQuery(StringBuilder query, TimecardSearchFilter filter, List<Object> params) {
         if (filter.getProject() != null) {
-            query.append(" and project = ? ");
+            query.append(" and project.id = ? ");
             params.add(filter.getProject());
         }
         
         if (filter.getConsultant() != null) {
-            query.append(" and consultant = ? ");
+            query.append(" and consultant.id = ? ");
             params.add(filter.getConsultant());
         }
         

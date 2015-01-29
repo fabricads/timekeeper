@@ -113,6 +113,25 @@
         </div>
     </div>
 
+    <div class="form-group" >
+        <label for="prj_tasks" class="col-md-2 control-label">Input task name</label>
+        <div class="col-md-2">
+            <input type="text" class="form-control" name="task" ng-model="temp_task" />
+        </div>
+        <button type="button" class="btn btn-primary" ng-click="add_task()">Add task</button>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <div class="com-sm-2">
+                <label>Tasks</label>
+                <ul>
+                    <li data-ng-repeat="task in selected_tasks">{{task}} - <a href="" ng-click="remove_task(task)">Remove</a></li>
+                </ul>
+
+            </div>
+        </div>
+    </div>
+
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
             <button type="submit" class="btn btn-primary" ng-click="project_submit(project)" ng-disabled="form.$invalid">Save</button>

@@ -60,7 +60,7 @@ public class ProjectRest {
     @Path("/list")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response listProjects(@QueryParam("by-pm") Integer pmId) {
+    public Response listProjects(@QueryParam("by-pm") Integer pmId, @QueryParam("by-cs") Integer consultantId) {
         List<Project> projects = null;
         List<ProjectDTO> projectsDto = null;
         Response.ResponseBuilder response = null;
@@ -68,6 +68,8 @@ public class ProjectRest {
         try {
             if (pmId != null)
                 projects = projectService.findByPM(pmId);
+            else if (consultantId != null) 
+                projects = projectService.findByConsultant(consultantId);
             else 
                 projects = projectService.findAll();
             if (projects.size() == 0) {
@@ -79,10 +81,7 @@ public class ProjectRest {
                 projectsDto = new ArrayList<ProjectDTO>(projects.size());
                 for (Project project: projects) {
                     ProjectDTO prjDto = new ProjectDTO();
-                    PersonDTO pmDto = new PersonDTO();
                     BeanUtils.copyProperties(prjDto, project);
-//                    BeanUtils.copyProperties(pmDto, project.getProjectManager());
-//                    prjDto.setProjectManagerDTO(pmDto);
                     projectsDto.add(prjDto);
                 }
                 response = Response.ok(projectsDto);
@@ -94,20 +93,6 @@ public class ProjectRest {
             response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
         }
         return response.build();
-    }
-    
-    @Path("/count-by-pm")
-    @Produces(MediaType.APPLICATION_JSON)
-    @GET
-    public Integer countProjectsByPM(@QueryParam("pmId") Integer pmId) {
-        Integer count = 0;
-        try {
-            count = projectService.countProjectsByPM(pmId);
-        } catch (GeneralException e) {
-            String msg = "Error searching for projects.";
-            LOG.error(msg, e);
-        }
-        return count;
     }
     
     @Path("/{pr}")

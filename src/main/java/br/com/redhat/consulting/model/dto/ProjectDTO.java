@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.JoinColumn;
+
 public class ProjectDTO  {
 
     private static final long serialVersionUID = 1L;
@@ -28,6 +33,7 @@ public class ProjectDTO  {
     private Date lastModification;
     
     private List<TimecardDTO> timecards = new ArrayList<>();
+    private List<String> tasks = new ArrayList<>();
     
     public Integer getId() {
         return id;
@@ -135,6 +141,14 @@ public class ProjectDTO  {
 
     public void setUsePMSubstitute(Boolean usePMSubstitute) {
         this.usePMSubstitute = usePMSubstitute;
+    }
+
+    public List<String> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<String> tasks) {
+        this.tasks = tasks;
     }
 
     @Override

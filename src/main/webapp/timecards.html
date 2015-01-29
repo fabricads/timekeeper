@@ -1,10 +1,15 @@
 <script src="js/lib/jquery.dataTables.js"></script>
 <h1>Timecards</h1>
 
-<a href="#/project-new">Add a timecard</a>
+<p><a class="btn btn-primary" href="#/timecard-new">Add a timecard</a></p>
 
-<div class="table-responsive">
-    <table class="table table-striped table-bordered table-hover" ng-controller="timecard_list_ctrl" ng-cloak>
+<div class="table-responsive" ng-controller="timecard_list_ctrl" ng-cloak>
+    <div ng-show="loading">Loading..</div>
+    <div class="alert alert-info" ng-show="timecards.timecards.length == 0">
+        <span class="pficon pficon-info"></span> There is no timecard to list, do you want to <a href="#/timecard-new">add a timecard</a> ?.<br> 
+        {{timecard.msg}}<br>
+    </div>
+    <table class="table table-striped table-bordered table-hover" ng-hide="timecards.timecards.length == 0">
         <thead>
             <tr>
                 <th>Project</th>

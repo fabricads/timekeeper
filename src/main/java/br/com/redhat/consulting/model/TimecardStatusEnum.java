@@ -2,9 +2,9 @@ package br.com.redhat.consulting.model;
 
 public enum TimecardStatusEnum {
 
-    APPROVED     (1, "Approved"),
-    REJECTED     (2, "Rejected"),
-    IN_PROGRESS  (3, "In progress"),
+    IN_PROGRESS  (1, "In progress"),
+    APPROVED     (2, "Approved"),
+    REJECTED     (3, "Rejected"),
     SUBMITTED    (4, "Submitted");
     
     private int id;

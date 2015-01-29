@@ -1,0 +1,53 @@
+<h1>New timecard</h1>
+
+<div ng-controller="timecard_new_ctrl">
+
+    <div class="alert alert-warning" ng-show="error_msg != null">
+        <span class="pficon-layered">
+          <span class="pficon pficon-warning-triangle"></span>
+          <span class="pficon pficon-warning-exclamation"></span>
+        </span> 
+            {{error_msg.error}}
+    </div>
+    
+    <div class="alert alert-success" ng-show="saved">
+      <span class="pficon pficon-ok"></span>
+            Timecard {{tc_name}} was successfully saved.
+    </div>
+
+<form class="form-horizontal" name="form">
+    <div class="form-group" ng-class="{'has-error': form.project.$invalid}">
+        <label for="prj_pm" class="col-md-2 control-label">Project</label>
+        <div class="col-md-2">
+            <select class="form-control" required name="project" ng-model="timecard.project.id" ng-options="project.id as project.name for project in projects">
+            </select>
+        </div>
+        <div class="col-md-4">
+            <span class="help-block" ng-show="form.project.$error.required">Required field</span>
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label for="prj_desc" class="col-md-2 control-label">Comment</label>
+        <div class="col-md-2">
+            <textarea class="form-control" rows="3" ng-model="timecard.commentConsultant" maxlength="512"></textarea>
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label for="prj_desc" class="col-md-2 control-label">Comment by Project Manager</label>
+        <div class="col-md-2">
+            <textarea class="form-control" rows="3" ng-model="timecard.commentPM" maxlength="512"></textarea>
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <button type="submit" class="btn btn-primary" ng-click="timecard_submit(project)" ng-disabled="saved || form.$invalid">Save</button>
+        </div>
+    </div>
+</form>
+
+</div>
+
+<a class="btn btn-default" href="#/projects">Go to main timecard list page.</a>

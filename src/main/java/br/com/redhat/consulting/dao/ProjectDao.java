@@ -60,4 +60,12 @@ public class ProjectDao extends BaseDao<Project, ProjectSearchFilter> {
         return count;
     }
     
+    public List<Project> findProjectsByConsultant(Integer consultantId) {
+        String jql = "select p from Project p inner join p.consultants c where c.id = ?0 order by p.name";
+        TypedQuery<Project> query= getEntityManager().createQuery(jql, Project.class);
+        query.setParameter(0, consultantId);
+        List<Project> res = query.getResultList();
+        return res;
+    }
+    
 }

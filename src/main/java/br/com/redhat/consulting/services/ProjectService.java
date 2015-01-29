@@ -28,6 +28,11 @@ public class ProjectService {
         return res;
     }
     
+    public List<Project> findByConsultant(Integer consultantId) throws GeneralException {
+        List<Project> res = projectDao.findProjectsByConsultant(consultantId);
+        return res;
+    }
+    
     public Project findByName(String name) throws GeneralException {
         Project prj = null;
         ProjectSearchFilter filter = new ProjectSearchFilter();

@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 @Table(name="timecard")
 @Entity
 @Audited
-@JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
 public class Timecard extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
@@ -118,10 +117,4 @@ public class Timecard extends AbstractEntity {
     public String toString() {
         return "TimecardEntry [id=" + getId() + ", project=" + project + ", consultant=" + consultant + "]";
     }
-    
-    
-
-
-    
-    
 }
