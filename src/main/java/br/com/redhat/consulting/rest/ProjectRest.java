@@ -30,16 +30,16 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import br.com.redhat.consulting.model.PartnerOrganization;
 import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.Project;
-import br.com.redhat.consulting.model.Role;
+import br.com.redhat.consulting.model.Task;
 import br.com.redhat.consulting.model.dto.PartnerOrganizationDTO;
 import br.com.redhat.consulting.model.dto.PersonDTO;
 import br.com.redhat.consulting.model.dto.ProjectDTO;
-import br.com.redhat.consulting.model.dto.RoleDTO;
+import br.com.redhat.consulting.model.dto.TaskDTO;
 import br.com.redhat.consulting.services.PersonService;
 import br.com.redhat.consulting.services.ProjectService;
+import br.com.redhat.consulting.services.TaskService;
 import br.com.redhat.consulting.util.GeneralException;
 
 @RequestScoped
@@ -53,6 +53,9 @@ public class ProjectRest {
     
     @Inject
     private PersonService personService;
+    
+    @Inject
+    private TaskService taskService;
     
     @Inject
     private Validator validator;
@@ -124,7 +127,11 @@ public class ProjectRest {
                     BeanUtils.copyProperties(orgDto, consultant.getPartnerOrganization());
                     consultantDto.setOrganization(orgDto);
                     projectDto.addConsultant(consultantDto);
-                    
+                }
+                for (Task task: projectEnt.getTasks()) {
+                    TaskDTO taskDto = new TaskDTO();
+                    BeanUtils.copyProperties(taskDto, task);
+                    projectDto.addTask(taskDto);
                 }
                 response = Response.ok(projectDto);
             }
@@ -167,6 +174,17 @@ public class ProjectRest {
                 BeanUtils.copyProperties(projectEnt, projectDto);
                 projectEnt.setProjectManager(pm);
                 projectEnt.setConsultants(consultants);
+                for (Person p: consultants) {
+                    p.getProjects().add(projectEnt);
+                }
+                
+                for (TaskDTO taskDto: projectDto.getTasksDTO()) {
+                    Task task = new Task();
+                    BeanUtils.copyProperties(task, taskDto);
+                    projectEnt.addTask(task);
+                    task.setProject(projectEnt);
+                }
+                taskService.removeById(projectDto.getTasksToRemove());
                 projectService.persist(projectEnt);
                 builder = Response.ok(projectDto);
             }

@@ -15,13 +15,9 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.envers.Audited;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
 @Table(name="timecard_entry")
 @Entity
 @Audited
-@JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
 public class TimecardEntry extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
@@ -29,6 +25,8 @@ public class TimecardEntry extends AbstractEntity {
     private Timecard timecard;
     private Date day;
     private Double workedHours;
+    private String workDescription;
+    private String taskName;
     
     public TimecardEntry() { }
     
@@ -71,6 +69,15 @@ public class TimecardEntry extends AbstractEntity {
 
     public void setTimecard(Timecard timecard) {
         this.timecard = timecard;
+    }
+
+    @Column(name="work_description")
+    public String getWorkDescription() {
+        return workDescription;
+    }
+
+    public void setWorkDescription(String workDescription) {
+        this.workDescription = workDescription;
     }
     
 

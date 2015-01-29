@@ -104,19 +104,18 @@
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
             <div class="com-sm-2">
-                <label> Selected consultants:</label>
+                <label>Selected consultants</label>
                 <ul>
                     <li data-ng-repeat="c in selected_consultants">{{c.name}} - {{c.organization.name}} - <a href="" ng-click="remove_consultant(c)">Remove</a></li>
                 </ul>
-
             </div>
         </div>
     </div>
 
     <div class="form-group" >
-        <label for="prj_tasks" class="col-md-2 control-label">Input task name</label>
+        <label for="prj_tasks" class="col-md-2 control-label">New task name</label>
         <div class="col-md-2">
-            <input type="text" class="form-control" name="task" ng-model="temp_task" />
+            <input type="text" class="form-control" name="task" ng-model="temp_task.name" />
         </div>
         <button type="button" class="btn btn-primary" ng-click="add_task()">Add task</button>
     </div>
@@ -125,9 +124,8 @@
             <div class="com-sm-2">
                 <label>Tasks</label>
                 <ul>
-                    <li data-ng-repeat="task in selected_tasks">{{task}} - <a href="" ng-click="remove_task(task)">Remove</a></li>
+                    <li data-ng-repeat="task in selected_tasks">{{task.name}} - <a href="" ng-click="remove_task(task)">Remove</a></li>
                 </ul>
-
             </div>
         </div>
     </div>

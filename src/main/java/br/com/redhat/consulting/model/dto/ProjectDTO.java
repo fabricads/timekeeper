@@ -4,11 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.JoinColumn;
-
 public class ProjectDTO  {
 
     private static final long serialVersionUID = 1L;
@@ -33,7 +28,8 @@ public class ProjectDTO  {
     private Date lastModification;
     
     private List<TimecardDTO> timecards = new ArrayList<>();
-    private List<String> tasks = new ArrayList<>();
+    private List<TaskDTO> tasks = new ArrayList<>();
+    private List<Integer> tasksToRemove = new ArrayList<>();
     
     public Integer getId() {
         return id;
@@ -143,12 +139,24 @@ public class ProjectDTO  {
         this.usePMSubstitute = usePMSubstitute;
     }
 
-    public List<String> getTasks() {
+    public List<TaskDTO> getTasksDTO() {
         return tasks;
     }
 
-    public void setTasks(List<String> tasks) {
+    public void setTasksDTO(List<TaskDTO> tasks) {
         this.tasks = tasks;
+    }
+    
+    public void addTask(TaskDTO task) {
+        this.tasks.add(task);
+    }
+
+    public List<Integer> getTasksToRemove() {
+        return tasksToRemove;
+    }
+
+    public void setTasksToRemove(List<Integer> tasksToRemove) {
+        this.tasksToRemove = tasksToRemove;
     }
 
     @Override

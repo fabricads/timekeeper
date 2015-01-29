@@ -50,7 +50,7 @@ public class Project extends AbstractEntity {
     private Date lastModification;
     
     private List<Timecard> timecards = new ArrayList<>();
-    private List<String> tasks = new ArrayList<>();
+    private List<Task> tasks = new ArrayList<>();
     
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -176,18 +176,16 @@ public class Project extends AbstractEntity {
         this.usePMSubstitute = usePMSubstitute;
     }
 
-    @ElementCollection(fetch=FetchType.EAGER)
-    @CollectionTable(name="project_tasks", joinColumns=@JoinColumn(name="id_project"))
-    @Column(name="task")
-    public List<String> getTasks() {
+    @OneToMany(mappedBy="project", fetch=FetchType.EAGER)
+    public List<Task> getTasks() {
         return tasks;
     }
 
-    public void setTasks(List<String> tasks) {
+    public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
     }
     
-    public void addTask(String task) {
+    public void addTask(Task task) {
         this.tasks.add(task);
     }
 

@@ -6,10 +6,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import br.com.redhat.consulting.config.TransactionalMode;
 import br.com.redhat.consulting.dao.ProjectDao;
-import br.com.redhat.consulting.model.PartnerOrganization;
+import br.com.redhat.consulting.dao.TaskDao;
 import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.Project;
+import br.com.redhat.consulting.model.Task;
 import br.com.redhat.consulting.model.filter.ProjectSearchFilter;
 import br.com.redhat.consulting.util.GeneralException;
 
@@ -17,6 +19,9 @@ public class ProjectService {
     
     @Inject
     private ProjectDao projectDao;
+    
+    @Inject
+    private TaskDao taskDao;
     
     public List<Project> findByPM(Integer pmId) throws GeneralException {
         ProjectSearchFilter filter = new ProjectSearchFilter();
@@ -73,11 +78,9 @@ public class ProjectService {
         return count;
     }
     
+    @TransactionalMode
     public void persist(Project project) throws GeneralException {
         Date today = new Date();
-        for (Person p: project.getConsultants()) {
-            p.getProjects().add(project);
-        }
         if (project.getId() != null) {
             project.setLastModification(today);
             projectDao.update(project);
@@ -85,6 +88,11 @@ public class ProjectService {
             project.setRegistered(today);
             project.setLastModification(today);
             projectDao.insert(project);
+        }
+        for (Task task: project.getTasks()) {
+            if (task.getId() == null)
+                taskDao.insert(task);
+            
         }
     }
     
@@ -100,8 +108,13 @@ public class ProjectService {
         projectDao.update(org);
     }
     
+    @TransactionalMode
     public void delete(Integer projectId) throws GeneralException {
-        projectDao.remove(projectId);
+        Project project = findById(projectId);
+        for (Task task: project.getTasks()) {
+            taskDao.remove(task);
+        }
+        projectDao.remove(project);
     }
 
 
