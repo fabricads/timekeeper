@@ -20,7 +20,7 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 	when("/timecards", {
 		templateUrl : "timecards.html",
 	}).
-	when("/timecard-new", {
+	when("/timecard-new/:projectId", {
 	    templateUrl : "timecard-new.html",
 	}).
 	
@@ -492,20 +492,20 @@ timekeeperApp.controller("profile_ctrl", function($scope, $http, $routeParams, $
  * ********************************************************
  */
 
-timekeeperApp.controller("timecard_list_ctrl", function($scope, $http, $routeParams) {
-    
-    $scope.loading = true;
-    $http.get('/timekeeper/svc/timecard/list').
-        success(function(data) {
-            $scope.timecards = data;
-            $scope.loading = false;
+timekeeperApp.controller("show_modal_select_project", function($scope, $http, $routeParams, $window, $modal) {
+
+    $scope.select_project = function () {
+        
+        var modalInstance = $modal.open({
+          templateUrl: 'modal_select_project.html',
+          controller: 'modal_instance'
         });
-    
-    
+        
+      };
 });
 
-timekeeperApp.controller("timecard_new_ctrl", function($scope, $http, $routeParams) {
-    
+timekeeperApp.controller("modal_instance", function($scope, $http, $routeParams, $window, $modalInstance) {
+
     $scope.timecard = {};
     
     $http.get('/timekeeper/svc/project/list?by-cs=12').
@@ -515,9 +515,45 @@ timekeeperApp.controller("timecard_new_ctrl", function($scope, $http, $routePara
         error(function(data) {
             $scope.error_msg = data;
         });
+
+    $scope.ok = function () {
+        $modalInstance.close();
+//        console.log($scope.timecard.project.id);
+        $window.location.href = "#/timecard-new/" + $scope.timecard.project.id;
+    };
+
+    $scope.cancel = function () {
+        $modalInstance.dismiss();
+    };
     
 });
 
+timekeeperApp.controller("timecard_list_ctrl", function($scope, $http, $routeParams) {
+    
+    $scope.loading = true;
+    $http.get('/timekeeper/svc/timecard/list').
+    success(function(data) {
+        $scope.timecards = data;
+        $scope.loading = false;
+    });
+    
+    
+});
+
+timekeeperApp.controller("timecard_new_ctrl", function($scope, $http, $routeParams) {
+    
+    $scope.timecard = {};
+    
+    $http.get('/timekeeper/svc/project/'+$routeParams.projectId).
+        success(function(data) {
+            $scope.project = data;
+        }).
+        error(function(data, status, header, config) {
+            $scope.error_msg = data;
+        });
+    
+    
+});
 
 /* ********************************************************
  * 

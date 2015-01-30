@@ -32,6 +32,7 @@ import br.com.redhat.consulting.model.Timecard;
 import br.com.redhat.consulting.model.dto.PersonDTO;
 import br.com.redhat.consulting.model.dto.TimecardDTO;
 import br.com.redhat.consulting.services.PersonService;
+import br.com.redhat.consulting.services.TaskService;
 import br.com.redhat.consulting.services.TimecardService;
 import br.com.redhat.consulting.util.GeneralException;
 
@@ -46,6 +47,9 @@ public class TimecardRest {
     
     @Inject
     private PersonService personService;
+    
+    @Inject
+    private TaskService taskService;
     
     @Inject
     private Validator validator;

@@ -43,8 +43,7 @@
     <div class="form-group" ng-class="{'has-error': form.pm.$invalid}">
         <label for="prj_pm" class="col-md-2 control-label">Project manager</label>
         <div class="col-md-2">
-            <select class="form-control" required name="pm" ng-model="project.projectManagerDTO.id" ng-options="pm.id as pm.name for pm in pms">
-            </select>
+            <select class="form-control" required name="pm" ng-model="project.projectManagerDTO.id" ng-options="pm.id as pm.name for pm in pms"/>
         </div>
         <div class="col-md-4">
             <span class="help-block" ng-show="form.pm.$error.required">Required field</span>
