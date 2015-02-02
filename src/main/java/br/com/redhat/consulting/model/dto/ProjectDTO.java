@@ -114,6 +114,10 @@ public class ProjectDTO  {
     public void setTimecardsDTO(List<TimecardDTO> timecards) {
         this.timecards = timecards;
     }
+    
+    public void addTimecardDTO(TimecardDTO dto) {
+        this.timecards.add(dto);
+    }
 
     public Date getInitialDate() {
         return initialDate;

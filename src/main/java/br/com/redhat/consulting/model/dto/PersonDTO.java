@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.PersonType;
 
 public class PersonDTO  {
@@ -39,7 +40,6 @@ public class PersonDTO  {
 	public PersonDTO() {}
 	
     public PersonDTO(String oraclePAId, String name, String email, String city, String state, PartnerOrganizationDTO partnerOrganization) {
-        super();
         this.oraclePAId = oraclePAId;
         this.name = name;
         this.email = email;
@@ -211,7 +211,42 @@ public class PersonDTO  {
 				+ ", email=" + email + ", id=" + getId() + "]";
 	}
 
-    
+    public Person toPerson() {
+/*
+    private Integer id;
+    private String oraclePAId;
+    private String name;
+    private String email;
+    private String password;
+    private String city;
+    private String state;
+    private String country;
+    private String telephone1;
+    private String telephone2;
+    private int numberOfProjects;
+    private Integer personType;
+    private boolean enabled;
+    private Date registered;
+    private Date lastModification;
+        
+ */
+        Person p = new Person();
+        p.setId(id);
+        p.setOraclePAId(oraclePAId);
+        p.setName(name);
+        p.setEmail(email);
+        p.setPassword(password);
+        p.setCity(city);
+        p.setState(state);
+        p.setCountry(country);
+        p.setTelephone1(telephone1);
+        p.setTelephone2(telephone2);
+        p.setPersonType(personType);
+        p.setEnabled(enabled);
+        p.setRegistered(registered);
+        p.setLastModification(lastModification);
+        return p;
+    }
     
 	
 }

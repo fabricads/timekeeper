@@ -12,6 +12,8 @@ import br.com.redhat.consulting.dao.TaskDao;
 import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.Project;
 import br.com.redhat.consulting.model.Task;
+import br.com.redhat.consulting.model.Timecard;
+import br.com.redhat.consulting.model.TimecardEntry;
 import br.com.redhat.consulting.model.filter.ProjectSearchFilter;
 import br.com.redhat.consulting.util.GeneralException;
 
@@ -70,6 +72,24 @@ public class ProjectService {
         List<Project> res = projectDao.find(filter);
         if (res.size() > 0) 
             prj = res.get(0);
+        return prj;
+    }
+    
+    @TransactionalMode
+    public Project findByIdWithTimecards(Integer pid) throws GeneralException {
+        Project prj = null;
+        ProjectSearchFilter filter = new ProjectSearchFilter();
+        filter.setId(pid);
+        projectDao.setFetchCollection(new String[]{"timecards"});
+        List<Project> res = projectDao.find(filter);
+        if (res.size() > 0) 
+            prj = res.get(0);
+        for (Timecard tc: prj.getTimecards()) {
+            // to prevent lazy load exceptions
+            for (TimecardEntry tce: tc.getTimecardEntries()) {
+                
+            }
+        }
         return prj;
     }
     

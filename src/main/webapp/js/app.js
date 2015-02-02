@@ -53,10 +53,6 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 
 ]);
 
-timekeeperApp.controller("TimecardCtrl", function($scope, $http, $routeParams) {
-
-});
-
 /* ********************************************************
  * 
  * Project controllers
@@ -178,7 +174,7 @@ timekeeperApp.controller("project_new_ctrl", function($scope, $http, $filter) {
 	
 });
 
-timekeeperApp.controller("project_edit_ctrl", function($scope, $http, $routeParams, $rootScope, $filter) {
+timekeeperApp.controller("project_edit_ctrl", function($scope, $http, $routeParams, $filter) {
 
     
     $http.get('/timekeeper/svc/project/'+$routeParams.projectId).
@@ -368,7 +364,7 @@ timekeeperApp.controller("org_listing_ctrl", function($scope, $http, $routeParam
  * ********************************************************
  */
 
-timekeeperApp.controller("person_listing_ctrl", function($scope, $http, $window, $routeParams) {
+timekeeperApp.controller("person_listing_ctrl", function($scope, $http, $window) {
 	
     $scope.loading = true;
 	$http.get('/timekeeper/svc/person/list').success(function(data) {
@@ -492,7 +488,7 @@ timekeeperApp.controller("profile_ctrl", function($scope, $http, $routeParams, $
  * ********************************************************
  */
 
-timekeeperApp.controller("show_modal_select_project", function($scope, $http, $routeParams, $window, $modal) {
+timekeeperApp.controller("show_modal_select_project", function($scope, $modal) {
 
     $scope.select_project = function () {
         
@@ -504,7 +500,7 @@ timekeeperApp.controller("show_modal_select_project", function($scope, $http, $r
       };
 });
 
-timekeeperApp.controller("modal_instance", function($scope, $http, $routeParams, $window, $modalInstance) {
+timekeeperApp.controller("modal_instance", function($scope, $http, $window, $modalInstance) {
 
     $scope.timecard = {};
     
@@ -540,20 +536,84 @@ timekeeperApp.controller("timecard_list_ctrl", function($scope, $http, $routePar
     
 });
 
-timekeeperApp.controller("timecard_new_ctrl", function($scope, $http, $routeParams) {
+timekeeperApp.controller("timecard_new_ctrl", function($scope, $http, $routeParams, $filter) {
     
     $scope.timecard = {};
+    $scope.timecard.consultant = {};
+    $scope.timecard.consultant.id = 12;
     
-    $http.get('/timekeeper/svc/project/'+$routeParams.projectId).
+    $http.get('/timekeeper/svc/project/'+$routeParams.projectId + "/tc").
         success(function(data) {
-            $scope.project = data;
+            var project = data;
+            $scope.timecard.project = data
+            var start_date = new Date(project.initialDate);
+            var end_date = new Date(project.endDate);
+            
+            $scope.days = $filter('dateDiffInDays')(start_date, end_date);
+            $scope.weeks = $filter('dateNumOfWeeks')(start_date, end_date);
+
+            var tasks = project.tasksDTO;
+            for (var i = 0; i < tasks.length; i++) {
+                var task = tasks[i];
+//                console.log(task);
+
+                // set the sunday day of the starting week
+                var initDayWeek = new Date(start_date);
+                initDayWeek.setDate(start_date.getDate() - start_date.getDay());
+                if ($scope.timecard.initDate == null) {
+                    $scope.timecard.initDate =  new Date(initDayWeek.getTime());
+                }
+                
+                var tcEntries = [];
+                for (var j = 0; j < 7; j++) {
+                    var tcEntry = {};
+                    tcEntry.day = new Date(initDayWeek.getTime());
+                    tcEntry.workedHours = "";
+                    tcEntry.workDescription = "";
+                    tcEntry.taskDTO = {};
+                    tcEntry.taskDTO.id = task.id;
+                    if ($scope.timecard.endDate == null && j == 6) {
+                        $scope.timecard.endDate =  new Date(initDayWeek.getTime());
+                    }
+                    initDayWeek.setDate(initDayWeek.getDate() + 1);
+                    tcEntries.push(tcEntry);
+                }
+                task.tcEntries = tcEntries;
+            }
+//            console.log($scope.timecardTasks);
+
+            
+            
         }).
         error(function(data, status, header, config) {
             $scope.error_msg = data;
         });
     
+    $scope.timecard_submit = function(timecard) {
+        timecard.timecardEntries = [];
+        while (timecard.project.tasksDTO.length > 0) {
+            var task = timecard.project.tasksDTO.shift();
+            while (task.tcEntries.length > 0) {
+                var tcEntry = task.tcEntries.shift();
+                console.log("tc entry: ");
+                console.log(tcEntry);
+                timecard.timecardEntries.push(tcEntry);
+            }
+        }
+        console.log(timecard);
+        $http.post("/timekeeper/svc/timecard/save", timecard).
+            success(function(data, status, header, config) {
+                $scope.saved = true;
+                $scope.error_msg = null;
+            }).
+            error(function(data, status, header, config) {
+                $scope.error_msg = data;
+            });
+    };
+
     
 });
+
 
 /* ********************************************************
  * 
@@ -596,6 +656,41 @@ timekeeperApp.filter('findByName', function() {
         return null;
     }
 });
+
+timekeeperApp.filter('dateDiffInDays', function () {
+    var magicNumber = (1000 * 60 * 60 * 24);
+
+    return function (fromDate, toDate) {
+      if(toDate && fromDate){
+        var num = (toDate - fromDate) / magicNumber;
+        var dayDiff = Math.ceil(num);
+        return dayDiff;
+      }
+    };
+});
+
+timekeeperApp.filter('dateNumOfWeeks', function () {
+    return function (fromDate, toDate) {
+        if(toDate && fromDate){
+            var week1 = fromDate.getWeek();
+            var week2 = toDate.getWeek();
+            var weekDiff = week2 - week1 + 1;
+            return weekDiff;
+        }
+    };
+});
+
+// from http://weeknumber.net/how-to/javascript
+Date.prototype.getWeek = function() { 
+    var date = new Date(this.getTime()); 
+    date.setHours(0, 0, 0, 0); 
+    // Thursday in current week decides the year. 
+    date.setDate(date.getDate() + 3 - (date.getDay() + 6) % 7); 
+    // January 4 is always in week 1. 
+    var week1 = new Date(date.getFullYear(), 0, 4); 
+    // Adjust to Thursday in week 1 and count number of weeks from date to week1. 
+    return 1 + Math.round(((date.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7); 
+}
 
 
 timekeeperApp.run(function($rootScope) {

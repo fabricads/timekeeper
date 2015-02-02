@@ -4,6 +4,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,7 +27,7 @@ public class TimecardEntry extends AbstractEntity {
     private Date day;
     private Double workedHours;
     private String workDescription;
-    private String taskName;
+    private Task task;
     
     public TimecardEntry() { }
     
@@ -78,6 +79,16 @@ public class TimecardEntry extends AbstractEntity {
 
     public void setWorkDescription(String workDescription) {
         this.workDescription = workDescription;
+    }
+
+    @ManyToOne(fetch=FetchType.EAGER)
+    @JoinColumn(name="id_task")
+    public Task getTask() {
+        return task;
+    }
+
+    public void setTask(Task task) {
+        this.task = task;
     }
     
 

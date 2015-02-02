@@ -10,6 +10,8 @@ public class TimecardEntryDTO  {
     private TimecardDTO timecard;
     private Date day;
     private Double workedHours;
+    private String workDescription;
+    private TaskDTO task;
     
     public TimecardEntryDTO() { }
     
@@ -43,13 +45,34 @@ public class TimecardEntryDTO  {
         this.workedHours = workedHours;
     }
     
-    public TimecardDTO getTimecard() {
+/*    public TimecardDTO getTimecard() {
         return timecard;
     }
 
     public void setTimecard(TimecardDTO timecard) {
         this.timecard = timecard;
     }
-    
+*/
+    public String getWorkDescription() {
+        return workDescription;
+    }
+
+    public void setWorkDescription(String workDescription) {
+        this.workDescription = workDescription;
+    }
+
+    public TaskDTO getTaskDTO() {
+        return task;
+    }
+
+    public void setTaskDTO(TaskDTO task) {
+        this.task = task;
+    }
+
+    @Override
+    public String toString() {
+        return "TimecardEntryDTO [day=" + day + ", workedHours=" + workedHours + ", workDescription=" + workDescription + ", task=" + task
+                + "]";
+    }
 
 }

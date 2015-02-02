@@ -33,10 +33,14 @@ import org.slf4j.LoggerFactory;
 import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.Project;
 import br.com.redhat.consulting.model.Task;
+import br.com.redhat.consulting.model.Timecard;
+import br.com.redhat.consulting.model.TimecardEntry;
 import br.com.redhat.consulting.model.dto.PartnerOrganizationDTO;
 import br.com.redhat.consulting.model.dto.PersonDTO;
 import br.com.redhat.consulting.model.dto.ProjectDTO;
 import br.com.redhat.consulting.model.dto.TaskDTO;
+import br.com.redhat.consulting.model.dto.TimecardDTO;
+import br.com.redhat.consulting.model.dto.TimecardEntryDTO;
 import br.com.redhat.consulting.services.PersonService;
 import br.com.redhat.consulting.services.ProjectService;
 import br.com.redhat.consulting.services.TaskService;
@@ -127,6 +131,55 @@ public class ProjectRest {
                     BeanUtils.copyProperties(orgDto, consultant.getPartnerOrganization());
                     consultantDto.setOrganization(orgDto);
                     projectDto.addConsultant(consultantDto);
+                }
+                for (Task task: projectEnt.getTasks()) {
+                    TaskDTO taskDto = new TaskDTO();
+                    BeanUtils.copyProperties(taskDto, task);
+                    projectDto.addTask(taskDto);
+                }
+                response = Response.ok(projectDto);
+            }
+        } catch (Exception e) {
+            LOG.error("Error to find project.", e);
+            Map<String, String> responseObj = new HashMap<>();
+            responseObj.put("error", e.getMessage());
+            response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+        }
+        return response.build();
+    }
+    
+    @Path("/{pr}/tc")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    public Response getWithTimecards(@PathParam("pr") @DefaultValue("-1") int projectId) {
+        ProjectDTO projectDto = new ProjectDTO();
+        Project projectEnt = null;
+        Response.ResponseBuilder response = null;
+        try {
+            projectEnt = projectService.findByIdWithTimecards(projectId);
+            if (projectEnt == null) {
+                Map<String, String> responseObj = new HashMap<>();
+                responseObj.put("error", "Project " + projectId + " not found.");
+                response = Response.status(Response.Status.NOT_FOUND).entity(responseObj);
+            } else {
+                Person pm = projectEnt.getProjectManager();
+                pm.nullifyAttributes();
+                
+                PersonDTO pmDto = new PersonDTO();
+                BeanUtils.copyProperties(pmDto, pm);
+                BeanUtils.copyProperties(projectDto, projectEnt);
+                projectDto.setProjectManagerDTO(pmDto);
+                for (Timecard tc: projectEnt.getTimecards()) {
+                    TimecardDTO tcDto = new TimecardDTO();
+                    BeanUtils.copyProperties(tcDto, tc);
+                    projectDto.addTimecardDTO(tcDto);
+                    List<TimecardEntryDTO> tcEntriesDto = new ArrayList<>();
+                    for (TimecardEntry tce: tc.getTimecardEntries()) {
+                        TimecardEntryDTO tcEntryDto = new TimecardEntryDTO();
+                        BeanUtils.copyProperties(tcEntryDto, tce);
+                        tcEntriesDto.add(tcEntryDto);
+                    }
+                    tcDto.setTimecardEntries(tcEntriesDto);
                 }
                 for (Task task: projectEnt.getTasks()) {
                     TaskDTO taskDto = new TaskDTO();

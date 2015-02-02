@@ -1,8 +1,10 @@
 package br.com.redhat.consulting.model.dto;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import br.com.redhat.consulting.model.Timecard;
 import br.com.redhat.consulting.model.TimecardStatusEnum;
 
 public class TimecardDTO  {
@@ -16,6 +18,8 @@ public class TimecardDTO  {
     private String commentConsultant;
     private String commentPM;
     private List<TimecardEntryDTO> timecardEntries = new ArrayList<>();
+    private Date initDate;
+    private Date endDate;
     
     public Integer getId() {
         return id;
@@ -29,7 +33,7 @@ public class TimecardDTO  {
         return project;
     }
 
-    public void setProject(ProjectDTO project) {
+    public void setProjectDTO(ProjectDTO project) {
         this.project = project;
     }
 
@@ -37,7 +41,7 @@ public class TimecardDTO  {
         return consultant;
     }
 
-    public void setConsultant(PersonDTO consultant) {
+    public void setConsultantDTO(PersonDTO consultant) {
         this.consultant = consultant;
     }
 
@@ -89,14 +93,34 @@ public class TimecardDTO  {
         timecardEntries.add(tce);
     }
 
+    public Date getInitDate() {
+        return initDate;
+    }
+
+    public void setInitDate(Date initDate) {
+        this.initDate = initDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
     @Override
     public String toString() {
         return "TimecardEntryDTO [id=" + getId() + ", project=" + project + ", consultant=" + consultant + "]";
     }
     
-    
-
-
-    
+    public Timecard toTimecard() {
+        Timecard tc = new Timecard();
+        tc.setCommentConsultant(commentConsultant);
+        tc.setCommentPM(commentPM);
+        tc.setId(id);
+        tc.setStatus(status);
+        return tc;
+    }
     
 }

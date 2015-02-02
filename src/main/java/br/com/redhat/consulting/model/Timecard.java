@@ -16,9 +16,6 @@ import javax.persistence.Transient;
 
 import org.hibernate.envers.Audited;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-
 @Table(name="timecard")
 @Entity
 @Audited

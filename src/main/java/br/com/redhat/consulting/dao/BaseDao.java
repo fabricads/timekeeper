@@ -153,13 +153,15 @@ public class BaseDao<ENTITY, SEARCH_FILTER> {
     }
 
     protected String configQueryFrom(SEARCH_FILTER filter) {
-        String sql = "select distinct ENT from " + entityClassName + " ENT";
+        StringBuilder sql = new StringBuilder("select ");
+        sql.append("distinct ENT");
+        sql.append(" from ").append(entityClassName).append(" ENT");
         String[] collectionsToFetch = getFetchCollection();
         for (String attrName: collectionsToFetch) {
-            sql += " left join fetch ENT." + attrName;
+            sql.append(" left join fetch ENT.").append(attrName).append(" ENT2");
         }
-        sql += " where 1=1 ";
-        return sql;
+        sql.append(" where 1=1 ");
+        return sql.toString();
     }
     
     protected void configQuery(SEARCH_FILTER filter, TypedQuery<ENTITY> query) {
