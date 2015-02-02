@@ -3,9 +3,9 @@ var timekeeperApp = angular
 
 timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 	
-	$routeProvider
-	.when("/persons", {
-		templateUrl : "persons.html",
+	$routeProvider.
+	when("/persons", {
+	    templateUrl : "persons.html",
 	}).
 	when("/person-new", {
 	    templateUrl : "person-new.html",
@@ -393,6 +393,8 @@ timekeeperApp.controller("person_new_ctrl", function($scope, $http, $rootScope) 
 	$scope.person.enabled = true;
 	$scope.person.country = "Brazil";
 	
+	$scope.password_confirmation;
+	
 	$scope.states = $rootScope.states;	
 	
 	$http.get('/timekeeper/svc/person/types').success(function(data) {
@@ -430,6 +432,7 @@ timekeeperApp.controller("person_edit_ctrl", function($scope, $http, $routeParam
             $scope.error_msg = data;
         });
 	
+	$scope.password_confirmation = null;
 	$scope.states = $rootScope.states;	
 	
 	$http.get('/timekeeper/svc/person/types').success(function(data) {
@@ -631,6 +634,40 @@ timekeeperApp.directive('float', function() {
 			});
 		}
 	};
+});
+
+// from https://github.com/TheSharpieOne/angular-input-match/blob/master/dist/angular-input-match.js
+timekeeperApp.directive('match', function($parse) {
+    return {
+        require: '?ngModel',
+        restrict: 'A',
+        link: function(scope, elem, attrs, ctrl) {
+            if(!ctrl) {
+                if(console && console.warn){
+                    console.warn('Match validation requires ngModel to be on the element');
+                }
+                return;
+            }
+
+            var matchGetter = $parse(attrs.match);
+
+            scope.$watch(getMatchValue, function(){
+                ctrl.$validate();
+            });
+
+            ctrl.$validators.match = function(){
+                return ctrl.$viewValue === getMatchValue();
+            };
+
+            function getMatchValue(){
+                var match = matchGetter(scope);
+                if(angular.isObject(match) && match.hasOwnProperty('$viewValue')){
+                    match = match.$viewValue;
+                }
+                return match;
+            }
+        }
+    };
 });
 
 timekeeperApp.filter('findById', function() {

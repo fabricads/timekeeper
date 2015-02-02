@@ -153,6 +153,7 @@ public class PersonRest {
                 RoleDTO roleDto = new RoleDTO();
                 BeanUtils.copyProperties(roleDto, role);
                 personDto.setRoleDTO(roleDto);
+                personDto.setPassword(null);
                 response = Response.ok(personDto);
             }
         } catch (Exception e) {
@@ -236,7 +237,7 @@ public class PersonRest {
                 responseObj.put("error", "Person with duplicated name: " + personDto.getName());
                 builder = Response.status(Response.Status.CONFLICT).entity(responseObj);
             } else {
-                Person person = new Person(personDto);
+                Person person = personDto.toPerson();
                 PartnerOrganization org = new PartnerOrganization();
                 Role role = new Role();
                 BeanUtils.copyProperties(org, personDto.getOrganization());

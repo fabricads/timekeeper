@@ -55,3 +55,12 @@ scp ~/tmp/jboss-eap-quickstarts-master/kitchensink/target/jboss-kitchensink.war 
 ./jbosseap/bin/tools/jboss-cli.sh -c --controller=127.2.67.129
 https://help.openshift.com/hc/en-us/articles/202399740-How-to-deploy-pre-compiled-java-applications-WAR-and-EAR-files-onto-your-OpenShift-gear-using-the-java-cartridges
 http://brazil-consulting.itos.redhat.com/jboss-kitchensink/index.jsf
+
+
+** autenticacao
+OK- criptografar senha do usuario
+OK- adicionar confirmação de senha e comparação)
+- criar tela de autenticacao
+- adicionar logout
+- configurar loginmodule
+- 

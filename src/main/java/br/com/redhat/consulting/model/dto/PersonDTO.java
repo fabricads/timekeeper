@@ -212,24 +212,6 @@ public class PersonDTO  {
 	}
 
     public Person toPerson() {
-/*
-    private Integer id;
-    private String oraclePAId;
-    private String name;
-    private String email;
-    private String password;
-    private String city;
-    private String state;
-    private String country;
-    private String telephone1;
-    private String telephone2;
-    private int numberOfProjects;
-    private Integer personType;
-    private boolean enabled;
-    private Date registered;
-    private Date lastModification;
-        
- */
         Person p = new Person();
         p.setId(id);
         p.setOraclePAId(oraclePAId);

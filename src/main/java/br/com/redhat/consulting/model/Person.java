@@ -57,21 +57,6 @@ public class Person extends AbstractEntity {
 	
 	public Person() {}
 	
-	public Person(PersonDTO dto) {
-	    setId(dto.getId());
-	    this.name = dto.getName();
-	    this.oraclePAId = dto.getOraclePAId();
-        this.email = dto.getEmail();
-        this.password = dto.getPassword();
-        this.city = dto.getCity();
-        this.state = dto.getState();
-        this.country = dto.getCountry();
-        this.telephone1 = dto.getTelephone1();
-        this.telephone2 = dto.getTelephone2();
-        this.personType = dto.getPersonType();
-        this.enabled = dto.isEnabled();
-	}
-	
     public Person(String oraclePAId, String name, String email, String city, String state, PartnerOrganization partnerOrganization) {
         super();
         this.oraclePAId = oraclePAId;

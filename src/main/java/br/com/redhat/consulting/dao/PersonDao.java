@@ -71,20 +71,4 @@ public class PersonDao extends BaseDao<Person, PersonSearchFilter> {
         query.append(" order by ENT.name");
     }
     
-//    public String[] getFetchCollection() {
-//        return new String[]{"partnerOrganization","projects"};
-//    }
-
-/*    public List<Person> findConsultants() {
-        List<Person> l = null;
-        TypedQuery<Person> tq = getEntityManager().createQuery(
-                "select new Person(person.oraclePAId, person.name, person.email, person.city, person.state, org) from Person person left join  person.partnerOrganization org"
-                + " where person.personType in (?0, ?1)", Person.class);
-        tq.setParameter(0, PersonType.CONSULTANT_PARTNER.getId());
-        tq.setParameter(1, PersonType.MANAGER_REDHAT.getId());
-        l = tq.getResultList();
-        return l;
-    }
-    
-*/    
 }
