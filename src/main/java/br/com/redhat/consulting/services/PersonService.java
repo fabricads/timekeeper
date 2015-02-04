@@ -113,6 +113,17 @@ public class PersonService {
             person = res.get(0);
         return person;
     }
+    
+    public Person findByEmail(String email) throws GeneralException {
+        List<Person> res = null;
+        PersonSearchFilter filter = new PersonSearchFilter();
+        filter.setEmail(email);
+        res = personDao.find(filter);
+        Person person = null;
+        if (res.size() > 0)
+            person = res.get(0);
+        return person;
+    }
 
     public List<Person> findPersonsById(List<Integer> consultantsId) throws GeneralException {
         List<Person> res = null;

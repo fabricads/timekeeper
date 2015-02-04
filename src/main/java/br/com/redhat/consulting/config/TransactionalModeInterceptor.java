@@ -30,7 +30,7 @@ public class TransactionalModeInterceptor implements Serializable {
         Object ret = null;
         if (utx != null) {
             if (utx.getStatus() != Status.STATUS_ACTIVE) {
-                LOG.debug("Transaction begin: " + utx);
+//                LOG.debug("Transaction begin: " + utx);
                 utx.begin();
                 startedTransaction = true;
             }
@@ -39,7 +39,7 @@ public class TransactionalModeInterceptor implements Serializable {
                 ret = ic.proceed();
 
                 if (startedTransaction) {
-                    LOG.debug("Transaction commit: " + utx);
+//                    LOG.debug("Transaction commit: " + utx);
                     utx.commit();
                 }
             } catch (Throwable t) {

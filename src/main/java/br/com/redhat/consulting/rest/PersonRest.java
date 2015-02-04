@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
@@ -26,20 +27,20 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import br.com.redhat.consulting.config.Authenticated;
 import br.com.redhat.consulting.model.PartnerOrganization;
 import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.PersonType;
-import br.com.redhat.consulting.model.Project;
 import br.com.redhat.consulting.model.Role;
 import br.com.redhat.consulting.model.dto.PartnerOrganizationDTO;
 import br.com.redhat.consulting.model.dto.PersonDTO;
-import br.com.redhat.consulting.model.dto.ProjectDTO;
 import br.com.redhat.consulting.model.dto.RoleDTO;
 import br.com.redhat.consulting.services.PersonService;
 import br.com.redhat.consulting.util.GeneralException;
 
 @RequestScoped
 @Path("/person")
+@Authenticated
 public class PersonRest {
 
     private static Logger LOG = LoggerFactory.getLogger(PersonRest.class);
@@ -53,6 +54,7 @@ public class PersonRest {
     @Path("/pms")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
+    @RolesAllowed({"redhat_manager", "admin"})
     public Response listProjectManagers() {
         return list(FIND_PM);
     }
@@ -60,6 +62,7 @@ public class PersonRest {
     @Path("/list")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
+    @RolesAllowed({"redhat_manager", "admin"})
     public Response listPersons() {
         return list(FIND_ALL);
     }
@@ -67,10 +70,10 @@ public class PersonRest {
     @Path("/consultants")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
+    @RolesAllowed({"redhat_manager", "admin"})
     public Response listConsultants() {
         return list(FIND_CONSULTANTS);
     }
-    
     
     private Response list(int type) {
         List<Person> persons = null;
@@ -123,6 +126,7 @@ public class PersonRest {
     @Path("/types")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
+    @RolesAllowed({"redhat_manager", "admin"})
     public List<Map<String, Object>> personTypes() {
         List<Map<String, Object>> types = new ArrayList<>();
         types.add(PersonType.CONSULTANT_PARTNER.toMap());
@@ -133,6 +137,7 @@ public class PersonRest {
     @Path("/{pd}")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
+    @RolesAllowed({"redhat_manager", "admin"})
     public Response get(@PathParam("pd") @DefaultValue("-1") int personId) {
         PersonDTO personDto = new PersonDTO();
         Person person = null;
@@ -168,6 +173,7 @@ public class PersonRest {
     @Path("/{pd}/disable")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
+    @RolesAllowed({"redhat_manager", "admin"})
     public Response disable(@PathParam("pd") @DefaultValue("-1") int personId) {
         Response.ResponseBuilder response = null;
         try {
@@ -185,6 +191,7 @@ public class PersonRest {
     @Path("/{pd}/enable")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
+    @RolesAllowed({"redhat_manager", "admin"})
     public Response enable(@PathParam("pd") @DefaultValue("-1") int personId) {
         Response.ResponseBuilder response = null;
         try {
@@ -202,6 +209,7 @@ public class PersonRest {
     @Path("/{pd}/delete")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
+    @RolesAllowed({"redhat_manager", "admin"})
     public Response delete(@PathParam("pd") @DefaultValue("-1") int personId) {
         Response.ResponseBuilder response = null;
         try {
@@ -222,6 +230,7 @@ public class PersonRest {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
+    @RolesAllowed({"redhat_manager", "admin"})
     public Response savePerson(PersonDTO personDto) {
         Response.ResponseBuilder builder = null;
         try {

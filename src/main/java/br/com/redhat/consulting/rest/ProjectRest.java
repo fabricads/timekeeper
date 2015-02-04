@@ -3,16 +3,15 @@ package br.com.redhat.consulting.rest;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import javax.validation.ValidationException;
 import javax.validation.Validator;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -30,6 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import br.com.redhat.consulting.config.Authenticated;
 import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.Project;
 import br.com.redhat.consulting.model.Task;
@@ -48,6 +48,7 @@ import br.com.redhat.consulting.util.GeneralException;
 
 @RequestScoped
 @Path("/project")
+@Authenticated
 public class ProjectRest {
 
     private static Logger LOG = LoggerFactory.getLogger(ProjectRest.class);
@@ -67,7 +68,12 @@ public class ProjectRest {
     @Path("/list")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response listProjects(@QueryParam("by-pm") Integer pmId, @QueryParam("by-cs") Integer consultantId) {
+    @RolesAllowed({"redhat_manager", "admin"})
+    public Response listProjectsByPM(@QueryParam("by-pm") Integer pmId) {
+        return listProjects(null, null);
+    }
+    
+    public Response listProjects(Integer pmId, Integer consultantId) {
         List<Project> projects = null;
         List<ProjectDTO> projectsDto = null;
         Response.ResponseBuilder response = null;
@@ -102,9 +108,18 @@ public class ProjectRest {
         return response.build();
     }
     
+    @Path("/list-by-cs")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @RolesAllowed({"redhat_manager", "admin", "partner_consultant"})
+    public Response listProjectsByConsultant(@QueryParam("by-cs") Integer consultantId) {
+        return listProjects(null, consultantId);
+    }
+    
     @Path("/{pr}")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
+    @RolesAllowed({"redhat_manager", "admin", "partner_consultant"})
     public Response get(@PathParam("pr") @DefaultValue("-1") int projectId) {
         ProjectDTO projectDto = new ProjectDTO();
         Project projectEnt = null;
@@ -151,6 +166,7 @@ public class ProjectRest {
     @Path("/{pr}/tc")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
+    @RolesAllowed({"redhat_manager", "admin", "partner_consultant"})
     public Response getWithTimecards(@PathParam("pr") @DefaultValue("-1") int projectId) {
         ProjectDTO projectDto = new ProjectDTO();
         Project projectEnt = null;
@@ -201,6 +217,7 @@ public class ProjectRest {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
+    @RolesAllowed({"redhat_manager", "admin", "partner_consultant"})
     public Response save(ProjectDTO projectDto) {
         Response.ResponseBuilder builder = null;
         try {
@@ -255,6 +272,7 @@ public class ProjectRest {
     @Path("/{pd}/disable")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
+    @RolesAllowed({"redhat_manager", "admin"})
     public Response disable(@PathParam("pd") @DefaultValue("-1") int projectId) {
         Response.ResponseBuilder response = null;
         try {
@@ -272,6 +290,7 @@ public class ProjectRest {
     @Path("/{pd}/enable")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
+    @RolesAllowed({"redhat_manager", "admin"})
     public Response enable(@PathParam("pd") @DefaultValue("-1") int projectId) {
         Response.ResponseBuilder response = null;
         try {
@@ -289,6 +308,7 @@ public class ProjectRest {
     @Path("/{pd}/delete")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
+    @RolesAllowed({"redhat_manager", "admin"})
     public Response delete(@PathParam("pd") @DefaultValue("-1") int projectId) {
         Response.ResponseBuilder response = null;
         try {
@@ -303,21 +323,6 @@ public class ProjectRest {
         return response.build();
     }
 
-
-    
-    private void validate(Project project) throws ConstraintViolationException, ValidationException {
-        // Create a bean validator and check for issues.
-        Set<ConstraintViolation<Project>> violations = validator.validate(project);
-
-        if (!violations.isEmpty()) {
-            throw new ConstraintViolationException(new HashSet<ConstraintViolation<?>>(violations));
-        }
-
-        if (project.getEndDate().before(project.getInitialDate()) ) {
-            throw new ValidationException("End date should not be before initial date.");
-        }
-
-    }
 
     /**
      * Creates a JAX-RS "Bad Request" response including a map of all violation fields, and their message. This can then be used

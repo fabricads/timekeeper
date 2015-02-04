@@ -8,9 +8,17 @@ public class RoleDTO  {
     
     private Integer id;
     private String name;
+    private String shortName;
     private String description;
     private List<PersonDTO> persons;
     
+    public RoleDTO() { }
+    
+    public RoleDTO(String name, String shortName) {
+        this.name = name;
+        this.shortName = shortName;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -41,6 +49,14 @@ public class RoleDTO  {
 
     public void setPersonsDTO(List<PersonDTO> persons) {
         this.persons = persons;
+    }
+
+    public String getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
     }
 
     @Override

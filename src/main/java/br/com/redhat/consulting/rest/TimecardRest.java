@@ -26,14 +26,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import br.com.redhat.consulting.model.PartnerOrganization;
+import br.com.redhat.consulting.config.Authenticated;
 import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.Project;
-import br.com.redhat.consulting.model.Role;
 import br.com.redhat.consulting.model.Task;
 import br.com.redhat.consulting.model.Timecard;
 import br.com.redhat.consulting.model.TimecardEntry;
@@ -49,6 +47,7 @@ import br.com.redhat.consulting.util.GeneralException;
 
 @RequestScoped
 @Path("/timecard")
+@Authenticated
 public class TimecardRest {
 
     private static Logger LOG = LoggerFactory.getLogger(TimecardRest.class);

@@ -22,9 +22,17 @@ public class Role extends AbstractEntity {
     private static final long serialVersionUID = 1L;
     
     private String name;
+    private String shortName;
     private String description;
     private List<Person> persons;
     
+    public Role() { }
+    
+    public Role(String name, String shortName) {
+        this.name = name;
+        this.shortName = shortName;
+    }
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="id_role")
@@ -38,6 +46,15 @@ public class Role extends AbstractEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Column(name="short_name")
+    public String getShortName() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName = shortName;
     }
 
     public String getDescription() {

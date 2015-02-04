@@ -139,9 +139,9 @@
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
             <version>1.9.2</version>
-            <!-- <version>1.8.3</version> -->
-            <!-- <scope>provided</scope> -->
         </dependency>
+        
+        <!-- necessary as recent jackson version fix some serialization bugs -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jaxrs</artifactId>
@@ -180,6 +180,33 @@
             <artifactId>resteasy-cdi</artifactId>
             <version>${version.resteasy}</version>
         </dependency>
+        <dependency>
+            <groupId>org.picketbox</groupId>
+            <artifactId>picketbox</artifactId>
+            <version>4.0.19.SP8-redhat-1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.spec.javax.security.jacc</groupId>
+            <artifactId>jboss-jacc-api_1.4_spec</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!-- 
+        <dependency>
+            <groupId>org.jboss.web</groupId>
+            <artifactId>jbossweb</artifactId>
+            <version>7.4.9.Final-redhat-1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.as</groupId>
+            <artifactId>jboss-as-web</artifactId>
+            <version>7.4.2.Final-redhat-2</version>
+            <scope>provided</scope>
+        </dependency>
+         -->
+        
+        
 
 
         <!-- upgrade jackson -->

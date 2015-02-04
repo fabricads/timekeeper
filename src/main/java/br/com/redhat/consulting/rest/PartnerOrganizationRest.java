@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -23,6 +24,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import br.com.redhat.consulting.config.Authenticated;
 import br.com.redhat.consulting.model.PartnerOrganization;
 import br.com.redhat.consulting.model.dto.PartnerOrganizationDTO;
 import br.com.redhat.consulting.services.PartnerOrganizationService;
@@ -30,6 +32,8 @@ import br.com.redhat.consulting.util.GeneralException;
 
 @RequestScoped
 @Path("/organization")
+@RolesAllowed({"redhat_manager", "admin"})
+@Authenticated
 public class PartnerOrganizationRest {
 
     private static Logger LOG = LoggerFactory.getLogger(PartnerOrganizationRest.class);

@@ -1,9 +1,8 @@
-var timekeeperApp = angular
-		.module("timekeeperApp", [ "ngRoute", "ngResource", "ui.bootstrap" ]);
+var timekeeperApp = angular.module("timekeeperApp", [ "ngRoute", "ngResource", "ui.bootstrap" ]);
 
 timekeeperApp.config([ "$routeProvider", function($routeProvider) {
-	
 	$routeProvider.
+	
 	when("/persons", {
 	    templateUrl : "persons.html",
 	}).
@@ -49,9 +48,7 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 		redirectTo : "/projects"
 	});
 	
-}
-
-]);
+}]);
 
 /* ********************************************************
  * 
@@ -507,7 +504,7 @@ timekeeperApp.controller("modal_instance", function($scope, $http, $window, $mod
 
     $scope.timecard = {};
     
-    $http.get('/timekeeper/svc/project/list?by-cs=12').
+    $http.get('/timekeeper/svc/project/list-by-cs?by-cs=12').
         success(function(data) {
             $scope.projects = data;
         }).
@@ -730,8 +727,23 @@ Date.prototype.getWeek = function() {
 }
 
 
-timekeeperApp.run(function($rootScope) {
-	
+timekeeperApp.run(function($rootScope, $location, $window) {
+
+// routeChangeStart     
+// locationChangeStart
+    $rootScope.$on( "$routeChangeStart", function(event, next, current) {
+        console.log("$rootScope.user");
+        console.log($rootScope.user);
+        console.log("$window.sessionStorage[user]");
+        var user = $window.sessionStorage["user"];
+        console.log(user);
+//        if (next.$$route) {
+            if (user == null) { 
+                $window.location.href = "login.html"; 
+            }
+//        }
+    });
+    
 	$rootScope.states= [{
 		"id": "AC",
 		"name": "Acre"
