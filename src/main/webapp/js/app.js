@@ -638,11 +638,13 @@ timekeeperApp.controller("menu_ctrl", function(MessageService, $scope, $rootScop
     }
     
     $scope.role = function(roles) {
-        console.log("roles");
-        console.log(roles);
+        for (var i = 0; i < roles.length; i++) {
+            console.log("role["+i+"] = " + roles[i]);
+            if (roles[i] == $scope.user.role.shortName) {
+                return true;
+            }
+        }
     };
-    
-//    ng-show="role('manager_redhat', 'admin')"
     
     $scope.logout = function() {
         $http.get("/timekeeper/svc/auth/logout").
