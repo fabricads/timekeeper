@@ -17,8 +17,10 @@ loginApp.config([ "$routeProvider", function($routeProvider) {
 
 loginApp.controller("login_ctrl", function($scope, $rootScope, $location, $window, AUTH_EVENTS, auth_service) {
 
+    $scope.error_msg = $rootScope.error_msg;
+    
     $scope.login = function(person) {
-        auth_service.login(person, function(status, data) {
+        auth_service.login(person, function(data, status) {
             if (status == 200) {
                 if (data.email != null) { 
                     sessionStorage.setItem("user", JSON.stringify(data));
@@ -39,24 +41,6 @@ loginApp.controller("login_ctrl", function($scope, $rootScope, $location, $windo
 
 });
 
-loginApp.controller("logout_ctrl", function($scope, $rootScope, AUTH_EVENTS, auth_service, Session) {
-
-    $scope.logout = function() {
-        auth_service.login(function(status, data) {
-            if (status == 200) {
-                console.log("logout ok");
-                console.log(data);
-                $rootScope.user = null;
-            } else {
-                console.log("logout failed");
-                console.log(status);
-                console.log(data);
-            }
-        });
-    };
-
-});
-
 loginApp.constant('AUTH_EVENTS', {
     loginSuccess    : 'auth-login-success',
     loginFailed     : 'auth-login-failed',
@@ -65,3 +49,34 @@ loginApp.constant('AUTH_EVENTS', {
     notAuthenticated: 'auth-not-authenticated',
     notAuthorized   : 'auth-not-authorized'
   })
+  
+loginApp.factory('authHttpResponseInterceptor',['$q','$location', '$window', 'MessageService', function($q, $location, $window, $rootScope, MessageService){
+    return {
+        response: function(response){
+            if (response.status === 401) {
+                console.log("Response 401");
+            } else if (response.status === 403) {
+                console.log("Response 403");
+            }
+            return response || $q.when(response);
+        },
+        responseError: function(rejection) {
+            if (rejection.status === 401) {
+                console.log("Response Error 401",rejection);
+                $window.location.href = "login.html";
+            } else if (rejection.status === 400) {
+                console.log("Response Error 400",rejection);
+                $rootScope.error_msg = rejection.data.message;
+            } else if (rejection.status === 403) {
+                MessageService.setMessages(rejection.data.message);
+                console.log("Response Error 403", rejection);
+            }
+            return $q.reject(rejection);
+        }
+    }
+}]);
+
+loginApp.config(['$httpProvider',function($httpProvider) {
+    //Http Intercpetor to check auth failures for xhr requests
+    $httpProvider.interceptors.push('authHttpResponseInterceptor');
+}]);

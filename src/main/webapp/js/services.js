@@ -5,10 +5,16 @@ servicesApp.factory('auth_service', function($http, $window, $rootScope) {
 
     authService.login = function(person, callback) {
         return $http.post('svc/auth/login', person).
-            success(function(data, status) {
+            success(function(status, data) {
 //                console.log(data);
-//                console.log(status);
+                console.log(status);
                 callback(status, data);
+            }).
+            error(function(status, data) {
+                console.log("auth error");
+                console.log(status);
+                console.log(data);
+                $rootScope.error_msg = "e-mail or password incorrect. Message from server: " + data.error;
             });
     };
 

@@ -789,6 +789,8 @@ timekeeperApp.factory('authHttpResponseInterceptor',['$q','$location', '$window'
             if (rejection.status === 401) {
                 console.log("Response Error 401",rejection);
                 $window.location.href = "login.html";
+            } else if (rejection.status === 400) {
+                console.log("Response Error 400",rejection);
             } else if (rejection.status === 403) {
                 MessageService.setMessages(rejection.data.message);
                 console.log("Response Error 403", rejection);

@@ -58,9 +58,7 @@ http://brazil-consulting.itos.redhat.com/jboss-kitchensink/index.jsf
 
 
 ** autenticacao
-OK- criptografar senha do usuario
-OK- adicionar confirmação de senha e comparação)
-- criar tela de autenticacao
-- adicionar logout
-- configurar loginmodule
+- adicionar msg de erro de autenticacao
+- adicionar lembrador de senha
+- redirecionar quando usuario ja esta autenticado na tela de login
 - 
