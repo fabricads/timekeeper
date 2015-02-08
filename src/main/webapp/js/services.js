@@ -21,10 +21,6 @@ servicesApp.factory('auth_service', function($http, $window, $rootScope) {
             });
     };
 
-    authService.isAuthenticated = function() {
-        return $rootScope.user != null;
-    };
-
 /*
  *     authService.isAuthorized = function(authorizedRoles) {
         if (!angular.isArray(authorizedRoles)) {
@@ -35,3 +31,24 @@ servicesApp.factory('auth_service', function($http, $window, $rootScope) {
 */
     return authService;
 });
+
+servicesApp.factory('MessageService', ['$rootScope', function($rootScope) {
+    $rootScope.messages = [];
+
+    var MessageService = function() {
+        this.setMessages = function(messages) {
+            console.log(messages);
+            $rootScope.messages = messages;
+        };
+
+        this.hasMessages = function() {
+            return $rootScope.messages && $rootScope.messages.length > 0;
+        }
+
+        this.clearMessages = function() {
+            $rootScope.messages = [];
+        }
+    };
+
+    return new MessageService();
+}]);

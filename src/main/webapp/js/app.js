@@ -1,4 +1,4 @@
-var timekeeperApp = angular.module("timekeeperApp", [ "ngRoute", "ngResource", "ui.bootstrap" ]);
+var timekeeperApp = angular.module("timekeeperApp", [ "ngRoute", "ngResource", "ui.bootstrap", "servicesApp" ]);
 
 timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 	$routeProvider.
@@ -43,9 +43,13 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
     when("/organization/:orgId", {
     	templateUrl: "organization-edit.html",
     }).
+    
+    when("/organization/:orgId", {
+        templateUrl: "organization-edit.html",
+    }).
 	
     otherwise({
-		redirectTo : "/projects"
+		redirectTo : "/timecards"
 	});
 	
 }]);
@@ -94,7 +98,7 @@ timekeeperApp.controller("project_new_ctrl", function($scope, $http, $filter) {
 	$http.get('/timekeeper/svc/person/consultants').success(function(data) {
 		$scope.consultants = data;
 	});
-	
+
 	$scope.project_submit = function(project) {
 		project.consultants = $scope.selected_consultants;
 		project.tasksDTO = $scope.selected_tasks;
@@ -334,10 +338,15 @@ timekeeperApp.controller("organization_edit_ctrl", function($scope, $http, $rout
 timekeeperApp.controller("org_listing_ctrl", function($scope, $http, $routeParams, $window) {
 	
     $scope.loading = true;
-	$http.get('/timekeeper/svc/organization/list').success(function(data) {
-		$scope.orgs = data;
-		$scope.loading = false;
-	});
+	$http.get('/timekeeper/svc/organization/list').
+	    success(function(data) {
+    		$scope.orgs = data;
+    		$scope.loading = false;
+    	}).
+    	error(function(data, status, header, config) {
+            $scope.error_msg = data;
+            $scope.loading = false;
+        });
 	
 	$scope.disable = function(orgId) {
 		$http.get("/timekeeper/svc/organization/"+orgId+"/disable");
@@ -464,6 +473,7 @@ timekeeperApp.controller("profile_ctrl", function($scope, $http, $routeParams, $
         $scope.person = data;
     });
     
+    $scope.password_confirmation = null;
     $scope.states = $rootScope.states;	
     
     $scope.person_submit = function(person) {
@@ -622,6 +632,40 @@ timekeeperApp.controller("timecard_new_ctrl", function($scope, $http, $routePara
  * ********************************************************
  */
 
+timekeeperApp.controller("menu_ctrl", function(MessageService, $scope, $rootScope, $window, $http) {
+    if ($rootScope.user != null) {
+        $scope.user = $rootScope.user;
+    }
+    
+    $scope.role = function(roles) {
+        console.log("roles");
+        console.log(roles);
+    };
+    
+//    ng-show="role('manager_redhat', 'admin')"
+    
+    $scope.logout = function() {
+        $http.get("/timekeeper/svc/auth/logout").
+        success(function(data, status, header, config) {
+            sessionStorage.removeItem("user");
+            $window.location.href = "login.html";
+        });
+    };
+    
+});
+
+timekeeperApp.controller("message_ctrl", function(MessageService, $scope) {
+    $scope.hasMessages = function() {
+        return MessageService.hasMessages();
+    };
+    
+    $scope.clearMessages = function() {
+        MessageService.clearMessages();
+    };
+    
+});
+
+
 timekeeperApp.directive('float', function() {
 	return {
 		require : 'ngModel',
@@ -634,6 +678,7 @@ timekeeperApp.directive('float', function() {
 });
 
 // from https://github.com/TheSharpieOne/angular-input-match/blob/master/dist/angular-input-match.js
+// used to test password confirmation on person-edit.html person-new.html
 timekeeperApp.directive('match', function($parse) {
     return {
         require: '?ngModel',
@@ -715,6 +760,7 @@ timekeeperApp.filter('dateNumOfWeeks', function () {
 });
 
 // from http://weeknumber.net/how-to/javascript
+// used on timecard pages, to calculate the number of weeks to present to the user.
 Date.prototype.getWeek = function() { 
     var date = new Date(this.getTime()); 
     date.setHours(0, 0, 0, 0); 
@@ -727,22 +773,42 @@ Date.prototype.getWeek = function() {
 }
 
 
-timekeeperApp.run(function($rootScope, $location, $window) {
-
-// routeChangeStart     
-// locationChangeStart
-    $rootScope.$on( "$routeChangeStart", function(event, next, current) {
-        console.log("$rootScope.user");
-        console.log($rootScope.user);
-        console.log("$window.sessionStorage[user]");
-        var user = $window.sessionStorage["user"];
-        console.log(user);
-//        if (next.$$route) {
-            if (user == null) { 
-                $window.location.href = "login.html"; 
+timekeeperApp.factory('authHttpResponseInterceptor',['$q','$location', '$window', 'MessageService', function($q, $location, $window, MessageService){
+    return {
+        response: function(response){
+            if (response.status === 401) {
+                console.log("Response 401");
+            } else if (response.status === 403) {
+                console.log("Response 403");
             }
-//        }
+            return response || $q.when(response);
+        },
+        responseError: function(rejection) {
+            if (rejection.status === 401) {
+                console.log("Response Error 401",rejection);
+                $window.location.href = "login.html";
+            } else if (rejection.status === 403) {
+                MessageService.setMessages(rejection.data.message);
+                console.log("Response Error 403", rejection);
+            }
+            return $q.reject(rejection);
+        }
+    }
+}]);
+
+timekeeperApp.config(['$httpProvider',function($httpProvider) {
+    //Http Intercpetor to check auth failures for xhr requests
+    $httpProvider.interceptors.push('authHttpResponseInterceptor');
+}]);
+
+timekeeperApp.run(function($rootScope, $window, MessageService) {
+
+    $rootScope.$on( "$routeChangeStart", function(event, next, current) {
+        MessageService.clearMessages();
     });
+    
+    $rootScope.user = JSON.parse(sessionStorage.getItem("user"));
+    var user2 = JSON.parse(sessionStorage.getItem("user"));
     
 	$rootScope.states= [{
 		"id": "AC",

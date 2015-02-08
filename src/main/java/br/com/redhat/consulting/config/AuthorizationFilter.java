@@ -35,7 +35,6 @@ public class AuthorizationFilter implements ContainerRequestFilter {
         if (ss != null) {
             user = (PersonDTO) ss.getAttribute("user");
         }
-        LOG.debug("user " + user);
         if (user == null) {
             LOG.warn("Unauthenticated user. Access denied for " + httpReq.getPathInfo() + " - Source address: " + httpReq.getRemoteAddr());
             requestContext.abortWith(ACCESS_DENIED);

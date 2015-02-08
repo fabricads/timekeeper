@@ -44,38 +44,31 @@
           <img src="img/brand.svg" alt="Red Hat&reg; Common User Experience" />
         </a>
       </div>
-      <div class="collapse navbar-collapse navbar-collapse-1">
+      <div class="collapse navbar-collapse navbar-collapse-1" ng-controller="menu_ctrl">
 
-        <ul class="nav navbar-nav navbar-utility">
-          <li>
-            <a href="#/profile/1">
-              <span class="pficon pficon-user"></span>
-              Profile
-            </a>
-          </li>
-          <li>
-            <a href="#">Logout</a>
-          </li>
-        </ul>
-      
         <ul class="nav navbar-nav navbar-primary">
-          <li>
-            <a href="#/persons" >Person</a>
-          </li>
-          <li>
-            <a  href="#/organizations">Organization</a>
-          </li>
-          <li>
-            <a href="#/projects">Project</a>
-          </li>
-          <li>
-            <a href="#/timecards">Timecard</a>
-          </li>
+          <li><a href="#/persons" ng-show="role('manager_redhat', 'admin')">Consultant</a></li>
+          <li><a href="#/organizations" ng-show="role('manager_redhat', 'admin')">Organization</a></li>
+          <li><a href="#/projects" ng-show="role('manager_redhat', 'admin')">Project</a></li>
+          <li><a href="#/timecards">Timecard</a></li>
+          <li><a href="#/profile/{{user.id}}">{{user.name}}</a></li>
+          <li><a href="#/" ng-click="logout()">Logout</a></li>
         </ul>
       </div>
     </nav>
     <div class="container-fluid">
       <div class="row">
+      
+        <div class="alert alert-warning" ng-controller="message_ctrl" ng-show="hasMessages()">
+            <span class="pficon-layered">
+              <span class="pficon pficon-warning-triangle"></span>
+              <span class="pficon pficon-warning-exclamation"></span>
+            </span>
+            <ul>
+                <li ng-repeat="message in messages">{{message}}</li> 
+            </ul>
+        </div>
+      
         <div ng-view class="col-md-12">
         </div><!-- /col -->
       </div><!-- /row -->

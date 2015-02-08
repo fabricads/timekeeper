@@ -207,8 +207,7 @@ public class PersonDTO  {
 
     @Override
 	public String toString() {
-		return "PersonDTO [oraclePAId=" + oraclePAId + ", name=" + name
-				+ ", email=" + email + ", id=" + getId() + "]";
+		return "PersonDTO [id=" + getId() + ", name=" + name + ", email=" + email + "]";
 	}
 
     public Person toPerson() {

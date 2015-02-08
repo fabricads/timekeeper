@@ -51,7 +51,7 @@ public class ProfileRest {
         Response.ResponseBuilder response = null;
         try {
             // check if the request id is the logged user.
-            Person loggedUser = Util.getPerson(req);
+            PersonDTO loggedUser = Util.getPerson(req);
             if (loggedUser.getId().intValue() != personId) {
                 Map<String, String> responseObj = new HashMap<>();
                 responseObj.put("error", "Person " + personId + " not found.");
@@ -73,6 +73,7 @@ public class ProfileRest {
                     person.setRegistered(null);
                     person.setRole(null);
                     person.setTimecards(null);
+                    person.setPassword(null);
                     
                     BeanUtils.copyProperties(personDto, person);
                     response = Response.ok(personDto);
@@ -100,8 +101,8 @@ public class ProfileRest {
                 builder = Response.status(Response.Status.CONFLICT).entity(responseObj);
                 return builder.build();
             }
-            Person loggedUser = Util.getPerson(req);
-            if (loggedUser.getId().intValue() != personDto.getId().intValue()) {
+            PersonDTO loggedUser = Util.getPerson(req);
+            if (!loggedUser.getId().equals(personDto.getId())) {
                 Map<String, String> responseObj = new HashMap<>();
                 responseObj.put("error", "Person " + personDto.getId() + " not found.");
                 builder = Response.status(Response.Status.NOT_FOUND).entity(responseObj);

@@ -35,13 +35,19 @@
             <p class="help-block">Write the corporate e-mail. Do not write personal email address.</p>
         </div>
     </div>
-    <div class="form-group" ng-class="{'has-error': form.password.$invalid}">
-        <label for="prj_name" class="col-md-2 control-label">Password</label>
+    <div class="form-group">
+        <label for="prj_name" class="col-md-2 control-label">Password {{person.password}}</label>
         <div class="col-md-2">
             <input type="password" class="form-control" name="password" ng-model="person.password">
         </div>
+    </div>
+    <div class="form-group" ng-class="{'has-error': form.password_confirmation.$error.match}">
+        <label for="prj_name" class="col-md-2 control-label">Password Confirmation</label>
+        <div class="col-md-2">
+            <input type="password" class="form-control" name="password_confirmation" ng-model="password_confirmation" data-match="person.password">
+        </div>
         <div class="col-md-4">
-            <span class="help-block" ng-show="form.password.$error.required">Required field</span>
+            <span class="help-block" ng-show="form.password_confirmation.$error.match">Passwords do not match!</span>
         </div>
     </div>
 

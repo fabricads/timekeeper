@@ -275,8 +275,7 @@ public class Person extends AbstractEntity {
 
     @Override
 	public String toString() {
-		return "Person [oraclePAId=" + oraclePAId + ", name=" + name
-				+ ", email=" + email + ", id=" + getId() + "]";
+        return "Person [id=" + getId() + ", name=" + name + ", email=" + email + "]";
 	}
 
 }

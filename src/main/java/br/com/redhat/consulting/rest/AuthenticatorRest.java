@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.inject.Inject;
 import javax.security.auth.Subject;
 import javax.security.auth.login.LoginException;
@@ -61,6 +62,7 @@ public class AuthenticatorRest {
                 user.setPassword(null);
                 Person p = personService.findByEmail(user.getEmail());
                 user.setId(p.getId());
+                user.setName(p.getName());
                 List<String> roles = retrieveRoles();
                 RoleEnum roleEnum = RoleEnum.findByShortname(roles.get(0));
                 RoleDTO role = new RoleDTO(roleEnum.getDescription(), roleEnum.getShortName());
@@ -81,7 +83,7 @@ public class AuthenticatorRest {
 
         return response.build();
     }
-
+    
     private List<String> retrieveRoles() {
         List<String> roles = new ArrayList<String>();
         try {

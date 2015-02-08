@@ -21,11 +21,7 @@ loginApp.controller("login_ctrl", function($scope, $rootScope, $location, $windo
         auth_service.login(person, function(status, data) {
             if (status == 200) {
                 if (data.email != null) { 
-                    console.log("login ok");
-                    console.log(data);
-                    $rootScope.user = data;
-    //                $window.sessionStorage["user"] = JSON.stringify(user);
-                    $window.sessionStorage["user"] = data;
+                    sessionStorage.setItem("user", JSON.stringify(data));
                     $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
                     $window.location.href = ".";
                 } else {
