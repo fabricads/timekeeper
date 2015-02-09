@@ -26,6 +26,8 @@ Type: vem escrito Contingent
 Task: Task do projeto
 Type: Labor
 
+echo -n admin123 | openssl dgst -sha256 -binary | openssl base64
+
 TODO:
 - revisao do envers, guardar o login do usuario quem fez a ação
 - adicionar seguranca, por classe e metodo. autenticacao e autorizacao
@@ -56,9 +58,22 @@ scp ~/tmp/jboss-eap-quickstarts-master/kitchensink/target/jboss-kitchensink.war 
 https://help.openshift.com/hc/en-us/articles/202399740-How-to-deploy-pre-compiled-java-applications-WAR-and-EAR-files-onto-your-OpenShift-gear-using-the-java-cartridges
 http://brazil-consulting.itos.redhat.com/jboss-kitchensink/index.jsf
 
+/subsystem=datasources/data-source=timekeeper:add(connection-url="jdbc:postgresql://${env.OPENSHIFT_POSTGRESQL_DB_HOST}:${env.OPENSHIFT_POSTGRESQL_DB_PORT}/brazil",check-valid-connection-sql="SELECT 1",driver-name=postgresql,jndi-name="java:/jdbc/partners_timekeeper",jta=true,password="asQW12#$",user-name=timekeeper)
+/subsystem=datasources/data-source=timekeeper:enable
+/subsystem=datasources/data-source=timekeeper:test-connection-in-pool
+
+/subsystem=security/security-domain=timekeeper:add(cache-type=default)
+/subsystem=security/security-domain=timekeeper/authentication=classic:add(login-modules=[{"code"=>"Database", "flag"=>"required", "module-options"=>[("dsJndiName"=>"java:/jdbc/partners_timekeeper"),("principalsQuery"=>"select password from person where enabled = true and email = ?"), ("rolesQuery"=>"select r.short_name, 'Roles' from role r inner join person p on p.id_role=r.id_role where p.email = ?"), ("hashAlgorithm"=>"SHA-256"),("hashEncoding"=>"base64")]}])
+
+
+insert into role(name,short_name) values('Partner Consultant','partner_consultant');
+insert into role(name,short_name) values('Red Hat Manager','redhat_manager');
+insert into partner_org(name,enabled) values('Red Hat',true);
+insert into person(name, email,password,enabled,persontype,id_role,id_partner_org,city,country,state) values('Claudio Miranda','claudio@redhat.com','gOqk39ARU+xpdTuMv8/ZSVREd7X8EYS6H8v1vlekO5Y=', true,4,4,4,'Brasilia','Brasil','DF');
 
 ** autenticacao
 - adicionar msg de erro de autenticacao
 - adicionar lembrador de senha
 - redirecionar quando usuario ja esta autenticado na tela de login
 - 
+

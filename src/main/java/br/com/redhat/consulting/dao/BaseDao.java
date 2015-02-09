@@ -158,8 +158,9 @@ public class BaseDao<ENTITY, SEARCH_FILTER> {
         sql.append("distinct ENT");
         sql.append(" from ").append(entityClassName).append(" ENT");
         String[] collectionsToFetch = getFetchCollection();
-        for (String attrName: collectionsToFetch) {
-            sql.append(" left join fetch ENT.").append(attrName).append(" ENT2");
+        for (int i = 0; i < collectionsToFetch.length; i++) {
+            String attrName = collectionsToFetch[i];
+            sql.append(" left join fetch ENT.").append(attrName).append(" ENT").append(i+2);
         }
         sql.append(" where 1=1 ");
         return sql.toString();

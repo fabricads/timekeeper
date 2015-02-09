@@ -2,6 +2,9 @@ package br.com.redhat.consulting.rest;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,6 +97,48 @@ public class ProjectRest {
                     ProjectDTO prjDto = new ProjectDTO();
                     BeanUtils.copyProperties(prjDto, project);
                     projectsDto.add(prjDto);
+                }
+                response = Response.ok(projectsDto);
+            }
+        } catch (GeneralException | IllegalAccessException | InvocationTargetException e) {
+            LOG.error("Error to find projects.", e);
+            Map<String, String> responseObj = new HashMap<>();
+            responseObj.put("error", e.getMessage());
+            response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+        }
+        return response.build();
+    }
+    
+    @Path("/list-by-cs-fill")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @RolesAllowed({"partner_consultant"})
+    public Response listByConsultantToFill(@QueryParam("cs") Integer consultantId) {
+        List<Project> projects = null;
+        List<ProjectDTO> projectsDto = null;
+        Response.ResponseBuilder response = null;
+        
+        try {
+            if (consultantId != null) 
+                projects = projectService.findByConsultantToFill(consultantId);
+            if (projects == null || projects.size() == 0) {
+                Map<String, Object> responseObj = new HashMap<>();
+                responseObj.put("msg", "No projects found");
+                responseObj.put("projects", new ArrayList());
+                response = Response.ok(responseObj);
+            } else {
+                projectsDto = new ArrayList<ProjectDTO>(projects.size());
+                for (Project project: projects) {
+                    // se projeto nao tem timecards, entao nao foi lancado nenhum, pode lancar novo timecard
+                    // OU verifica se o ultimo timecardentry lancado e menor que a data fim do projeto
+                    if (project.getTimecards().size() == 0 || projectService.checkProjectCanFillMoreTimecards(project.getId())) {
+                        LOG.debug(" can fill more timecards to project: " + project.getName());
+                        ProjectDTO prjDto = new ProjectDTO();
+                        BeanUtils.copyProperties(prjDto, project);
+                        projectsDto.add(prjDto);
+                    } else {
+                        LOG.debug("User CANNOT fill new timecards to project: " + project.getName());
+                    }
                 }
                 response = Response.ok(projectsDto);
             }

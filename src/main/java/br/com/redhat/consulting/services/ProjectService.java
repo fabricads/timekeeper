@@ -31,13 +31,22 @@ public class ProjectService {
         Person pm = new Person();
         pm.setId(pmId);
         filter.setProjectManager(pm);
-//        projectDao.setFetchCollection(new String[]{"consultants"});
         List<Project> res = projectDao.find(filter);
         return res;
     }
     
     public List<Project> findByConsultant(Integer consultantId) throws GeneralException {
         List<Project> res = projectDao.findProjectsByConsultant(consultantId);
+        return res;
+    }
+    
+    public List<Project> findByConsultantToFill(Integer consultantId) throws GeneralException {
+        List<Project> res = projectDao.findProjectsToFill(consultantId);
+        return res;
+    }
+    
+    public boolean checkProjectCanFillMoreTimecards(Integer prjId) throws GeneralException {
+        boolean res = projectDao.checkProjectCanFillMoreTimecards(prjId);
         return res;
     }
     
@@ -55,7 +64,6 @@ public class ProjectService {
         List<Project> res = Collections.emptyList();
         ProjectSearchFilter filter = new ProjectSearchFilter();
         res = projectDao.find(filter);
-//        projectDao.setFetchCollection(new String[]{"consultants"});
         return res;
         
     }

@@ -3,6 +3,7 @@ package br.com.redhat.consulting.dao;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
 import org.apache.commons.lang.StringUtils;
@@ -67,5 +68,28 @@ public class ProjectDao extends BaseDao<Project, ProjectSearchFilter> {
         List<Project> res = query.getResultList();
         return res;
     }
+    
+    public List<Project> findProjectsToFill(Integer consultantId) {
+        String jql = "select p from Project p inner join p.consultants c left join fetch p.timecards tc where p.enabled=true and c.id = ?0 order by p.name";
+        TypedQuery<Project> query= getEntityManager().createQuery(jql, Project.class);
+        query.setParameter(0, consultantId);
+        List<Project> res = query.getResultList();
+        return res;
+    }
+    
+    public boolean checkProjectCanFillMoreTimecards(Integer prjId) {
+        String jql = "select p.id from Project p left outer join p.timecards tc left outer join tc.timecardEntries tce where p.id=?0 group by p.id having p.endDate > max(tce.day)";
+        TypedQuery<Integer> query= getEntityManager().createQuery(jql, Integer.class);
+        query.setParameter(0, prjId);
+        Integer res = 0;
+        try {
+            res = query.getSingleResult();
+        } catch (NoResultException e) { 
+            // nada a fazer.
+        }
+        return res > 0;
+    }
+    
+    
     
 }

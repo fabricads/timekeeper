@@ -109,7 +109,7 @@ public class ProfileRest {
                 LOG.warn(loggedUser + " trying to save on top of other user id " + personDto.getId());
             } else {
                 Person personEnt = personService.findByName(personDto.getName());
-                if (personEnt != null) {
+                if (personEnt != null && (personEnt.getId() != personDto.getId())) {
                     Map<String, String> responseObj = new HashMap<String, String>();
                     responseObj.put("error", "Person with duplicated name: " + personDto.getName());
                     builder = Response.status(Response.Status.CONFLICT).entity(responseObj);

@@ -509,7 +509,7 @@ timekeeperApp.controller("modal_instance", function($rootScope, $scope, $http, $
 
     $scope.timecard = {};
     
-    $http.get('/timekeeper/svc/project/list-by-cs?cs=' + $rootScope.user.id).
+    $http.get('/timekeeper/svc/project/list-by-cs-fill?cs=' + $rootScope.user.id).
         success(function(data) {
             $scope.projects = data;
         }).
@@ -554,7 +554,6 @@ timekeeperApp.controller("timecard_new_ctrl", function($scope, $http, $routePara
     
     $scope.timecard = {};
     $scope.timecard.consultant = {};
-//    $scope.timecard.consultant.id = $rootScope.user.id;
     
     $http.get('/timekeeper/svc/project/'+$routeParams.projectId + "/tc").
         success(function(data) {
@@ -569,7 +568,6 @@ timekeeperApp.controller("timecard_new_ctrl", function($scope, $http, $routePara
             var tasks = project.tasksDTO;
             for (var i = 0; i < tasks.length; i++) {
                 var task = tasks[i];
-//                console.log(task);
 
                 // set the sunday day of the starting week
                 var initDayWeek = new Date(start_date);
@@ -609,12 +607,9 @@ timekeeperApp.controller("timecard_new_ctrl", function($scope, $http, $routePara
             var task = timecard.project.tasksDTO.shift();
             while (task.tcEntries.length > 0) {
                 var tcEntry = task.tcEntries.shift();
-//                console.log("tc entry: ");
-//                console.log(tcEntry);
                 timecard.timecardEntriesDTO.push(tcEntry);
             }
         }
-//        console.log(timecard);
         $http.post("/timekeeper/svc/timecard/save", timecard).
             success(function(data, status, header, config) {
                 $scope.saved = true;
