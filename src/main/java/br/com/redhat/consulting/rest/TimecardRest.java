@@ -12,6 +12,7 @@ import java.util.Set;
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.ValidationException;
@@ -23,6 +24,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -38,6 +40,7 @@ import br.com.redhat.consulting.model.Timecard;
 import br.com.redhat.consulting.model.TimecardEntry;
 import br.com.redhat.consulting.model.TimecardStatusEnum;
 import br.com.redhat.consulting.model.dto.PersonDTO;
+import br.com.redhat.consulting.model.dto.ProjectDTO;
 import br.com.redhat.consulting.model.dto.TimecardDTO;
 import br.com.redhat.consulting.model.dto.TimecardEntryDTO;
 import br.com.redhat.consulting.services.PersonService;
@@ -45,6 +48,7 @@ import br.com.redhat.consulting.services.ProjectService;
 import br.com.redhat.consulting.services.TaskService;
 import br.com.redhat.consulting.services.TimecardService;
 import br.com.redhat.consulting.util.GeneralException;
+import br.com.redhat.consulting.util.Util;
 
 @RequestScoped
 @Path("/timecard")
@@ -67,6 +71,9 @@ public class TimecardRest {
     
     @Inject
     private Validator validator;
+    
+    @Context
+    private HttpServletRequest httpReq;
 
     @Path("/list-cs")
     @Produces(MediaType.APPLICATION_JSON)
@@ -104,10 +111,22 @@ public class TimecardRest {
             } else {
                 timecardsDto = new ArrayList<TimecardDTO>(timecards.size());
                 for (Timecard timecard: timecards) {
-                    TimecardDTO prjDto = new TimecardDTO();
+                    TimecardDTO tcDto = new TimecardDTO();
                     PersonDTO pmDto = new PersonDTO();
-                    BeanUtils.copyProperties(prjDto, timecard);
-                    timecardsDto.add(prjDto);
+                    BeanUtils.copyProperties(tcDto, timecard);
+                    ProjectDTO prjDto = new ProjectDTO();
+                    BeanUtils.copyProperties(prjDto, timecard.getProject());
+                    tcDto.setProjectDTO(prjDto);
+                    List<TimecardEntryDTO> tceDtos = new ArrayList<>(timecard.getTimecardEntries().size());
+                    for (TimecardEntry tce: timecard.getTimecardEntries()) {
+                        TimecardEntryDTO tceDto = new TimecardEntryDTO();
+                        BeanUtils.copyProperties(tceDto, tce);
+                        tceDtos.add(tceDto);
+                    }
+                    tcDto.setFirstDate(tceDtos.get(0).getDay());
+                    tcDto.setLastDate(tceDtos.get(tceDtos.size() - 1).getDay());
+                    tcDto.setTimecardEntriesDTO(tceDtos);
+                    timecardsDto.add(tcDto);
                 }
                 response = Response.ok(timecardsDto);
             }
@@ -163,26 +182,23 @@ public class TimecardRest {
         Response.ResponseBuilder response = null;
         try {
             timecardDto.setStatusEnum(TimecardStatusEnum.IN_PROGRESS);
-            
+            PersonDTO loggedUser = Util.loggedUser(httpReq);
             Timecard timecardEnt = timecardDto.toTimecard();
-            Long count = timecardService.countByDate(timecardDto.getConsultant().getId(), timecardDto.getProject().getId(), timecardDto.getInitDate(), timecardDto.getEndDate());
+            Person cs = loggedUser.toPerson();
+            timecardEnt.setConsultant(cs);
+            Long count = timecardService.countByDate(timecardDto.getConsultant().getId(), timecardDto.getProject().getId(), timecardDto.getFirstDate(), timecardDto.getLastDate());
             if (count > 0) {
                 Map<String, String> responseObj = new HashMap<String, String>();
-                responseObj.put("error", "Timecard existant with start date "+ timecardDto.getInitDate() + " and end date "+ timecardDto.getEndDate() + " specified.");
+                responseObj.put("error", "Cannot save timecard existant with start date "+ timecardDto.getFirstDate() + " and end date "+ timecardDto.getLastDate() + " specified.");
                 response = Response.status(Response.Status.CONFLICT).entity(responseObj);
             } else {
             
-                // validate if the logged user is equals to the consultant 
-                Person consultant = new Person();
-                consultant.setId(timecardDto.getConsultant().getId());
-                timecardEnt.setConsultant(consultant);
-                
                 Project prj = new Project();
                 prj.setId(timecardDto.getProject().getId());
                 timecardEnt.setProject(prj);
                 
                 List<Date> dates = new ArrayList<>();
-                for (TimecardEntryDTO tcEntryDto: timecardDto.getTimecardEntries()) {
+                for (TimecardEntryDTO tcEntryDto: timecardDto.getTimecardEntriesDTO()) {
                     dates.add(tcEntryDto.getDay());
                     TimecardEntry tcEntry = new TimecardEntry();
                     BeanUtils.copyProperties(tcEntry, tcEntryDto);

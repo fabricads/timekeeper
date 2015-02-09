@@ -9,8 +9,6 @@ import br.com.redhat.consulting.model.TimecardStatusEnum;
 
 public class TimecardDTO  {
 
-    private static final long serialVersionUID = 1L;
-
     private Integer id;
     private ProjectDTO project;
     private PersonDTO consultant;
@@ -18,8 +16,8 @@ public class TimecardDTO  {
     private String commentConsultant;
     private String commentPM;
     private List<TimecardEntryDTO> timecardEntries = new ArrayList<>();
-    private Date initDate;
-    private Date endDate;
+    private Date firstDate;
+    private Date lastDate;
     
     public Integer getId() {
         return id;
@@ -81,11 +79,11 @@ public class TimecardDTO  {
         this.commentPM = commentPM;
     }
 
-    public List<TimecardEntryDTO> getTimecardEntries() {
+    public List<TimecardEntryDTO> getTimecardEntriesDTO() {
         return timecardEntries;
     }
 
-    public void setTimecardEntries(List<TimecardEntryDTO> timecardEntries) {
+    public void setTimecardEntriesDTO(List<TimecardEntryDTO> timecardEntries) {
         this.timecardEntries = timecardEntries;
     }
     
@@ -93,25 +91,25 @@ public class TimecardDTO  {
         timecardEntries.add(tce);
     }
 
-    public Date getInitDate() {
-        return initDate;
+    public Date getFirstDate() {
+        return firstDate;
     }
 
-    public void setInitDate(Date initDate) {
-        this.initDate = initDate;
+    public void setFirstDate(Date firstDate) {
+        this.firstDate = firstDate;
     }
 
-    public Date getEndDate() {
-        return endDate;
+    public Date getLastDate() {
+        return lastDate;
     }
 
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+    public void setLastDate(Date lastDate) {
+        this.lastDate = lastDate;
     }
 
     @Override
     public String toString() {
-        return "TimecardEntryDTO [id=" + getId() + ", project=" + project + ", consultant=" + consultant + "]";
+        return "TimecardEntryDTO [id=" + getId() + ", project=" + project + ", consultant=" + consultant + ", firstDate=" + firstDate+ ", lastDate=" + lastDate + "]";
     }
     
     public Timecard toTimecard() {

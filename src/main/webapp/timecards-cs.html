@@ -37,52 +37,19 @@
         <thead>
             <tr>
                 <th>Project</th>
-                <th>Consultant</th>
                 <th>Status</th>
+                <th>Period</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="tc in timecards">
 
-                <td style="vertical-align: middle;"><a ng-href="#/timecard/{{tc.id}}">{{tc.consultant.name}}</a></td>
                 <td style="vertical-align: middle;">{{tc.project.name}}</td>
-                <td style="vertical-align: middle;">{{tc.status}}</td>
+                <td style="vertical-align: middle;">{{tc.statusDescription}}</td>
+                <td style="vertical-align: middle;">{{tc.firstDate|date:'dd-MMMM-yyyy'}} to {{tc.lastDate|date:'dd-MMMM-yyyy'}}</td>
                 <td style="vertical-align: middle;"></td>
             </tr>
         </tbody>
     </table>
 </div>
-
-<!-- 
-<div class="modal fade" id="select-project" tabindex="-1" role="dialog" aria-labelledby="title_label" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                    <span class="pficon pficon-close"></span>
-                </button>
-                <h4 class="modal-title" id="title_label">Select project</h4>
-            </div>
-            <form class="form-horizontal" name="form" ng-controller="select_project_new_timecard">
-                <div class="modal-body">
-
-                    <div class="form-group" ng-class="{'has-error': form.project.$invalid}">
-                        <label for="prj_pm" class="col-md-2 control-label">Project</label>
-                        <div class="col-lg-6">
-                            <select class="form-control" required name="project" ng-model="timecard.project.id"
-                                ng-options="project.id as project.name for project in projects" />
-                        </div>
-                    </div>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
-                    <button type="submit" class="btn btn-primary" data-dismiss="modal" ng-click="new_timecard(timecard.project.id)"
-                        ng-disabled="form.$invalid">Next</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
- -->

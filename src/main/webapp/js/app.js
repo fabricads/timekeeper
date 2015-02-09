@@ -235,18 +235,15 @@ timekeeperApp.controller("project_edit_ctrl", function($scope, $http, $routePara
     
     $scope.add_consultant = function() {
         found = $filter('findById')($scope.selected_consultants, $scope.temp_consultant.id);
-        if (found == null && $scope.temp_consultant.toSource() != "({})" ) {
+        if (found == null && $scope.temp_consultant.id != null ) {
             $scope.selected_consultants.push($scope.temp_consultant);
-            console.log($scope.selected_consultants);
         }
     };
     
     $scope.remove_consultant = function(consultant) {
         idx = $scope.selected_consultants.indexOf(consultant);
         if (idx > -1) {
-// console.log("before: " + $scope.selected_consultants.toSource());
             $scope.selected_consultants.splice(idx, 1);
-// console.log("after : " + $scope.selected_consultants.toSource());
         }
     };
 
@@ -256,27 +253,20 @@ timekeeperApp.controller("project_edit_ctrl", function($scope, $http, $routePara
 
     $scope.add_task = function() {
         found = $filter('findByName')($scope.selected_tasks, $scope.temp_task.name);
-//        console.log("found task by name ? "); 
-//        console.log(found);
         if (!found && $scope.temp_task.name.trim() != "" ) {
             $scope.selected_tasks.push($scope.temp_task);
             $scope.temp_task = {};
             $scope.temp_task.name = "";
-//            console.log($scope.selected_tasks);
         }
     };
     
     $scope.remove_task = function(task) {
         idx = $scope.selected_tasks.indexOf(task);
         if (idx > -1) {
-//            console.log("before: " + $scope.selected_tasks.toSource());
             $scope.selected_tasks.splice(idx, 1);
-//            console.log("after : " + $scope.selected_tasks.toSource());
             if (task.id != null) {
                 $scope.tasks_to_remove.push(task.id);
             }
-            console.log("tasks to remove");
-            console.log($scope.tasks_to_remove);
         }
     };
     
@@ -515,11 +505,11 @@ timekeeperApp.controller("show_modal_select_project", function($scope, $modal) {
       };
 });
 
-timekeeperApp.controller("modal_instance", function($scope, $http, $window, $modalInstance) {
+timekeeperApp.controller("modal_instance", function($rootScope, $scope, $http, $window, $modalInstance) {
 
     $scope.timecard = {};
     
-    $http.get('/timekeeper/svc/project/list-by-cs?by-cs=12').
+    $http.get('/timekeeper/svc/project/list-by-cs?cs=' + $rootScope.user.id).
         success(function(data) {
             $scope.projects = data;
         }).
@@ -529,7 +519,6 @@ timekeeperApp.controller("modal_instance", function($scope, $http, $window, $mod
 
     $scope.ok = function () {
         $modalInstance.close();
-//        console.log($scope.timecard.project.id);
         $window.location.href = "#/timecard-new/" + $scope.timecard.project.id;
     };
 
@@ -565,7 +554,7 @@ timekeeperApp.controller("timecard_new_ctrl", function($scope, $http, $routePara
     
     $scope.timecard = {};
     $scope.timecard.consultant = {};
-    $scope.timecard.consultant.id = 12;
+//    $scope.timecard.consultant.id = $rootScope.user.id;
     
     $http.get('/timekeeper/svc/project/'+$routeParams.projectId + "/tc").
         success(function(data) {
@@ -585,8 +574,8 @@ timekeeperApp.controller("timecard_new_ctrl", function($scope, $http, $routePara
                 // set the sunday day of the starting week
                 var initDayWeek = new Date(start_date);
                 initDayWeek.setDate(start_date.getDate() - start_date.getDay());
-                if ($scope.timecard.initDate == null) {
-                    $scope.timecard.initDate =  new Date(initDayWeek.getTime());
+                if ($scope.timecard.firstDate == null) {
+                    $scope.timecard.firstDate =  new Date(initDayWeek.getTime());
                 }
                 
                 var tcEntries = [];
@@ -597,8 +586,8 @@ timekeeperApp.controller("timecard_new_ctrl", function($scope, $http, $routePara
                     tcEntry.workDescription = "";
                     tcEntry.taskDTO = {};
                     tcEntry.taskDTO.id = task.id;
-                    if ($scope.timecard.endDate == null && j == 6) {
-                        $scope.timecard.endDate =  new Date(initDayWeek.getTime());
+                    if ($scope.timecard.lastDate == null && j == 6) {
+                        $scope.timecard.lastDate =  new Date(initDayWeek.getTime());
                     }
                     initDayWeek.setDate(initDayWeek.getDate() + 1);
                     tcEntries.push(tcEntry);
@@ -615,17 +604,17 @@ timekeeperApp.controller("timecard_new_ctrl", function($scope, $http, $routePara
         });
     
     $scope.timecard_submit = function(timecard) {
-        timecard.timecardEntries = [];
+        timecard.timecardEntriesDTO = [];
         while (timecard.project.tasksDTO.length > 0) {
             var task = timecard.project.tasksDTO.shift();
             while (task.tcEntries.length > 0) {
                 var tcEntry = task.tcEntries.shift();
-                console.log("tc entry: ");
-                console.log(tcEntry);
-                timecard.timecardEntries.push(tcEntry);
+//                console.log("tc entry: ");
+//                console.log(tcEntry);
+                timecard.timecardEntriesDTO.push(tcEntry);
             }
         }
-        console.log(timecard);
+//        console.log(timecard);
         $http.post("/timekeeper/svc/timecard/save", timecard).
             success(function(data, status, header, config) {
                 $scope.saved = true;

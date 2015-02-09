@@ -51,7 +51,7 @@ public class ProfileRest {
         Response.ResponseBuilder response = null;
         try {
             // check if the request id is the logged user.
-            PersonDTO loggedUser = Util.getPerson(req);
+            PersonDTO loggedUser = Util.loggedUser(req);
             if (loggedUser.getId().intValue() != personId) {
                 Map<String, String> responseObj = new HashMap<>();
                 responseObj.put("error", "Person " + personId + " not found.");
@@ -101,7 +101,7 @@ public class ProfileRest {
                 builder = Response.status(Response.Status.CONFLICT).entity(responseObj);
                 return builder.build();
             }
-            PersonDTO loggedUser = Util.getPerson(req);
+            PersonDTO loggedUser = Util.loggedUser(req);
             if (!loggedUser.getId().equals(personDto.getId())) {
                 Map<String, String> responseObj = new HashMap<>();
                 responseObj.put("error", "Person " + personDto.getId() + " not found.");

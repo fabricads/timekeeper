@@ -7,7 +7,7 @@ import br.com.redhat.consulting.model.dto.PersonDTO;
 
 public class Util {
 
-    public static PersonDTO getPerson(HttpServletRequest req) {
+    public static PersonDTO loggedUser(HttpServletRequest req) {
         PersonDTO p = null;
         if (req != null) {
             HttpSession ss = req.getSession(false);

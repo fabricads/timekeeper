@@ -30,7 +30,7 @@
         </div>
         <div class="panel-body" ng-repeat="tcDayEntry in tcEntry.tcEntries">
             <div class="form-group">
-                <label for="prj_pm" class="col-md-2 control-label">Day</label>
+                <label for="prj_pm" class="col-md-2 control-label">{{tcDayEntry.day|date:'EEEE'}}</label>
                 <div class="col-md-5">
                     <div class="row">
                         <div class="col-md-2">

@@ -33,6 +33,7 @@ public class TimecardDao extends BaseDao<Timecard, TimecardSearchFilter> {
             query.append(" and ENT.status = ? ");
             params.add(filter.getStatus());
         }
+        query.append(getOrderBy());
 
     }
     

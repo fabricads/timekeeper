@@ -29,6 +29,7 @@ public class BaseDao<ENTITY, SEARCH_FILTER> {
     private Class<ENTITY> entityClass;
     private String entityClassName;
     private String[] fetchCollection = new String[]{};
+    private String orderBy = "";
 
     public BaseDao() {
         if (entityClass == null) {
@@ -171,8 +172,24 @@ public class BaseDao<ENTITY, SEARCH_FILTER> {
         return fetchCollection;
     }
     
-    public void setFetchCollection(String[] coll) {
+    public void OLDsetFetchCollection2(String[] coll) {
         this.fetchCollection = coll;
+    }
+    
+    public void setFetchCollection(String ...colls) {
+        fetchCollection = new String[colls.length];
+        int i = 0;
+        for (String collName: colls) { 
+            this.fetchCollection[i++] = collName;
+        }
+    }
+
+    public String getOrderBy() {
+        return orderBy;
+    }
+
+    public void setOrderBy(String orderBy) {
+        this.orderBy = orderBy;
     }
 
 }

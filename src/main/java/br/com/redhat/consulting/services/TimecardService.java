@@ -28,6 +28,8 @@ public class TimecardService {
         Person consultant = new Person();
         consultant.setId(personId);
         filter.setConsultant(consultant);
+        timecardDao.setFetchCollection("timecardEntries");
+        timecardDao.setOrderBy("order by ENT2.day");
         List<Timecard> res = timecardDao.find(filter);
         return res;
     }
@@ -46,6 +48,8 @@ public class TimecardService {
     
     public List<Timecard> findAll() throws GeneralException {
         TimecardSearchFilter filter = new TimecardSearchFilter();
+        timecardDao.setFetchCollection("timecardEntries");
+        timecardDao.setOrderBy("order by ENT2.day");
         List<Timecard> res = timecardDao.find(filter);
         return res;
     }

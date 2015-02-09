@@ -75,6 +75,7 @@ public class ProjectRest {
         List<ProjectDTO> projectsDto = null;
         Response.ResponseBuilder response = null;
        
+        // TODO: colocar validacao do consultor e PM pode buscar tc soment dele
         try {
             if (pmId != null)
                 projects = projectService.findByPM(pmId);
@@ -82,7 +83,7 @@ public class ProjectRest {
                 projects = projectService.findByConsultant(consultantId);
             else 
                 projects = projectService.findAll();
-            if (projects.size() == 0) {
+            if (projects == null || projects.size() == 0) {
                 Map<String, Object> responseObj = new HashMap<>();
                 responseObj.put("msg", "No projects found");
                 responseObj.put("projects", new ArrayList());
@@ -192,7 +193,7 @@ public class ProjectRest {
                         BeanUtils.copyProperties(tcEntryDto, tce);
                         tcEntriesDto.add(tcEntryDto);
                     }
-                    tcDto.setTimecardEntries(tcEntriesDto);
+                    tcDto.setTimecardEntriesDTO(tcEntriesDto);
                 }
                 for (Task task: projectEnt.getTasks()) {
                     TaskDTO taskDto = new TaskDTO();
