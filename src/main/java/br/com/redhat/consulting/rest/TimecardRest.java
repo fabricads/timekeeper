@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolation;
@@ -66,17 +67,35 @@ public class TimecardRest {
     
     @Inject
     private Validator validator;
+
+    @Path("/list-cs")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @RolesAllowed({"partner_consultant"})
+    public Response listTimecardsByCS(@QueryParam("id") Integer consultantId) {
+        return listTimecards(null, consultantId);
+    }
+    
     
     @Path("/list")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response listTimecards(@QueryParam("by-pm") Integer pmId) {
+    @RolesAllowed({"redhat_manager", "admin"})
+    public Response listTimecardsAll(@QueryParam("pm") Integer pmId) {
+        return listTimecards(pmId, null);
+    }
+    
+    public Response listTimecards(Integer pmId, Integer consultantId) {
         List<Timecard> timecards = null;
         List<TimecardDTO> timecardsDto = null;
         Response.ResponseBuilder response = null;
        
         try {
-            timecards = timecardService.findAll();
+            if (consultantId != null) {
+                timecards = timecardService.findByConsultant(consultantId);
+            } else {
+                timecards = timecardService.findAll();
+            }
             if (timecards.size() == 0) {
                 Map<String, Object> responseObj = new HashMap<>();
                 responseObj.put("msg", "No timecards found");

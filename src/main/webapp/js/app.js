@@ -19,6 +19,9 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 	when("/timecards", {
 		templateUrl : "timecards.html",
 	}).
+	when("/timecards-cs", {
+	    templateUrl : "timecards-cs.html",
+	}).
 	when("/timecard-new/:projectId", {
 	    templateUrl : "timecard-new.html",
 	}).
@@ -33,6 +36,10 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 	    templateUrl: "project-edit.html",
 	}).
 	
+    when("/projects-cs", {
+        templateUrl : "projects-cs.html",
+    }).
+	
 	
 	when("/organizations", {
 		templateUrl : "organizations.html",
@@ -46,11 +53,7 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
     
     when("/organization/:orgId", {
         templateUrl: "organization-edit.html",
-    }).
-	
-    otherwise({
-		redirectTo : "/timecards"
-	});
+    });
 	
 }]);
 
@@ -83,7 +86,17 @@ timekeeperApp.controller("project_list_ctrl", function($scope, $http, $window) {
         $window.location.reload();
     };
 
+});
 
+timekeeperApp.controller("project_cs_list_ctrl", function($rootScope, $scope, $http, $window) {
+    
+    $scope.loading = true;
+    $http.get('/timekeeper/svc/project/list-by-cs?cs=' + $rootScope.user.id).
+    success(function(data) {
+        $scope.projects = data;
+        $scope.loading = false;
+    });
+    
 });
 
 timekeeperApp.controller("project_new_ctrl", function($scope, $http, $filter) {
@@ -133,18 +146,15 @@ timekeeperApp.controller("project_new_ctrl", function($scope, $http, $filter) {
 	
 	$scope.add_consultant = function() {
 	    found = $filter('findById')($scope.selected_consultants, $scope.temp_consultant.id);
-        if (found == null && $scope.temp_consultant.toSource() != "({})" ) {
+        if (found == null && $scope.temp_consultant.id != null ) {
 			$scope.selected_consultants.push($scope.temp_consultant);
-// console.log($scope.selected_consultants);
 		}
 	};
 	
 	$scope.remove_consultant = function(consultant) {
 		idx = $scope.selected_consultants.indexOf(consultant);
 		if (idx > -1) {
-// console.log("before: " + $scope.selected_consultants.toSource());
 			$scope.selected_consultants.splice(idx, 1);
-// console.log("after : " + $scope.selected_consultants.toSource());
 		}
 	};
 	
@@ -154,22 +164,17 @@ timekeeperApp.controller("project_new_ctrl", function($scope, $http, $filter) {
 
     $scope.add_task = function() {
         found = $filter('findByName')($scope.selected_tasks, $scope.temp_task.name);
-//        console.log("found task by name ? "); 
-//        console.log(found);
         if (!found && $scope.temp_task.name.trim() != "" ) {
             $scope.selected_tasks.push($scope.temp_task);
             $scope.temp_task = {};
             $scope.temp_task.name = "";
-//            console.log($scope.selected_tasks);
         }
     };
     
     $scope.remove_task = function(task) {
         idx = $scope.selected_tasks.indexOf(task);
         if (idx > -1) {
-//            console.log("before: " + $scope.selected_tasks.toSource());
             $scope.selected_tasks.splice(idx, 1);
-//            console.log("after : " + $scope.selected_tasks.toSource());
         }
     };
 	
@@ -543,6 +548,16 @@ timekeeperApp.controller("timecard_list_ctrl", function($scope, $http, $routePar
         $scope.loading = false;
     });
     
+});
+
+timekeeperApp.controller("timecard_cs_list_ctrl", function($rootScope, $scope, $http, $routeParams) {
+    
+    $scope.loading = true;
+    $http.get('/timekeeper/svc/timecard/list-cs?id=' + $rootScope.user.id).
+    success(function(data) {
+        $scope.timecards = data;
+        $scope.loading = false;
+    });
     
 });
 
@@ -639,7 +654,6 @@ timekeeperApp.controller("menu_ctrl", function(MessageService, $scope, $rootScop
     
     $scope.role = function(roles) {
         for (var i = 0; i < roles.length; i++) {
-            console.log("role["+i+"] = " + roles[i]);
             if (roles[i] == $scope.user.role.shortName) {
                 return true;
             }

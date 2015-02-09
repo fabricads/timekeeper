@@ -1,33 +1,6 @@
 <script src="js/lib/jquery.dataTables.js"></script>
 <h1>Timecards</h1>
 
-<p ng-controller="show_modal_select_project">
-
-    <script type="text/ng-template" id="modal_select_project.html">
-        <div class="modal-header">
-            <h3 class="modal-title">Select a project</h3>
-        </div>
-        <form class="form-horizontal" name="form">
-            <div class="modal-body">
-                <div class="form-group" ng-class="{'has-error': form.project.$invalid}">
-                    <label for="prj_pm" class="col-md-2 control-label">Project</label>
-                    <div class="col-lg-6">
-                        <select class="form-control" required name="project" ng-model="timecard.project.id" ng-options="project.id as project.name for project in projects"/>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-default" ng-click="cancel()">Cancel</button>
-                    <button class="btn btn-primary" ng-click="ok(timecard.project.id)" ng-disabled="form.$invalid">Next</button>
-                </div>
-            </div>
-        </form>
-    </script>
-
-    <!-- <a class="btn btn-primary" href="#/timecard-new">Add a timecard</a> -->
-    <!-- <button class="btn btn-primary" data-toggle="modal" data-target="#select-project">Add a timecard</button> -->
-    <button class="btn btn-primary" ng-click="select_project()">Add a timecard</button>
-</p>
-
 <div class="table-responsive" ng-controller="timecard_list_ctrl" ng-cloak>
     <div ng-show="loading">Loading..</div>
     <div class="alert alert-info" ng-show="timecards.timecards.length == 0">
@@ -44,7 +17,6 @@
         </thead>
         <tbody>
             <tr ng-repeat="tc in timecards">
-
                 <td style="vertical-align: middle;"><a ng-href="#/timecard/{{tc.id}}">{{tc.consultant.name}}</a></td>
                 <td style="vertical-align: middle;">{{tc.project.name}}</td>
                 <td style="vertical-align: middle;">{{tc.status}}</td>
@@ -53,36 +25,3 @@
         </tbody>
     </table>
 </div>
-
-<!-- 
-<div class="modal fade" id="select-project" tabindex="-1" role="dialog" aria-labelledby="title_label" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
-                    <span class="pficon pficon-close"></span>
-                </button>
-                <h4 class="modal-title" id="title_label">Select project</h4>
-            </div>
-            <form class="form-horizontal" name="form" ng-controller="select_project_new_timecard">
-                <div class="modal-body">
-
-                    <div class="form-group" ng-class="{'has-error': form.project.$invalid}">
-                        <label for="prj_pm" class="col-md-2 control-label">Project</label>
-                        <div class="col-lg-6">
-                            <select class="form-control" required name="project" ng-model="timecard.project.id"
-                                ng-options="project.id as project.name for project in projects" />
-                        </div>
-                    </div>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="cancel()">Cancel</button>
-                    <button type="submit" class="btn btn-primary" data-dismiss="modal" ng-click="new_timecard(timecard.project.id)"
-                        ng-disabled="form.$invalid">Next</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
- -->

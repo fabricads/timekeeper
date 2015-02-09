@@ -50,7 +50,9 @@
           <li><a href="#/persons" ng-show="role(['redhat_manager', 'admin'])">Consultant</a></li>
           <li><a href="#/organizations" ng-show="role(['redhat_manager', 'admin'])">Organization</a></li>
           <li><a href="#/projects" ng-show="role(['redhat_manager', 'admin'])">Project</a></li>
-          <li><a href="#/timecards">Timecard</a></li>
+          <li><a href="#/projects-cs" ng-show="role(['partner_consultant'])">Project</a></li>
+          <li><a href="#/timecards" ng-show="role(['redhat_manager', 'admin'])">Timecard</a></li>
+          <li><a href="#/timecards-cs" ng-show="role(['partner_consultant'])">Timecard</a></li>
           <li><a href="#/profile/{{user.id}}">{{user.name}}</a></li>
           <li><a href="#/" ng-click="logout()">Logout</a></li>
         </ul>

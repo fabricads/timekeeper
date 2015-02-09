@@ -62,9 +62,6 @@ public class ProjectRest {
     @Inject
     private TaskService taskService;
     
-    @Inject
-    private Validator validator;
-    
     @Path("/list")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
@@ -112,14 +109,14 @@ public class ProjectRest {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @RolesAllowed({"redhat_manager", "admin", "partner_consultant"})
-    public Response listProjectsByConsultant(@QueryParam("by-cs") Integer consultantId) {
+    public Response listProjectsByConsultant(@QueryParam("cs") Integer consultantId) {
         return listProjects(null, consultantId);
     }
     
     @Path("/{pr}")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    @RolesAllowed({"redhat_manager", "admin", "partner_consultant"})
+    @RolesAllowed({"redhat_manager", "admin"})
     public Response get(@PathParam("pr") @DefaultValue("-1") int projectId) {
         ProjectDTO projectDto = new ProjectDTO();
         Project projectEnt = null;
@@ -217,7 +214,7 @@ public class ProjectRest {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
-    @RolesAllowed({"redhat_manager", "admin", "partner_consultant"})
+    @RolesAllowed({"redhat_manager", "admin"})
     public Response save(ProjectDTO projectDto) {
         Response.ResponseBuilder builder = null;
         try {

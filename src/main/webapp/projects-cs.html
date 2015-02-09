@@ -1,0 +1,30 @@
+<script src="js/lib/jquery.dataTables.js"></script>
+<h1>Projects</h1>
+
+<div class="table-responsive" ng-controller="project_cs_list_ctrl" ng-cloak>
+    <div ng-show="loading">Loading..</div>
+    <div class="alert alert-info" ng-show="projects.projects.length == 0">
+        <span class="pficon pficon-info"></span> There is no project to list.<br> 
+        {{project.msg}}<br>
+    </div>
+    <table class="table table-striped table-bordered table-hover" ng-hide="projects.projects.length == 0">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Start date</th>
+                <th>End date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="prj in projects">
+                <td style="vertical-align: middle;">{{prj.name}}</td>
+                <td style="vertical-align: middle;">{{prj.initialDate | date:'dd-MMMM-yyyy'}}</td>
+                <td style="vertical-align: middle;">{{prj.endDate | date:'dd-MMMM-yyyy'}}</td>
+                <td style="vertical-align: middle;">
+                    <a class="btn btn-default" ng-click="timecard-new(prj.id)">Write timecard</a> 
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
