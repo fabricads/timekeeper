@@ -116,6 +116,10 @@ public class TimecardRest {
                     BeanUtils.copyProperties(tcDto, timecard);
                     ProjectDTO prjDto = new ProjectDTO();
                     BeanUtils.copyProperties(prjDto, timecard.getProject());
+                    PersonDTO consultantDto = new PersonDTO();
+                    timecard.getConsultant().nullifyAttributes();
+                    BeanUtils.copyProperties(consultantDto, timecard.getConsultant());
+                    tcDto.setConsultantDTO(consultantDto);
                     tcDto.setProjectDTO(prjDto);
                     List<TimecardEntryDTO> tceDtos = new ArrayList<>(timecard.getTimecardEntries().size());
                     for (TimecardEntry tce: timecard.getTimecardEntries()) {
