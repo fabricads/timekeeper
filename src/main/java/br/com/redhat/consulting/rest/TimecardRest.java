@@ -74,7 +74,7 @@ public class TimecardRest {
     
     @Context
     private HttpServletRequest httpReq;
-
+    
     @Path("/list-cs")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
@@ -197,9 +197,7 @@ public class TimecardRest {
                 prj.setId(timecardDto.getProject().getId());
                 timecardEnt.setProject(prj);
                 
-                List<Date> dates = new ArrayList<>();
                 for (TimecardEntryDTO tcEntryDto: timecardDto.getTimecardEntriesDTO()) {
-                    dates.add(tcEntryDto.getDay());
                     TimecardEntry tcEntry = new TimecardEntry();
                     BeanUtils.copyProperties(tcEntry, tcEntryDto);
                     timecardEnt.addTimecardEntry(tcEntry);

@@ -30,6 +30,7 @@ public class BaseDao<ENTITY, SEARCH_FILTER> {
     private String entityClassName;
     private String[] fetchCollection = new String[]{};
     private String orderBy = "";
+    private List<String> innerJoins = new ArrayList<>(); 
 
     public BaseDao() {
         if (entityClass == null) {
@@ -111,11 +112,13 @@ public class BaseDao<ENTITY, SEARCH_FILTER> {
         List<Object> params = new ArrayList<Object>();
         StringBuilder queryBuffer = new StringBuilder();
 
-        // montar a clausula select .. from ENTIDADE ... JOIN ... 
-        queryBuffer.append(configQueryFrom(filter));
-
         // montar as clausulas WHERE
         configQuery(queryBuffer, filter, params);
+        
+        // montar a clausula select .. from ENTIDADE ... JOIN ... 
+        String fromClause = configQueryFrom(filter);
+        
+        queryBuffer = new StringBuilder(fromClause).append(queryBuffer);
         
         // ajusta para parametros posicionais de jpql (?0, ?1, etc)
         int start = 0;
@@ -162,6 +165,9 @@ public class BaseDao<ENTITY, SEARCH_FILTER> {
             String attrName = collectionsToFetch[i];
             sql.append(" left join fetch ENT.").append(attrName).append(" ENT").append(i+2);
         }
+        for (String innerJoin: innerJoins)  {
+            sql.append(" ").append(innerJoin).append(" ");
+        }
         sql.append(" where 1=1 ");
         return sql.toString();
     }
@@ -191,6 +197,10 @@ public class BaseDao<ENTITY, SEARCH_FILTER> {
 
     public void setOrderBy(String orderBy) {
         this.orderBy = orderBy;
+    }
+    
+    public void addInnerJoin(String innerJoin) {
+        innerJoins.add(innerJoin);
     }
 
 }

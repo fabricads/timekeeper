@@ -30,6 +30,7 @@ public class ProjectDTO  {
     private List<TimecardDTO> timecards = new ArrayList<>();
     private List<TaskDTO> tasks = new ArrayList<>();
     private List<Integer> tasksToRemove = new ArrayList<>();
+    private Date lastFilledDay;
     
     public Integer getId() {
         return id;
@@ -162,13 +163,18 @@ public class ProjectDTO  {
     public void setTasksToRemove(List<Integer> tasksToRemove) {
         this.tasksToRemove = tasksToRemove;
     }
+    
+    public Date getLastFilledDay() {
+        return lastFilledDay;
+    }
+
+    public void setLastFilledDay(Date lastFilledDay) {
+        this.lastFilledDay = lastFilledDay;
+    }
 
     @Override
     public String toString() {
         return "ProjectDTO [id=" + getId() + ", name=" + name + ", paNumber=" + paNumber + ", pm=" + projectManager + "]";
     }
-    
-    
-
     
 }

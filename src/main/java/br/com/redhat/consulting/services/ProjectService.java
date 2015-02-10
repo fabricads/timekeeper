@@ -35,6 +35,19 @@ public class ProjectService {
         return res;
     }
     
+    public Project findByIdAndConsultant(Integer prjId, Integer consultantId) throws GeneralException {
+        ProjectSearchFilter filter = new ProjectSearchFilter();
+        filter.setId(prjId);
+        Person consultant = new Person();
+        consultant.setId(consultantId);
+        filter.addConsultant(consultant);
+        List<Project> res = projectDao.find(filter);
+        Project prj = null;
+        if (res.size() > 0) 
+            prj = res.get(0);
+        return prj;
+    }
+    
     public List<Project> findByConsultant(Integer consultantId) throws GeneralException {
         List<Project> res = projectDao.findProjectsByConsultant(consultantId);
         return res;
@@ -47,6 +60,11 @@ public class ProjectService {
     
     public boolean checkProjectCanFillMoreTimecards(Integer prjId) throws GeneralException {
         boolean res = projectDao.checkProjectCanFillMoreTimecards(prjId);
+        return res;
+    }
+    
+    public Date lastFilledTimecard(Integer prjId) throws GeneralException {
+        Date res = projectDao.lastFilledTimecard(prjId);
         return res;
     }
     
@@ -84,21 +102,13 @@ public class ProjectService {
         return prj;
     }
     
-    @TransactionalMode
     public Project findByIdWithTimecards(Integer pid) throws GeneralException {
         Project prj = null;
         ProjectSearchFilter filter = new ProjectSearchFilter();
         filter.setId(pid);
-        projectDao.setFetchCollection(new String[]{"timecards"});
         List<Project> res = projectDao.find(filter);
         if (res.size() > 0) 
             prj = res.get(0);
-        for (Timecard tc: prj.getTimecards()) {
-            // to prevent lazy load exceptions
-            for (TimecardEntry tce: tc.getTimecardEntries()) {
-                
-            }
-        }
         return prj;
     }
     

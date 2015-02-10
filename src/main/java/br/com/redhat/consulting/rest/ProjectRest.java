@@ -2,8 +2,6 @@ package br.com.redhat.consulting.rest;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -13,9 +11,10 @@ import java.util.Set;
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import javax.validation.Validator;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -24,6 +23,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -48,6 +48,7 @@ import br.com.redhat.consulting.services.PersonService;
 import br.com.redhat.consulting.services.ProjectService;
 import br.com.redhat.consulting.services.TaskService;
 import br.com.redhat.consulting.util.GeneralException;
+import br.com.redhat.consulting.util.Util;
 
 @RequestScoped
 @Path("/project")
@@ -64,6 +65,10 @@ public class ProjectRest {
     
     @Inject
     private TaskService taskService;
+    
+    @Context
+    private HttpServletRequest httpReq;
+
     
     @Path("/list")
     @Produces(MediaType.APPLICATION_JSON)
@@ -117,7 +122,7 @@ public class ProjectRest {
         List<Project> projects = null;
         List<ProjectDTO> projectsDto = null;
         Response.ResponseBuilder response = null;
-        
+        PersonDTO loggedUser = Util.loggedUser(httpReq);
         try {
             if (consultantId != null) 
                 projects = projectService.findByConsultantToFill(consultantId);
@@ -132,12 +137,12 @@ public class ProjectRest {
                     // se projeto nao tem timecards, entao nao foi lancado nenhum, pode lancar novo timecard
                     // OU verifica se o ultimo timecardentry lancado e menor que a data fim do projeto
                     if (project.getTimecards().size() == 0 || projectService.checkProjectCanFillMoreTimecards(project.getId())) {
-                        LOG.debug(" can fill more timecards to project: " + project.getName());
+                        LOG.debug(loggedUser + " can fill more timecards to project: " + project.getName());
                         ProjectDTO prjDto = new ProjectDTO();
                         BeanUtils.copyProperties(prjDto, project);
                         projectsDto.add(prjDto);
                     } else {
-                        LOG.debug("User CANNOT fill new timecards to project: " + project.getName());
+                        LOG.debug(loggedUser + " CANNOT fill new timecards to project: " + project.getName());
                     }
                 }
                 response = Response.ok(projectsDto);
@@ -214,8 +219,10 @@ public class ProjectRest {
         ProjectDTO projectDto = new ProjectDTO();
         Project projectEnt = null;
         Response.ResponseBuilder response = null;
+        PersonDTO loggedUser = Util.loggedUser(httpReq);
         try {
-            projectEnt = projectService.findByIdWithTimecards(projectId);
+//            projectEnt = projectService.findByIdWithTimecards(projectId);
+            projectEnt = projectService.findByIdAndConsultant(projectId, loggedUser.getId());
             if (projectEnt == null) {
                 Map<String, String> responseObj = new HashMap<>();
                 responseObj.put("error", "Project " + projectId + " not found.");
@@ -228,18 +235,11 @@ public class ProjectRest {
                 BeanUtils.copyProperties(pmDto, pm);
                 BeanUtils.copyProperties(projectDto, projectEnt);
                 projectDto.setProjectManagerDTO(pmDto);
-                for (Timecard tc: projectEnt.getTimecards()) {
-                    TimecardDTO tcDto = new TimecardDTO();
-                    BeanUtils.copyProperties(tcDto, tc);
-                    projectDto.addTimecardDTO(tcDto);
-                    List<TimecardEntryDTO> tcEntriesDto = new ArrayList<>();
-                    for (TimecardEntry tce: tc.getTimecardEntries()) {
-                        TimecardEntryDTO tcEntryDto = new TimecardEntryDTO();
-                        BeanUtils.copyProperties(tcEntryDto, tce);
-                        tcEntriesDto.add(tcEntryDto);
-                    }
-                    tcDto.setTimecardEntriesDTO(tcEntriesDto);
-                }
+                
+                Date lastFilledDate = projectService.lastFilledTimecard(projectId);
+                LOG.debug(projectId + " ultimo dia preenchido " + lastFilledDate);
+                projectDto.setLastFilledDay(lastFilledDate);
+                
                 for (Task task: projectEnt.getTasks()) {
                     TaskDTO taskDto = new TaskDTO();
                     BeanUtils.copyProperties(taskDto, task);

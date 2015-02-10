@@ -555,7 +555,7 @@ timekeeperApp.controller("timecard_new_ctrl", function($scope, $http, $routePara
     $scope.timecard = {};
     $scope.timecard.consultant = {};
     
-    $http.get('/timekeeper/svc/project/'+$routeParams.projectId + "/tc").
+    $http.get('/timekeeper/svc/project/' + $routeParams.projectId + "/tc").
         success(function(data) {
             var project = data;
             $scope.timecard.project = data
@@ -570,8 +570,14 @@ timekeeperApp.controller("timecard_new_ctrl", function($scope, $http, $routePara
                 var task = tasks[i];
 
                 // set the sunday day of the starting week
-                var initDayWeek = new Date(start_date);
-                initDayWeek.setDate(start_date.getDate() - start_date.getDay());
+                var initDayWeek = new Date();
+                if ($scope.timecard.project.lastFilledDay == null) {
+                    initDayWeek.setDate(start_date.getDate() - start_date.getDay());
+                } else {
+                    var sunday = new Date($scope.timecard.project.lastFilledDay);
+                    sunday.setDate(sunday.getDate() + 2);
+                    initDayWeek = sunday;
+                }
                 if ($scope.timecard.firstDate == null) {
                     $scope.timecard.firstDate =  new Date(initDayWeek.getTime());
                 }
@@ -592,7 +598,6 @@ timekeeperApp.controller("timecard_new_ctrl", function($scope, $http, $routePara
                 }
                 task.tcEntries = tcEntries;
             }
-//            console.log($scope.timecardTasks);
 
             
             

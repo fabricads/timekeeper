@@ -1,5 +1,6 @@
 package br.com.redhat.consulting.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
@@ -33,6 +34,18 @@ public class ProjectDao extends BaseDao<Project, ProjectSearchFilter> {
         if (StringUtils.isNotBlank(filter.getPartialName())) {
             query.append(" and lower(ENT.name) like '%'||?||'%' ");
             params.add(filter.getPartialName().toLowerCase());
+        }
+        
+        if (filter.getConsultants().size() > 0) {
+            addInnerJoin("inner join ENT.consultants cons");
+            query.append(" and cons.id in (");
+            for (int i = 0; i < filter.getConsultants().size(); i++) {
+                query.append("?");
+                params.add(filter.getConsultants().get(i).getId());
+                if (i+1 < filter.getConsultants().size())
+                    query.append(",");
+            }
+            query.append(")");
         }
         
         if (filter.getPaNumber() != null) {
@@ -70,7 +83,7 @@ public class ProjectDao extends BaseDao<Project, ProjectSearchFilter> {
     }
     
     public List<Project> findProjectsToFill(Integer consultantId) {
-        String jql = "select p from Project p inner join p.consultants c left join fetch p.timecards tc where p.enabled=true and c.id = ?0 order by p.name";
+        String jql = "select distinct p from Project p inner join p.consultants c left join fetch p.timecards tc where p.enabled=true and c.id = ?0 order by p.name";
         TypedQuery<Project> query= getEntityManager().createQuery(jql, Project.class);
         query.setParameter(0, consultantId);
         List<Project> res = query.getResultList();
@@ -78,7 +91,7 @@ public class ProjectDao extends BaseDao<Project, ProjectSearchFilter> {
     }
     
     public boolean checkProjectCanFillMoreTimecards(Integer prjId) {
-        String jql = "select p.id from Project p left outer join p.timecards tc left outer join tc.timecardEntries tce where p.id=?0 group by p.id having p.endDate > max(tce.day)";
+        String jql = "select distinct p.id from Project p left outer join p.timecards tc left outer join tc.timecardEntries tce where p.id=?0 group by p.id having p.endDate > max(tce.day)";
         TypedQuery<Integer> query= getEntityManager().createQuery(jql, Integer.class);
         query.setParameter(0, prjId);
         Integer res = 0;
@@ -88,6 +101,19 @@ public class ProjectDao extends BaseDao<Project, ProjectSearchFilter> {
             // nada a fazer.
         }
         return res > 0;
+    }
+    
+    public Date lastFilledTimecard(Integer prjId) {
+        String jql = "select max(tce.day)  from Project p left outer join p.timecards tc left outer join tc.timecardEntries tce where p.id=?0 group by p.id having p.endDate > max(tce.day)";
+        TypedQuery<Date> query= getEntityManager().createQuery(jql, Date.class);
+        query.setParameter(0, prjId);
+        Date res = null;
+        try {
+            res = query.getSingleResult();
+        } catch (NoResultException e) { 
+            // nada a fazer.
+        }
+        return res;
     }
     
     
