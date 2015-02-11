@@ -134,11 +134,11 @@ public class TimecardRest {
         }
         return response.build();
     }
+    
     @Path("/{tcId}")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @RolesAllowed({"partner_consultant"})
-    @Formatted
     public Response getTimecard(@PathParam("tcId") Integer tcId) {
         Timecard timecard = null;
         Response.ResponseBuilder response = null;
@@ -186,6 +186,7 @@ public class TimecardRest {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
+    @RolesAllowed({"partner_consultant"})
     public Response save(TimecardDTO timecardDto) {
         LOG.debug(timecardDto.toString());
         LOG.debug("timecard status: " + timecardDto.getStatus());
@@ -241,5 +242,33 @@ public class TimecardRest {
         }
         return response.build();
     }
+    
+    @Path("/delete/{tcId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @RolesAllowed({"partner_consultant"})
+    public Response delete(@PathParam("tcId") Integer tcId) {
+        Response.ResponseBuilder response = null;
+        PersonDTO loggedUser = Util.loggedUser(httpReq);
+        
+        try {
+            if (tcId != null) {
+                timecardService.delete(tcId, loggedUser.getId());
+                response = Response.ok();
+            } else  {
+                Map<String, Object> responseObj = new HashMap<>();
+                responseObj.put("msg", "Timecard not found");
+                responseObj.put("timecards", new ArrayList());
+                response = Response.status(Status.NOT_FOUND).entity(responseObj);
+            }
+        } catch (GeneralException e) {
+            LOG.error("Error to delete timecard.", e);
+            Map<String, String> responseObj = new HashMap<>();
+            responseObj.put("error", e.getMessage());
+            response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+        }
+        return response.build();
+    }
+    
 
 }

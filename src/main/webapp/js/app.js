@@ -546,7 +546,7 @@ timekeeperApp.controller("timecard_list_ctrl", function($scope, $http, $routePar
     
 });
 
-timekeeperApp.controller("timecard_cs_list_ctrl", function($rootScope, $scope, $http, $routeParams) {
+timekeeperApp.controller("timecard_cs_list_ctrl", function($rootScope, $scope, $http, $window) {
     
     $scope.loading = true;
     $http.get('/timekeeper/svc/timecard/list-cs?id=' + $rootScope.user.id).
@@ -559,6 +559,20 @@ timekeeperApp.controller("timecard_cs_list_ctrl", function($rootScope, $scope, $
             $scope.loading = false;
             $scope.error_msg = data;
         });
+
+    $scope.delete = function(tcId) {
+        $http.get("/timekeeper/svc/timecard/delete/" + tcId).
+            success(function(data, status, header, config) {
+                $scope.saved = true;
+                $scope.error_msg = null;
+                $window.location.reload();
+            }).
+            error(function(data, status, header, config) {
+                $scope.error_msg = data;
+            });
+    };
+
+    
     
 });
 

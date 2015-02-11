@@ -46,7 +46,9 @@
                 <td style="vertical-align: middle;"><a ng-href="#/timecard-edit/{{tc.id}}">{{tc.project.name}}</a></td>
                 <td style="vertical-align: middle;">{{tc.statusDescription}}</td>
                 <td style="vertical-align: middle;">{{tc.firstDate|date:'dd-MMMM-yyyy'}} to {{tc.lastDate|date:'dd-MMMM-yyyy'}}</td>
-                <td style="vertical-align: middle;"></td>
+                <td style="vertical-align: middle;">
+                    <a class="btn btn-danger" ng-show="tc.status == 1" ng-click="delete(tc.id)">Delete</a>
+                </td>
             </tr>
         </tbody>
     </table>

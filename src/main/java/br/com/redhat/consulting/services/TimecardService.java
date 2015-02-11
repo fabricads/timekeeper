@@ -5,6 +5,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import br.com.redhat.consulting.config.TransactionalMode;
 import br.com.redhat.consulting.dao.TimecardDao;
 import br.com.redhat.consulting.dao.TimecardEntryDao;
@@ -16,6 +19,8 @@ import br.com.redhat.consulting.model.filter.TimecardSearchFilter;
 import br.com.redhat.consulting.util.GeneralException;
 
 public class TimecardService {
+
+    private static Logger LOG = LoggerFactory.getLogger(TimecardService.class);
     
     @Inject
     private TimecardDao timecardDao;
@@ -94,12 +99,27 @@ public class TimecardService {
         }
     }
 
-    private Timecard findById(Integer projectId) {
-        return timecardDao.findById(projectId);
+    private Timecard findById(Integer tcId) {
+        return timecardDao.findById(tcId);
     }
 
-    public void delete(Integer projectId) throws GeneralException {
-        timecardDao.remove(projectId);
+    public void delete(Integer tcId) throws GeneralException {
+        timecardDao.remove(tcId);
+    }
+    
+    public void delete(Integer tcId, Integer consultantId) throws GeneralException {
+        TimecardSearchFilter filter = new TimecardSearchFilter();
+        filter.setId(tcId);
+        filter.setConsultant(new Person());
+        filter.getConsultant().setId(consultantId);
+        List<Timecard> res = timecardDao.find(filter);
+        Timecard tc = null;
+        if (res.size() > 0) {
+            tc = res.get(0);
+            timecardDao.remove(tcId);
+        } else {
+            LOG.warn("Consultant " +consultantId + " tried to delete timecard ("+ tcId +") assigned to a different consultant");
+        }
     }
 
 
