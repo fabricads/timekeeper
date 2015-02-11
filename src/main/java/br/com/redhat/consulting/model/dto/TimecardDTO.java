@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import br.com.redhat.consulting.model.Timecard;
@@ -71,6 +72,7 @@ public class TimecardDTO  {
         return getStatusEnum().getDescription();
     }
     
+    @JsonIgnore
     public void setStatusEnum(TimecardStatusEnum projectStatusEnum) {
         setStatus(projectStatusEnum.getId());
     }

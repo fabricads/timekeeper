@@ -137,12 +137,12 @@ public class ProjectRest {
                     // se projeto nao tem timecards, entao nao foi lancado nenhum, pode lancar novo timecard
                     // OU verifica se o ultimo timecardentry lancado e menor que a data fim do projeto
                     if (project.getTimecards().size() == 0 || projectService.checkProjectCanFillMoreTimecards(project.getId())) {
-                        LOG.debug(loggedUser + " can fill more timecards to project: " + project.getName());
+                        LOG.debug(loggedUser.getName() + " can fill more timecards to project: " + project.getName());
                         ProjectDTO prjDto = new ProjectDTO();
                         BeanUtils.copyProperties(prjDto, project);
                         projectsDto.add(prjDto);
                     } else {
-                        LOG.debug(loggedUser + " CANNOT fill new timecards to project: " + project.getName());
+                        LOG.debug(loggedUser.getName() + " CANNOT fill new timecards to project: " + project.getName());
                     }
                 }
                 response = Response.ok(projectsDto);

@@ -63,7 +63,16 @@ public class TimecardRest {
     @GET
     @RolesAllowed({"partner_consultant"})
     public Response listTimecardsByCS(@QueryParam("id") Integer consultantId) {
-        return listTimecards(null, consultantId);
+        Response response = null;
+        if (consultantId == null) {
+            Map<String, Object> responseObj = new HashMap<>();
+            responseObj.put("msg", "No timecards found");
+            responseObj.put("timecards", new ArrayList());
+            response = Response.status(Status.NOT_FOUND).entity(responseObj).build();
+        } else {
+            response = listTimecards(null, consultantId);
+        }
+        return response;
     }
     
     
@@ -179,12 +188,13 @@ public class TimecardRest {
     @POST
     public Response save(TimecardDTO timecardDto) {
         LOG.debug(timecardDto.toString());
+        LOG.debug("timecard status: " + timecardDto.getStatus());
         Response.ResponseBuilder response = null;
         PersonDTO loggedUser = Util.loggedUser(httpReq);
+        timecardDto.setStatusEnum(TimecardStatusEnum.find(timecardDto.getStatus()));
         try {
             
             if (timecardDto.getId() == null) {
-                timecardDto.setStatusEnum(TimecardStatusEnum.IN_PROGRESS);
                 Timecard timecardEnt = timecardDto.toTimecard();
                 Person cs = loggedUser.toPerson();
                 timecardEnt.setConsultant(cs);

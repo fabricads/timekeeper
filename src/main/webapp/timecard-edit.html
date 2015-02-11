@@ -32,15 +32,15 @@
                 <div class="col-md-5">
                     <div class="row">
                         <div class="col-md-2">
-                            <p>{{tcDayEntry.day|date:'dd-MMMM-yyyy'}}</p>
+                            <p class="form-control-static">{{tcDayEntry.day|date:'dd-MMMM-yyyy'}}</p>
                         </div>
                         <div class="col-md-1">
-                        <p class="input-group">
-                            <input type="text" style="width: 3em!important;" class="form-control" name="workedHours"  ng-model="tcDayEntry.workedHours" title="Input hours">
-                        </p>
+                            <input type="text" style="width: 3em!important;" class="form-control" name="workedHours"  ng-model="tcDayEntry.workedHours" title="Input hours" ng-show="timecard.status == 1"/>
+                            <p class="form-control-static" ng-show="timecard.status != 1">{{tcDayEntry.workedHours}}</p>
                         </div>
                         <div class="col-md-6">
-                            <textarea class="form-control" rows="1" cols="50" ng-model="tcDayEntry.workDescription" maxlength="512" placeholder="Work description"></textarea>
+                            <textarea class="form-control" rows="1" cols="50" ng-model="tcDayEntry.workDescription" maxlength="512" placeholder="Work description" ng-show="timecard.status == 1"></textarea>
+                            <p class="form-control-static" ng-show="timecard.status != 1">{{tcDayEntry.workDescription}}</p>
                         </div>
                     </div>
                 </div>        
@@ -49,15 +49,23 @@
       </div>          
           
         <div class="form-group">
-            <label for="prj_desc" class="col-md-2 control-label">Comment</label>
+            <label for="prj_desc" class="col-md-2 control-label">Consultant Comment</label>
             <div class="col-md-3">
-                <textarea class="form-control" rows="3" cols="50" ng-model="timecard.commentConsultant" maxlength="512"></textarea>
+                <textarea class="form-control" rows="3" cols="50" ng-model="timecard.commentConsultant" maxlength="512"  ng-show="timecard.status == 1"></textarea>
+                <p class="form-control-static" ng-show="timecard.status != 1">{{timecard.commentConsultant}}</p>
+            </div>
+        </div>
+        <div class="form-group" ng-show="timecard.commentPM != null">
+            <label for="prj_desc" class="col-md-2 control-label">Project Manager Comment</label>
+            <div class="col-md-3">
+                <textarea class="form-control" rows="3" cols="50" ng-model="timecard.commentPM" maxlength="512"  ng-show="timecard.status == 1"></textarea>
+                <p class="form-control-static" ng-show="timecard.status != 1">{{timecard.commentPM}}</p>
             </div>
         </div>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <button type="submit" class="btn btn-primary" ng-click="save(timecard)">Save</button>
-                <button type="submit" class="btn btn-primary" ng-click="submit(timecard)">Submit for approval</button>
+                <button type="submit" class="btn btn-primary" ng-click="save(timecard)" ng-show="timecard.status == 1">Save</button>
+                <button type="submit" class="btn btn-primary" ng-click="submit(timecard)" ng-show="timecard.status == 1">Submit for approval</button>
             </div>
         </div>
     </form>

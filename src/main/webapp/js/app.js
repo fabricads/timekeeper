@@ -633,6 +633,26 @@ timekeeperApp.controller("timecard_new_ctrl", function($scope, $http, $routePara
                 $scope.error_msg = data;
             });
     };
+    
+    $scope.submit = function(timecard) {
+        timecard.timecardEntriesDTO = [];
+        timecard.status = 4;
+        while (timecard.project.tasksDTO.length > 0) {
+            var task = timecard.project.tasksDTO.shift();
+            while (task.tcEntries.length > 0) {
+                var tcEntry = task.tcEntries.shift();
+                timecard.timecardEntriesDTO.push(tcEntry);
+            }
+        }
+        $http.post("/timekeeper/svc/timecard/save", timecard).
+        success(function(data, status, header, config) {
+            $scope.saved = true;
+            $scope.error_msg = null;
+        }).
+        error(function(data, status, header, config) {
+            $scope.error_msg = data;
+        });
+    };
 
     
 });
@@ -660,6 +680,7 @@ timekeeperApp.controller("timecard_edit_ctrl", function($scope, $http, $routePar
                     var y = tcEntry.day.substring(0,4);
                     var m = tcEntry.day.substring(5,7);
                     var d = tcEntry.day.substring(8,10);
+                    m = m - 1;
 //                    console.log("y,m,d " + y + ", " + m + ", " +d);
                     tcEntry.day = new Date(y, m, d)
 //                    console.log(tcEntry);
@@ -682,6 +703,27 @@ timekeeperApp.controller("timecard_edit_ctrl", function($scope, $http, $routePar
                 timecard.timecardEntriesDTO.push(tcEntry);
             }
         }
+        $http.post("/timekeeper/svc/timecard/save", timecard).
+        success(function(data, status, header, config) {
+            $scope.saved = true;
+            $scope.error_msg = null;
+        }).
+        error(function(data, status, header, config) {
+            $scope.error_msg = data;
+        });
+    };
+    
+    $scope.submit = function(timecard) {
+        timecard.timecardEntriesDTO = [];
+        timecard.status = 4;
+        while (timecard.project.tasksDTO.length > 0) {
+            var task = timecard.project.tasksDTO.shift();
+            while (task.tcEntries.length > 0) {
+                var tcEntry = task.tcEntries.shift();
+                timecard.timecardEntriesDTO.push(tcEntry);
+            }
+        }
+        console.log("timecard.status: " + timecard.status);
         $http.post("/timekeeper/svc/timecard/save", timecard).
         success(function(data, status, header, config) {
             $scope.saved = true;
