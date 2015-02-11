@@ -34,6 +34,20 @@ public class TimecardService {
         return res;
     }
     
+    public Timecard findByIdAndConsultant(Integer tcId, Integer consultantId) throws GeneralException {
+        TimecardSearchFilter filter = new TimecardSearchFilter();
+        filter.setId(tcId);
+        Person consultant = new Person();
+        consultant.setId(consultantId);
+        filter.setConsultant(consultant);
+        timecardDao.setFetchCollection("timecardEntries");
+        List<Timecard> res = timecardDao.find(filter);
+        Timecard tc = null;
+        if (res.size() > 0)
+            tc = res.get(0);
+        return tc;
+    }
+    
     public Long countByDate(Integer consultantId, Integer projectId, Date initDate, Date endDate) throws GeneralException {
         Long res = timecardDao.countByDate(projectId, consultantId, initDate, endDate);
         return res;
@@ -65,15 +79,18 @@ public class TimecardService {
     
     @TransactionalMode
     public void persist(Timecard timecard) throws GeneralException {
-        Date today = new Date();
         if (timecard.getId() != null) {
             timecardDao.update(timecard);
         } else {
             timecardDao.insert(timecard);
         }
         for (TimecardEntry tcEntry: timecard.getTimecardEntries()) {
-            tcEntry.setTimecard(timecard);
-            tcEntryDao.insert(tcEntry);
+            if (tcEntry.getId() != null) {
+                tcEntryDao.update(tcEntry);
+            } else {
+                tcEntry.setTimecard(timecard);
+                tcEntryDao.insert(tcEntry);
+            }
         }
     }
 

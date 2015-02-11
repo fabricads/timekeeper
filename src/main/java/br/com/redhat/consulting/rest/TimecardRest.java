@@ -2,21 +2,15 @@ package br.com.redhat.consulting.rest;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.ValidationException;
-import javax.validation.Validator;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -27,8 +21,10 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.beanutils.BeanUtils;
+import org.jboss.resteasy.annotations.providers.jackson.Formatted;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,13 +37,12 @@ import br.com.redhat.consulting.model.TimecardEntry;
 import br.com.redhat.consulting.model.TimecardStatusEnum;
 import br.com.redhat.consulting.model.dto.PersonDTO;
 import br.com.redhat.consulting.model.dto.ProjectDTO;
+import br.com.redhat.consulting.model.dto.TaskDTO;
 import br.com.redhat.consulting.model.dto.TimecardDTO;
 import br.com.redhat.consulting.model.dto.TimecardEntryDTO;
-import br.com.redhat.consulting.services.PersonService;
-import br.com.redhat.consulting.services.ProjectService;
-import br.com.redhat.consulting.services.TaskService;
 import br.com.redhat.consulting.services.TimecardService;
 import br.com.redhat.consulting.util.GeneralException;
+import br.com.redhat.consulting.util.TimecardEntryDateComparator;
 import br.com.redhat.consulting.util.Util;
 
 @RequestScoped
@@ -59,18 +54,6 @@ public class TimecardRest {
     
     @Inject
     private TimecardService timecardService;
-    
-    @Inject
-    private ProjectService projectService;
-    
-    @Inject
-    private PersonService personService;
-    
-    @Inject
-    private TaskService taskService;
-    
-    @Inject
-    private Validator validator;
     
     @Context
     private HttpServletRequest httpReq;
@@ -107,7 +90,7 @@ public class TimecardRest {
                 Map<String, Object> responseObj = new HashMap<>();
                 responseObj.put("msg", "No timecards found");
                 responseObj.put("timecards", new ArrayList());
-                response = Response.ok(responseObj);
+                response = Response.status(Status.NOT_FOUND).entity(responseObj);
             } else {
                 timecardsDto = new ArrayList<TimecardDTO>(timecards.size());
                 for (Timecard timecard: timecards) {
@@ -142,33 +125,46 @@ public class TimecardRest {
         }
         return response.build();
     }
-    
-    @Path("/list/project/{prjId}")
+    @Path("/{tcId}")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response listTimecardsByProject(@PathParam("prjId") Integer prjId) {
-        List<Timecard> timecards = null;
-        List<TimecardDTO> timecardsDto = null;
+    @RolesAllowed({"partner_consultant"})
+    @Formatted
+    public Response getTimecard(@PathParam("tcId") Integer tcId) {
+        Timecard timecard = null;
         Response.ResponseBuilder response = null;
+        PersonDTO loggedUser = Util.loggedUser(httpReq);
         
         try {
-            timecards = timecardService.findByProject(prjId);
-            if (timecards.size() == 0) {
-                Map<String, Object> responseObj = new HashMap<>();
-                responseObj.put("msg", "No timecards found");
-                responseObj.put("timecards", new ArrayList());
-                response = Response.ok(responseObj);
-            } else {
-                timecardsDto = new ArrayList<TimecardDTO>(timecards.size());
-                for (Timecard timecard: timecards) {
-                    TimecardDTO timecardDto = new TimecardDTO();
-                    PersonDTO pmDto = new PersonDTO();
-                    BeanUtils.copyProperties(timecardDto, timecard);
-                    timecardsDto.add(timecardDto);
+            if (tcId != null) {
+                timecard = timecardService.findByIdAndConsultant(tcId, loggedUser.getId());
+                if (timecard != null) {
+                    TimecardDTO tcDto = new TimecardDTO(timecard);
+                    ProjectDTO prjDto = new ProjectDTO(timecard.getProject());
+                    for (Task task: timecard.getProject().getTasks()) {
+                        TaskDTO taskDto = new TaskDTO(task);
+                        prjDto.addTask(taskDto);
+                    }
+                    tcDto.setProjectDTO(prjDto);
+                    List<TimecardEntryDTO> tceDtos = new ArrayList<>(timecard.getTimecardEntries().size());
+                    for (TimecardEntry tce: timecard.getTimecardEntries()) {
+                        TimecardEntryDTO tceDto = new TimecardEntryDTO(tce);
+                        tceDto.setTaskDTO(new TaskDTO(tce.getTask()));
+                        tceDtos.add(tceDto);
+                    }
+                    Collections.sort(tceDtos, new TimecardEntryDateComparator());
+                    tcDto.setTimecardEntriesDTO(tceDtos);
+                    response = Response.ok(tcDto);
                 }
-                response = Response.ok(timecardsDto);
+                 
             }
-        } catch (GeneralException | IllegalAccessException | InvocationTargetException e) {
+            if (tcId == null || timecard == null) {
+                Map<String, Object> responseObj = new HashMap<>();
+                responseObj.put("msg", "Timecard not found");
+                responseObj.put("timecards", new ArrayList());
+                response = Response.status(Status.NOT_FOUND).entity(responseObj);
+            }
+        } catch (GeneralException e) {
             LOG.error("Error to find projects.", e);
             Map<String, String> responseObj = new HashMap<>();
             responseObj.put("error", e.getMessage());
@@ -184,37 +180,49 @@ public class TimecardRest {
     public Response save(TimecardDTO timecardDto) {
         LOG.debug(timecardDto.toString());
         Response.ResponseBuilder response = null;
+        PersonDTO loggedUser = Util.loggedUser(httpReq);
         try {
-            timecardDto.setStatusEnum(TimecardStatusEnum.IN_PROGRESS);
-            PersonDTO loggedUser = Util.loggedUser(httpReq);
-            Timecard timecardEnt = timecardDto.toTimecard();
-            Person cs = loggedUser.toPerson();
-            timecardEnt.setConsultant(cs);
-            Long count = timecardService.countByDate(timecardDto.getConsultant().getId(), timecardDto.getProject().getId(), timecardDto.getFirstDate(), timecardDto.getLastDate());
-            if (count > 0) {
-                Map<String, String> responseObj = new HashMap<String, String>();
-                responseObj.put("error", "Cannot save timecard existant with start date "+ timecardDto.getFirstDate() + " and end date "+ timecardDto.getLastDate() + " specified.");
-                response = Response.status(Response.Status.CONFLICT).entity(responseObj);
-            } else {
             
-                Project prj = new Project();
-                prj.setId(timecardDto.getProject().getId());
-                timecardEnt.setProject(prj);
-                
-                for (TimecardEntryDTO tcEntryDto: timecardDto.getTimecardEntriesDTO()) {
-                    TimecardEntry tcEntry = new TimecardEntry();
-                    BeanUtils.copyProperties(tcEntry, tcEntryDto);
-                    timecardEnt.addTimecardEntry(tcEntry);
-                    Task task = new Task();
-                    task.setId(tcEntryDto.getTaskDTO().getId());
-                    tcEntry.setTask(task);
+            if (timecardDto.getId() == null) {
+                timecardDto.setStatusEnum(TimecardStatusEnum.IN_PROGRESS);
+                Timecard timecardEnt = timecardDto.toTimecard();
+                Person cs = loggedUser.toPerson();
+                timecardEnt.setConsultant(cs);
+                Long count = timecardService.countByDate(timecardDto.getConsultant().getId(), timecardDto.getProject().getId(), timecardDto.getFirstDate(), timecardDto.getLastDate());
+                if (count > 0) {
+                    Map<String, String> responseObj = new HashMap<String, String>();
+                    responseObj.put("error", "Cannot save timecard existant with start date "+ timecardDto.getFirstDate() + " and end date "+ timecardDto.getLastDate() + " specified.");
+                    response = Response.status(Response.Status.CONFLICT).entity(responseObj);
+                } else {
+                    Project prj = new Project();
+                    prj.setId(timecardDto.getProject().getId());
+                    timecardEnt.setProject(prj);
+                    for (TimecardEntryDTO tcEntryDto: timecardDto.getTimecardEntriesDTO()) {
+                        TimecardEntry tcEntry = new TimecardEntry();
+                        BeanUtils.copyProperties(tcEntry, tcEntryDto);
+                        timecardEnt.addTimecardEntry(tcEntry);
+                        Task task = new Task();
+                        task.setId(tcEntryDto.getTaskDTO().getId());
+                        tcEntry.setTask(task);
+                    }
+                    
+                    timecardService.persist(timecardEnt);
+                    response = Response.ok();
                 }
-                
+            } else {
+                Timecard timecardEnt = timecardDto.toTimecard();
+                timecardEnt.setConsultant(loggedUser.toPerson());
+                Project prj = timecardDto.getProject().toProject();
+                timecardEnt.setProject(prj);
+                for (TimecardEntryDTO tcEntryDto: timecardDto.getTimecardEntriesDTO()) {
+                    TimecardEntry tcEntry = tcEntryDto.toTimecardEntry();
+                    tcEntry.setTask(tcEntryDto.getTaskDTO().toTask());
+                    tcEntry.setTimecard(timecardEnt);
+                    timecardEnt.addTimecardEntry(tcEntry);
+                }
                 timecardService.persist(timecardEnt);
                 response = Response.ok();
             }
-        } catch (ConstraintViolationException e) {
-            response = createViolationResponse("Error to insert project.", e.getConstraintViolations());
         } catch (Exception e) {
             LOG.error("Error to insert project.", e);
             Map<String, String> responseObj = new HashMap<String, String>();
@@ -224,39 +232,4 @@ public class TimecardRest {
         return response.build();
     }
 
-    private void validate(Project project) throws ConstraintViolationException, ValidationException {
-        // Create a bean validator and check for issues.
-        Set<ConstraintViolation<Project>> violations = validator.validate(project);
-
-        if (!violations.isEmpty()) {
-            throw new ConstraintViolationException(new HashSet<ConstraintViolation<?>>(violations));
-        }
-
-        if (project.getEndDate().before(project.getInitialDate()) ) {
-            throw new ValidationException("End date should not be before initial date.");
-        }
-
-    }
-
-    /**
-     * Creates a JAX-RS "Bad Request" response including a map of all violation fields, and their message. This can then be used
-     * by clients to show violations.
-     *
-     * @param violations A set of violations that needs to be reported
-     * @return JAX-RS response containing all violations
-     */
-    private Response.ResponseBuilder createViolationResponse(String msg, Set<ConstraintViolation<?>> violations) {
-        LOG.info("Validation completed for Pedido: " + msg + " . " + violations.size() + " violations found: ");
-
-        Map<String, String> responseObj = new HashMap<String, String>();
-
-        for (ConstraintViolation<?> violation : violations) {
-            responseObj.put(violation.getPropertyPath().toString(), violation.getMessage());
-        }
-
-        return Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
-    }
-
-
-    
 }

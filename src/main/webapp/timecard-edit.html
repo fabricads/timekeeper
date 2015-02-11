@@ -1,6 +1,6 @@
 <h1>New timecard</h1>
 
-<div ng-controller="timecard_new_ctrl">
+<div ng-controller="timecard_edit_ctrl">
 
     <div class="alert alert-warning" ng-show="error_msg != null">
         <span class="pficon-layered">
@@ -16,14 +16,12 @@
     </div>
 
     <form class="form-horizontal" name="form">
-        
         <div class="form-group" >
             <label for="prj_pm" class="col-md-2 control-label">Project</label>
             <div class="col-md-5">
                 <label>{{timecard.project.name}} - {{timecard.project.initialDate|date:'dd-MMMM-yyyy'}} to {{timecard.project.endDate|date:'dd-MMMM-yyyy'}} - {{days}} days - {{weeks}} weeks</label>
             </div>
         </div>
-
       <div class="panel panel-default" ng-repeat="tcEntry in timecard.project.tasksDTO">
         <div class="panel-heading">
           <h3 class="panel-title">Task: {{tcEntry.name}}</h3>
@@ -59,6 +57,7 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
                 <button type="submit" class="btn btn-primary" ng-click="save(timecard)">Save</button>
+                <button type="submit" class="btn btn-primary" ng-click="submit(timecard)">Submit for approval</button>
             </div>
         </div>
     </form>

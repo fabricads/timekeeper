@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import br.com.redhat.consulting.model.Project;
+
 public class ProjectDTO  {
 
     private static final long serialVersionUID = 1L;
@@ -31,6 +33,21 @@ public class ProjectDTO  {
     private List<TaskDTO> tasks = new ArrayList<>();
     private List<Integer> tasksToRemove = new ArrayList<>();
     private Date lastFilledDay;
+    
+    public ProjectDTO() {}
+    
+    public ProjectDTO(Project prj) {
+        this.id = prj.getId();
+        this.name = prj.getName();
+        this.description = prj.getDescription();
+        this.paNumber = prj.getPaNumber();
+        this.enabled = prj.isEnabled();
+        this.usePMSubstitute = prj.isUsePMSubstitute();
+        this.initialDate = prj.getInitialDate();
+        this.endDate = prj.getEndDate();
+        this.registered = prj.getRegistered();
+        this.lastModification = prj.getLastModification();
+    } 
     
     public Integer getId() {
         return id;
@@ -170,6 +187,21 @@ public class ProjectDTO  {
 
     public void setLastFilledDay(Date lastFilledDay) {
         this.lastFilledDay = lastFilledDay;
+    }
+    
+    public Project toProject() {
+        Project prj = new Project();
+        prj.setId(id);
+        prj.setName(name);
+        prj.setDescription(description);
+        prj.setPaNumber(paNumber);
+        prj.setEnabled(enabled);
+        prj.setUsePMSubstitute(usePMSubstitute);
+        prj.setInitialDate(initialDate);
+        prj.setEndDate(endDate);
+        prj.setRegistered(registered);
+        prj.setLastModification(lastModification);
+        return prj;
     }
 
     @Override

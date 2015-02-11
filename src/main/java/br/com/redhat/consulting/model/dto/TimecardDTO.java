@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import br.com.redhat.consulting.model.Timecard;
 import br.com.redhat.consulting.model.TimecardStatusEnum;
 
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class TimecardDTO  {
 
     private Integer id;
@@ -18,6 +21,15 @@ public class TimecardDTO  {
     private List<TimecardEntryDTO> timecardEntries = new ArrayList<>();
     private Date firstDate;
     private Date lastDate;
+
+    public TimecardDTO() {}
+    
+    public TimecardDTO(Timecard timecard) {
+        this.id = timecard.getId();
+        this.status = timecard.getStatus();
+        this.commentConsultant = timecard.getCommentConsultant();
+        this.commentPM = timecard.getCommentPM();
+    }
     
     public Integer getId() {
         return id;

@@ -13,6 +13,11 @@ import br.com.redhat.consulting.model.filter.TimecardSearchFilter;
 public class TimecardDao extends BaseDao<Timecard, TimecardSearchFilter> {
 
     protected void configQuery(StringBuilder query, TimecardSearchFilter filter, List<Object> params) {
+        if (filter.getId() != null) {
+            query.append(" and ENT.id = ? ");
+            params.add(filter.getId());
+        }
+        
         if (filter.getProject() != null && filter.getProject().getId() != null) {
             query.append(" and ENT.project.id = ? ");
             params.add(filter.getProject().getId());

@@ -1,14 +1,19 @@
 package br.com.redhat.consulting.model.dto;
 
+import br.com.redhat.consulting.model.Task;
+
 
 public class TaskDTO  {
 
-    private static final long serialVersionUID = 1L;
-    
     private Integer id;
     private String name;
     
     public TaskDTO() { }
+    
+    public TaskDTO(Task task) { 
+        this.id = task.getId();
+        this.name = task.getName();
+    }
     
     public TaskDTO(String name) {
         this.name = name;
@@ -28,6 +33,13 @@ public class TaskDTO  {
 
     public void setName(String name) {
         this.name = name;
+    }
+    
+    public Task toTask() {
+        Task task = new Task();
+        task.setId(id);
+        task.setName(name);
+        return task;
     }
 
     @Override

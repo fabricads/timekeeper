@@ -6,7 +6,7 @@
 <div class="table-responsive" ng-controller="person_listing_ctrl" ng-cloak>
     <div ng-show="loading">Loading..</div>
     <div class="alert alert-info" ng-show="persons.persons.length == 0">
-            <span class="pficon pficon-info"></span> There is no persons to list, do you want to <a href="#/person-new">add a person</a> ?.
+            <span class="pficon pficon-info"></span> There are no persons to list, do you want to <a href="#/person-new">add a person</a> ?.
             <br> {{orgs.msg}}<br>
     </div>
     <table class="table table-striped table-bordered table-hover" ng-hide="persons.persons.length == 0">
