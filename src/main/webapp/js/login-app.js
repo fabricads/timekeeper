@@ -28,12 +28,10 @@ loginApp.controller("login_ctrl", function($scope, $rootScope, $location, $windo
                     $window.location.href = ".";
                 } else {
                     console.log("already logged in");
-                    console.log(data);
                 }
             } else {
-                console.log("login failed");
-                console.log(status);
-                console.log(data);
+                console.log(">> login failed");
+                $scope.error_msg = "E-mail or password incorrect.";
                 $rootScope.$broadcast(AUTH_EVENTS.loginFailed);
             }
         });
@@ -50,26 +48,11 @@ loginApp.constant('AUTH_EVENTS', {
     notAuthorized   : 'auth-not-authorized'
   })
   
-loginApp.factory('authHttpResponseInterceptor',['$q','$location', '$window', 'MessageService', function($q, $location, $window, $rootScope, MessageService){
+loginApp.factory('authHttpResponseInterceptor',['$q','$location', '$window', function($q, $location, $window, $rootScope){
     return {
-        response: function(response){
-            if (response.status === 401) {
-                console.log("Response 401");
-            } else if (response.status === 403) {
-                console.log("Response 403");
-            }
-            return response || $q.when(response);
-        },
         responseError: function(rejection) {
             if (rejection.status === 401) {
-                console.log("Response Error 401",rejection);
                 $window.location.href = "login.html";
-            } else if (rejection.status === 400) {
-                console.log("Response Error 400",rejection);
-                $rootScope.error_msg = rejection.data.message;
-            } else if (rejection.status === 403) {
-                MessageService.setMessages(rejection.data.message);
-                console.log("Response Error 403", rejection);
             }
             return $q.reject(rejection);
         }

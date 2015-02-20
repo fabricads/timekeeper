@@ -37,11 +37,7 @@ TODO:
 git clone ssh://54b5c4603b696efd7e0004a5@brazil-consulting.itos.redhat.com/~/git/brazil.git/
 cd brazil/
 
-This will create a folder with the source code of your application. After making a change, add, commit, and push your changes.
-
-
 - postgresql server
-
    Root User: admin6wwr82m
    Root Password: qg7NMPPRT6Ym
    Database Name: brazil
