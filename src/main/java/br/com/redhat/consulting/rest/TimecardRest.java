@@ -138,7 +138,7 @@ public class TimecardRest {
     @Path("/{tcId}")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    @RolesAllowed({"partner_consultant"})
+    @RolesAllowed({"partner_consultant", "redhat_manager", "admin"})
     public Response getTimecard(@PathParam("tcId") Integer tcId) {
         Timecard timecard = null;
         Response.ResponseBuilder response = null;
@@ -146,7 +146,11 @@ public class TimecardRest {
         
         try {
             if (tcId != null) {
-                timecard = timecardService.findByIdAndConsultant(tcId, loggedUser.getId());
+                if (loggedUser.isAdminOrProjectManager()) {
+                    timecard = timecardService.findByIdAndConsultant(tcId, null);
+                } else {
+                    timecard = timecardService.findByIdAndConsultant(tcId, loggedUser.getId());
+                }
                 if (timecard != null) {
                     TimecardDTO tcDto = new TimecardDTO(timecard);
                     ProjectDTO prjDto = new ProjectDTO(timecard.getProject());
@@ -169,7 +173,7 @@ public class TimecardRest {
             }
             if (tcId == null || timecard == null) {
                 Map<String, Object> responseObj = new HashMap<>();
-                responseObj.put("msg", "Timecard not found");
+                responseObj.put("error", "Timecard not found");
                 responseObj.put("timecards", new ArrayList());
                 response = Response.status(Status.NOT_FOUND).entity(responseObj);
             }

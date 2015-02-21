@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.PersonType;
+import br.com.redhat.consulting.model.RoleEnum;
 
 public class PersonDTO  {
 
@@ -227,6 +230,14 @@ public class PersonDTO  {
         p.setRegistered(registered);
         p.setLastModification(lastModification);
         return p;
+    }
+    
+    @JsonIgnore
+    public boolean isAdminOrProjectManager() {
+        RoleEnum currentRole = RoleEnum.find(getRole().getId());
+        boolean permit = currentRole.equals(RoleEnum.ADMIN);
+        permit = permit || currentRole.equals(RoleEnum.REDHAT_MANAGER);
+        return permit;
     }
     
 	

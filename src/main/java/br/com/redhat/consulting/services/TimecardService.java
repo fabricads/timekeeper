@@ -99,7 +99,7 @@ public class TimecardService {
         }
     }
 
-    private Timecard findById(Integer tcId) {
+    public Timecard findById(Integer tcId) {
         return timecardDao.findById(tcId);
     }
 

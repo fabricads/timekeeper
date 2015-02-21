@@ -25,6 +25,9 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 	when("/timecard-new/:projectId", {
 	    templateUrl : "timecard-new.html",
 	}).
+	when("/timecard-view/:tcId", {
+	    templateUrl : "timecard-view.html",
+	}).
 	when("/timecard-edit/:tcId", {
 	    templateUrl : "timecard-edit.html",
 	}).
@@ -612,7 +615,7 @@ timekeeperApp.controller("timecard_new_ctrl", function($scope, $http, $routePara
                 for (var j = 0; j < 7; j++) {
                     var tcEntry = {};
                     tcEntry.day = new Date(initDayWeek.getTime());
-                    tcEntry.workedHours = "";
+                    tcEntry.workedHours = 0;
                     tcEntry.workDescription = "";
                     tcEntry.taskDTO = {};
                     tcEntry.taskDTO.id = task.id;
@@ -630,6 +633,7 @@ timekeeperApp.controller("timecard_new_ctrl", function($scope, $http, $routePara
         });
     
     $scope.save = function(timecard) {
+        timecard.status = 1;
         timecard.timecardEntriesDTO = [];
         while (timecard.project.tasksDTO.length > 0) {
             var task = timecard.project.tasksDTO.shift();
@@ -705,6 +709,7 @@ timekeeperApp.controller("timecard_edit_ctrl", function($scope, $http, $routePar
         }
     }).
     error(function(data, status, header, config) {
+        console.log("Error loading timecard... " + status);
         $scope.error_msg = data;
     });
     
@@ -739,6 +744,68 @@ timekeeperApp.controller("timecard_edit_ctrl", function($scope, $http, $routePar
         }
         console.log("timecard.status: " + timecard.status);
         $http.post("/timekeeper/svc/timecard/save", timecard).
+        success(function(data, status, header, config) {
+            $scope.saved = true;
+            $scope.error_msg = null;
+        }).
+        error(function(data, status, header, config) {
+            $scope.error_msg = data;
+        });
+    };
+    
+    
+});
+
+timekeeperApp.controller("timecard_view_ctrl", function($scope, $http, $routeParams, $filter) {
+    
+    $http.get('/timekeeper/svc/timecard/' + $routeParams.tcId).
+    success(function(data) {
+        $scope.timecard = data
+        var start_date = new Date($scope.timecard.project.initialDate);
+        var end_date = new Date($scope.timecard.project.endDate);
+        
+        $scope.days = $filter('dateDiffInDays')(start_date, end_date);
+        $scope.weeks = $filter('dateNumOfWeeks')(start_date, end_date);
+        
+        var tasks = $scope.timecard.project.tasksDTO;
+        for (var i = 0; i < tasks.length; i++) {
+            var task = tasks[i];
+//            console.log("task " + task.name);
+            var tcEntries = [];
+            for (var j = 0; j < $scope.timecard.timecardEntriesDTO.length; j++) {
+                var tcEntry = $scope.timecard.timecardEntriesDTO[j];
+                if (task.id == tcEntry.taskDTO.id) {
+                    // datas estao no formato yyyy-mm-dd
+                    var y = tcEntry.day.substring(0,4);
+                    var m = tcEntry.day.substring(5,7);
+                    var d = tcEntry.day.substring(8,10);
+                    m = m - 1;
+//                    console.log("y,m,d " + y + ", " + m + ", " +d);
+                    tcEntry.day = new Date(y, m, d)
+//                    console.log(tcEntry);
+                    tcEntries.push(tcEntry);
+                }
+            }
+            task.tcEntries = tcEntries;
+        }
+    }).
+    error(function(data, status, header, config) {
+        $scope.error_msg = data;
+    });
+    
+    $scope.approve = function(timecardId) {
+        $http.post("/timekeeper/svc/timecard/approve", timecardId).
+        success(function(data, status, header, config) {
+            $scope.saved = true;
+            $scope.error_msg = null;
+        }).
+        error(function(data, status, header, config) {
+            $scope.error_msg = data;
+        });
+    };
+    
+    $scope.reject = function(timecardId) {
+        $http.post("/timekeeper/svc/timecard/reject", timecardId).
         success(function(data, status, header, config) {
             $scope.saved = true;
             $scope.error_msg = null;
@@ -884,6 +951,23 @@ timekeeperApp.filter('dateNumOfWeeks', function () {
             var weekDiff = week2 - week1 + 1;
             return weekDiff;
         }
+    };
+});
+
+
+timekeeperApp.filter('sumOfValue', function () {
+    return function (data, key) {
+        if (typeof (data) === 'undefined' && typeof (key) === 'undefined') {
+            return 0;
+        }
+        var sum = 0;
+        for (var i = 0; i < data.length; i++) {
+            var num = parseFloat(data[i][key]);
+            if (isNaN(num))
+                continue;
+            sum = sum + num;
+        }
+        return sum;
     };
 });
 

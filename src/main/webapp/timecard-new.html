@@ -26,7 +26,7 @@
 
       <div class="panel panel-default" ng-repeat="tcEntry in timecard.project.tasksDTO">
         <div class="panel-heading">
-          <h3 class="panel-title">Task: {{tcEntry.name}}</h3>
+          <h3 class="panel-title">Task: {{tcEntry.name}} - {{tcEntry.tcEntries | sumOfValue:'workedHours'}} hours</h3>
         </div>
         <div class="panel-body" ng-repeat="tcDayEntry in tcEntry.tcEntries">
             <div class="form-group">

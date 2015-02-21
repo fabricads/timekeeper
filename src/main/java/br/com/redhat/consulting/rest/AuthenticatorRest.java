@@ -66,6 +66,7 @@ public class AuthenticatorRest {
                 List<String> roles = retrieveRoles();
                 RoleEnum roleEnum = RoleEnum.findByShortname(roles.get(0));
                 RoleDTO role = new RoleDTO(roleEnum.getDescription(), roleEnum.getShortName());
+                role.setId(roleEnum.getId());
                 user.setRoleDTO(role);
                 ss.setAttribute("user", user);
                 response = Response.ok(user);

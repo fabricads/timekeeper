@@ -9,7 +9,7 @@
     <table class="table table-striped table-bordered table-hover" ng-hide="timecards.timecards.length == 0">
         <thead>
             <tr>
-                <th>Consultor</th>
+                <th>Consultant</th>
                 <th>Project</th>
                 <th>Status</th>
                 <th>Period</th>
@@ -18,7 +18,7 @@
         </thead>
         <tbody>
             <tr ng-repeat="tc in timecards">
-                <td style="vertical-align: middle;">{{tc.consultant.name}}</td>
+                <td style="vertical-align: middle;"><a ng-href="#/timecard-view/{{tc.id}}">{{tc.consultant.name}}</a></td>
                 <td style="vertical-align: middle;">{{tc.project.name}}</td>
                 <td style="vertical-align: middle;">{{tc.statusDescription}}</td>
                 <td style="vertical-align: middle;">{{tc.firstDate|date:'dd-MMMM-yyyy'}} to {{tc.lastDate|date:'dd-MMMM-yyyy'}}</td>
