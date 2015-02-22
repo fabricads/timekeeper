@@ -15,6 +15,7 @@ import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.Project;
 import br.com.redhat.consulting.model.Timecard;
 import br.com.redhat.consulting.model.TimecardEntry;
+import br.com.redhat.consulting.model.TimecardStatusEnum;
 import br.com.redhat.consulting.model.filter.TimecardSearchFilter;
 import br.com.redhat.consulting.util.GeneralException;
 
@@ -113,14 +114,42 @@ public class TimecardService {
         filter.setConsultant(new Person());
         filter.getConsultant().setId(consultantId);
         List<Timecard> res = timecardDao.find(filter);
-        Timecard tc = null;
         if (res.size() > 0) {
-            tc = res.get(0);
+            Timecard tc = res.get(0);
             timecardDao.remove(tcId);
         } else {
             LOG.warn("Consultant " +consultantId + " tried to delete timecard ("+ tcId +") assigned to a different consultant");
         }
     }
 
+    public void approve(Integer tcId, String commentPM) throws GeneralException {
+        TimecardSearchFilter filter = new TimecardSearchFilter();
+        filter.setId(tcId);
+        filter.setStatusEnum(TimecardStatusEnum.SUBMITTED);
+        List<Timecard> res = timecardDao.find(filter);
+        Timecard tc = null;
+        if (res.size() > 0) {
+            tc = res.get(0);
+            tc.setStatusEnum(TimecardStatusEnum.APPROVED);
+            tc.setCommentPM(commentPM);
+            timecardDao.update(tc);
+        }
+    }
+
+    public void reject(Integer tcId, String commentPM) throws GeneralException {
+        TimecardSearchFilter filter = new TimecardSearchFilter();
+        filter.setId(tcId);
+        filter.setStatusEnum(TimecardStatusEnum.SUBMITTED);
+        List<Timecard> res = timecardDao.find(filter);
+        Timecard tc = null;
+        if (res.size() > 0) {
+            tc = res.get(0);
+            tc.setStatusEnum(TimecardStatusEnum.REJECTED);
+            tc.setCommentPM(commentPM);
+            timecardDao.update(tc);
+        }
+        
+    }
+    
 
 }

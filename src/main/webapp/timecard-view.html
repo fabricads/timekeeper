@@ -58,10 +58,10 @@
                 <textarea class="form-control" rows="3" cols="50" ng-model="timecard.commentPM" maxlength="512"></textarea>
             </div>
         </div>
-        <div class="form-group">
+        <div class="form-group" ng-show="timecard.status == 4" >
             <div class="col-md-offset-2 col-md-10">
-                <button type="submit" class="btn btn-primary" ng-click="save(timecard)">Approve</button>
-                <button type="submit" class="btn btn-primary" ng-click="submit(timecard)">Reject</button>
+                <button type="submit" class="btn btn-primary" ng-click="approve(timecard)">Approve</button>
+                <button type="submit" class="btn btn-primary" ng-click="reject(timecard)">Reject</button>
             </div>
         </div>
     </form>

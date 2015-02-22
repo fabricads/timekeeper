@@ -6,8 +6,6 @@ import br.com.redhat.consulting.model.TimecardEntry;
 
 public class TimecardEntryDTO  {
 
-    private static final long serialVersionUID = 1L;
-    
     private Integer id;
     private TimecardDTO timecard;
     private Date day;

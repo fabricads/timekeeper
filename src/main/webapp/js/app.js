@@ -685,6 +685,9 @@ timekeeperApp.controller("timecard_edit_ctrl", function($scope, $http, $routePar
         
         $scope.days = $filter('dateDiffInDays')(start_date, end_date);
         $scope.weeks = $filter('dateNumOfWeeks')(start_date, end_date);
+        // 1 = in progress
+        // 3 = rejected
+        $scope.edit =  $scope.timecard.status == 1 || $scope.timecard.status == 3;
         
         var tasks = $scope.timecard.project.tasksDTO;
         for (var i = 0; i < tasks.length; i++) {
@@ -756,7 +759,7 @@ timekeeperApp.controller("timecard_edit_ctrl", function($scope, $http, $routePar
     
 });
 
-timekeeperApp.controller("timecard_view_ctrl", function($scope, $http, $routeParams, $filter) {
+timekeeperApp.controller("timecard_view_ctrl", function($scope, $http, $routeParams, $filter, $window) {
     
     $http.get('/timekeeper/svc/timecard/' + $routeParams.tcId).
     success(function(data) {
@@ -770,7 +773,6 @@ timekeeperApp.controller("timecard_view_ctrl", function($scope, $http, $routePar
         var tasks = $scope.timecard.project.tasksDTO;
         for (var i = 0; i < tasks.length; i++) {
             var task = tasks[i];
-//            console.log("task " + task.name);
             var tcEntries = [];
             for (var j = 0; j < $scope.timecard.timecardEntriesDTO.length; j++) {
                 var tcEntry = $scope.timecard.timecardEntriesDTO[j];
@@ -780,9 +782,7 @@ timekeeperApp.controller("timecard_view_ctrl", function($scope, $http, $routePar
                     var m = tcEntry.day.substring(5,7);
                     var d = tcEntry.day.substring(8,10);
                     m = m - 1;
-//                    console.log("y,m,d " + y + ", " + m + ", " +d);
                     tcEntry.day = new Date(y, m, d)
-//                    console.log(tcEntry);
                     tcEntries.push(tcEntry);
                 }
             }
@@ -793,22 +793,24 @@ timekeeperApp.controller("timecard_view_ctrl", function($scope, $http, $routePar
         $scope.error_msg = data;
     });
     
-    $scope.approve = function(timecardId) {
-        $http.post("/timekeeper/svc/timecard/approve", timecardId).
+    $scope.approve = function(timecard) {
+        $http.post("/timekeeper/svc/timecard/app-rej/" + timecard.id + "?op=1", timecard.commentPM).
         success(function(data, status, header, config) {
             $scope.saved = true;
             $scope.error_msg = null;
+            $window.location.href = "#/timecards/";
         }).
         error(function(data, status, header, config) {
             $scope.error_msg = data;
         });
     };
     
-    $scope.reject = function(timecardId) {
-        $http.post("/timekeeper/svc/timecard/reject", timecardId).
+    $scope.reject = function(timecard) {
+        $http.post("/timekeeper/svc/timecard/app-rej/" + timecard.id + "?op=2", timecard.commentPM).
         success(function(data, status, header, config) {
             $scope.saved = true;
             $scope.error_msg = null;
+            $window.location.href = "#/timecards/";
         }).
         error(function(data, status, header, config) {
             $scope.error_msg = data;

@@ -4,16 +4,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import br.com.redhat.consulting.model.Person;
-import br.com.redhat.consulting.model.PersonType;
 import br.com.redhat.consulting.model.RoleEnum;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class PersonDTO  {
 
-	private static final long serialVersionUID = 1L;
-	
 	private Integer id;
 	private String oraclePAId;
 	private String name;
@@ -41,6 +38,20 @@ public class PersonDTO  {
 	private Date lastModification;
 	
 	public PersonDTO() {}
+	
+	public PersonDTO(Person p) {
+	    id = p.getId();
+	    oraclePAId = p.getOraclePAId();
+	    name = p.getName();
+	    email = p.getEmail();
+	    password = p.getPassword();
+	    city = p.getCity();
+	    state = p.getState();
+	    country = p.getCountry();
+	    telephone1 = p.getTelephone1();
+	    telephone2 = p.getTelephone2();
+	    
+	}
 	
     public PersonDTO(String oraclePAId, String name, String email, String city, String state, PartnerOrganizationDTO partnerOrganization) {
         this.oraclePAId = oraclePAId;

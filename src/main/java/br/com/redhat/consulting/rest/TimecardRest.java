@@ -24,7 +24,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.beanutils.BeanUtils;
-import org.jboss.resteasy.annotations.providers.jackson.Formatted;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -103,20 +102,19 @@ public class TimecardRest {
             } else {
                 timecardsDto = new ArrayList<TimecardDTO>(timecards.size());
                 for (Timecard timecard: timecards) {
-                    TimecardDTO tcDto = new TimecardDTO();
-                    PersonDTO pmDto = new PersonDTO();
-                    BeanUtils.copyProperties(tcDto, timecard);
-                    ProjectDTO prjDto = new ProjectDTO();
-                    BeanUtils.copyProperties(prjDto, timecard.getProject());
-                    PersonDTO consultantDto = new PersonDTO();
+                    TimecardDTO tcDto = new TimecardDTO(timecard);
+//                    BeanUtils.copyProperties(tcDto, timecard);
+                    ProjectDTO prjDto = new ProjectDTO(timecard.getProject());
+//                    BeanUtils.copyProperties(prjDto, timecard.getProject());
+                    PersonDTO consultantDto = new PersonDTO(timecard.getConsultant());
                     timecard.getConsultant().nullifyAttributes();
-                    BeanUtils.copyProperties(consultantDto, timecard.getConsultant());
+//                    BeanUtils.copyProperties(consultantDto, timecard.getConsultant());
                     tcDto.setConsultantDTO(consultantDto);
                     tcDto.setProjectDTO(prjDto);
                     List<TimecardEntryDTO> tceDtos = new ArrayList<>(timecard.getTimecardEntries().size());
                     for (TimecardEntry tce: timecard.getTimecardEntries()) {
-                        TimecardEntryDTO tceDto = new TimecardEntryDTO();
-                        BeanUtils.copyProperties(tceDto, tce);
+                        TimecardEntryDTO tceDto = new TimecardEntryDTO(tce);
+//                        BeanUtils.copyProperties(tceDto, tce);
                         tceDtos.add(tceDto);
                     }
                     tcDto.setFirstDate(tceDtos.get(0).getDay());
@@ -126,7 +124,7 @@ public class TimecardRest {
                 }
                 response = Response.ok(timecardsDto);
             }
-        } catch (GeneralException | IllegalAccessException | InvocationTargetException e) {
+        } catch (GeneralException e) {
             LOG.error("Error to find projects.", e);
             Map<String, String> responseObj = new HashMap<>();
             responseObj.put("error", e.getMessage());
@@ -262,6 +260,35 @@ public class TimecardRest {
             } else  {
                 Map<String, Object> responseObj = new HashMap<>();
                 responseObj.put("msg", "Timecard not found");
+                responseObj.put("timecards", new ArrayList());
+                response = Response.status(Status.NOT_FOUND).entity(responseObj);
+            }
+        } catch (GeneralException e) {
+            LOG.error("Error to delete timecard.", e);
+            Map<String, String> responseObj = new HashMap<>();
+            responseObj.put("error", e.getMessage());
+            response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+        }
+        return response.build();
+    }
+    
+    @Path("/app-rej/{tcId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    @RolesAllowed({"admin", "redhat_manager"})
+    public Response approveOrReject(@PathParam("tcId") Integer tcId, @QueryParam("op") Integer op, String commentPM) {
+        Response.ResponseBuilder response = null;
+        
+        try {
+            if (tcId != null) {
+                if (op == 1) 
+                    timecardService.approve(tcId, commentPM);
+                else if (op == 2)
+                    timecardService.reject(tcId, commentPM);
+                response = Response.ok();
+            } else  {
+                Map<String, Object> responseObj = new HashMap<>();
+                responseObj.put("error", "Timecard not found");
                 responseObj.put("timecards", new ArrayList());
                 response = Response.status(Status.NOT_FOUND).entity(responseObj);
             }
