@@ -293,8 +293,17 @@ timekeeperApp.controller("organization_new_ctrl", function($scope, $http) {
 	$scope.org.enabled = true;
 	$scope.saved = false;
 	
+	$scope.contact1 = {}
+	$scope.contact2 = {}
+	
 	$scope.org_submit = function(org) {
-//	    org.name = org.name.trim();
+	    org.contacts = [];
+	    if ($scope.contact1.name != null) {
+	        org.contacts.push($scope.contact1);
+	    }
+	    if ($scope.contact2.name != null) {
+	        org.contacts.push($scope.contact2);
+	    }
 		$http.post("/timekeeper/svc/organization/save", org)
 			.success(function(data, status, header, config) {
 				$scope.saved = true;
@@ -311,10 +320,16 @@ timekeeperApp.controller("organization_new_ctrl", function($scope, $http) {
 timekeeperApp.controller("organization_edit_ctrl", function($scope, $http, $routeParams) {
 	
     $scope.saved = false;
+    $scope.contact1 = {}
+    $scope.contact2 = {}
     
 	$http.get('/timekeeper/svc/organization/'+$routeParams.orgId).
 	    success(function(data) {
     		$scope.org = data;
+    		if ($scope.org.contacts.length > 0) {
+    		    $scope.contact1 = $scope.org.contacts[0]
+    		    $scope.contact2 = $scope.org.contacts[1]
+    		} 
     	}).
     	error(function(data, status, header, config) {
     	    $scope.error_msg = data;
@@ -322,7 +337,13 @@ timekeeperApp.controller("organization_edit_ctrl", function($scope, $http, $rout
 
 	
 	$scope.org_submit = function(org) {
-//	    org.name = org.name.trim();
+	    org.contacts = [];
+        if ($scope.contact1.name != null) {
+            org.contacts.push($scope.contact1);
+        }
+        if ($scope.contact2.name != null) {
+            org.contacts.push($scope.contact2);
+        }
 		$http.post("/timekeeper/svc/organization/save", org).
 	        success(function(data, status, header, config) {
 	            $scope.saved = true;

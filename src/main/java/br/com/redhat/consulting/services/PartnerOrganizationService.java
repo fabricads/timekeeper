@@ -20,7 +20,7 @@ public class PartnerOrganizationService {
         PartnerOrganizationSearchFilter filter = new PartnerOrganizationSearchFilter();
         if (enabled != null)
             filter.setEnabled(enabled);
-        orgDao.setFetchCollection(new String[] {"persons"});
+        orgDao.setFetchCollection("persons");
         res = orgDao.find(filter);
         return res;
     }
@@ -29,7 +29,6 @@ public class PartnerOrganizationService {
         List<PartnerOrganization> res = null;
         PartnerOrganizationSearchFilter filter = new PartnerOrganizationSearchFilter();
         filter.setName(name);
-//        orgDao.setFetchCollection(new String[] {"persons"});
         res = orgDao.find(filter);
         PartnerOrganization org = null;
         if (res.size() > 0) 
@@ -68,7 +67,14 @@ public class PartnerOrganizationService {
     }
     
     public PartnerOrganization findById(Integer id) throws GeneralException {
-        PartnerOrganization org = orgDao.findById(id);
+        PartnerOrganizationSearchFilter filter = new PartnerOrganizationSearchFilter();
+        filter.setId(id);
+        orgDao.setFetchCollection("contacts");
+        List<PartnerOrganization> res = orgDao.find(filter);
+        PartnerOrganization org = null;
+        if (res.size() > 0) {
+            org = res.get(0);
+        }
         return org;
     }
     

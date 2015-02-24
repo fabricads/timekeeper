@@ -1,6 +1,5 @@
 package br.com.redhat.consulting.rest;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +19,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,14 +57,13 @@ public class PartnerOrganizationRest {
             } else {
                 orgsDto = new ArrayList<PartnerOrganizationDTO>(orgs.size());
                 for (PartnerOrganization org: orgs) {
-                    PartnerOrganizationDTO _orgDto = new PartnerOrganizationDTO();
+                    PartnerOrganizationDTO _orgDto = new PartnerOrganizationDTO(org);
                     _orgDto.setNumberOfPersons(org.getPersons().size());
-                    BeanUtils.copyProperties(_orgDto, org);
                     orgsDto.add(_orgDto);
                 }
                 response = Response.ok(orgsDto);
             }
-        } catch (GeneralException | IllegalAccessException | InvocationTargetException e) {
+        } catch (GeneralException e) {
             LOG.error("Error to find organization.", e);
             Map<String, String> responseObj = new HashMap<>();
             responseObj.put("error", e.getMessage());
@@ -79,7 +76,6 @@ public class PartnerOrganizationRest {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     public Response get(@PathParam("pd") @DefaultValue("-1") int orgId) {
-        PartnerOrganizationDTO _orgDto = new PartnerOrganizationDTO();
         PartnerOrganization org = null;
         Response.ResponseBuilder response = null;
         try {
@@ -89,7 +85,8 @@ public class PartnerOrganizationRest {
                 responseObj.put("error", "Organization " + orgId + " not found.");
                 response = Response.status(Response.Status.NOT_FOUND).entity(responseObj);
             } else {
-                BeanUtils.copyProperties(_orgDto, org);
+                PartnerOrganizationDTO _orgDto = new PartnerOrganizationDTO(org);
+                _orgDto.setContacts(org.getContacts());
                 response = Response.ok(_orgDto);
             }
         } catch (Exception e) {
@@ -161,28 +158,24 @@ public class PartnerOrganizationRest {
     public Response saveOrg(PartnerOrganizationDTO orgDto) {
         Response.ResponseBuilder builder = null;
         try {
-            if (orgDto.getId() != null) {
-                PartnerOrganization org = new PartnerOrganization();
-                BeanUtils.copyProperties(org, orgDto);
+            PartnerOrganization orgEnt = orgService.findByName(orgDto.getName());
+            if (orgEnt != null && orgEnt.getId() != orgDto.getId()) {
+                Map<String, String> responseObj = new HashMap<String, String>();
+                responseObj.put("error", "Organization with duplicated name: " + orgDto.getName());
+                builder = Response.status(Response.Status.CONFLICT).entity(responseObj);
+            } else {
+                PartnerOrganization org = orgDto.toPartnerOrganization();
+                org.setContacts(orgDto.getContacts());
                 orgService.persist(org);
                 builder = Response.ok(org);
-            } else {
-                PartnerOrganization orgEnt = orgService.findByName(orgDto.getName());
-                if (orgEnt != null) {
-                    Map<String, String> responseObj = new HashMap<String, String>();
-                    responseObj.put("error", "Organization with duplicated name: " + orgDto.getName());
-                    builder = Response.status(Response.Status.CONFLICT).entity(responseObj);
-                } else {
-                    PartnerOrganization org = new PartnerOrganization();
-                    BeanUtils.copyProperties(org, orgDto);
-                    orgService.persist(org);
-                    builder = Response.ok(org);
-                }
             }
         } catch (Exception e) {
             LOG.error("Error to insert organization.", e);
             Map<String, String> responseObj = new HashMap<String, String>();
-            responseObj.put("error", e.getCause().getMessage());
+            String msg = e.getMessage();
+            if (e.getCause() != null) 
+                msg = e.getCause().getMessage();
+            responseObj.put("error", msg);
             builder = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
         }
         return builder.build();
