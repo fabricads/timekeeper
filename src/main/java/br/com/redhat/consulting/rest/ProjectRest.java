@@ -184,9 +184,8 @@ public class ProjectRest {
                 for (Person consultant: projectEnt.getConsultants()) {
                     consultant.nullifyAttributes();
                     PersonDTO consultantDto = new PersonDTO();
-                    PartnerOrganizationDTO orgDto = new PartnerOrganizationDTO();
+                    PartnerOrganizationDTO orgDto = new PartnerOrganizationDTO(consultant.getPartnerOrganization());
                     BeanUtils.copyProperties(consultantDto, consultant);
-                    BeanUtils.copyProperties(orgDto, consultant.getPartnerOrganization());
                     consultantDto.setOrganization(orgDto);
                     projectDto.addConsultant(consultantDto);
                 }
@@ -216,7 +215,6 @@ public class ProjectRest {
         Response.ResponseBuilder response = null;
         PersonDTO loggedUser = Util.loggedUser(httpReq);
         try {
-//            projectEnt = projectService.findByIdWithTimecards(projectId);
             projectEnt = projectService.findByIdAndConsultant(projectId, loggedUser.getId());
             if (projectEnt == null) {
                 Map<String, String> responseObj = new HashMap<>();

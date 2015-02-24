@@ -95,16 +95,14 @@ public class PersonRest {
             } else {
                 personsDto = new ArrayList<PersonDTO>(persons.size());
                 for (Person p: persons) {
-                    PersonDTO personDto = new PersonDTO();
+                    PersonDTO personDto = new PersonDTO(p);
                     PartnerOrganization org = p.getPartnerOrganization();
-                    PartnerOrganizationDTO orgDto = new PartnerOrganizationDTO();
+                    PartnerOrganizationDTO orgDto = new PartnerOrganizationDTO(org);
                     Role role = p.getRole();
                     if (type == FIND_ALL) 
                         personDto.setNumberOfProjects(p.getProjects().size());
                     RoleDTO roleDto = new RoleDTO();
-                    BeanUtils.copyProperties(orgDto, org);
                     BeanUtils.copyProperties(roleDto, role);
-                    BeanUtils.copyProperties(personDto, p);
                     personDto.setOrganization(orgDto);
                     personDto.setRoleDTO(roleDto);
                     personsDto.add(personDto);
@@ -139,7 +137,6 @@ public class PersonRest {
     @GET
     @RolesAllowed({"redhat_manager", "admin"})
     public Response get(@PathParam("pd") @DefaultValue("-1") int personId) {
-        PersonDTO personDto = new PersonDTO();
         Person person = null;
         Response.ResponseBuilder response = null;
         try {
@@ -149,10 +146,9 @@ public class PersonRest {
                 responseObj.put("error", "Person " + personId + " not found.");
                 response = Response.status(Response.Status.NOT_FOUND).entity(responseObj);
             } else {
-                BeanUtils.copyProperties(personDto, person);
+                PersonDTO personDto = new PersonDTO(person);
                 PartnerOrganization org = person.getPartnerOrganization();
-                PartnerOrganizationDTO orgDto = new PartnerOrganizationDTO();
-                BeanUtils.copyProperties(orgDto, org);
+                PartnerOrganizationDTO orgDto = new PartnerOrganizationDTO(org);
                 personDto.setOrganization(orgDto);
                 Role role = person.getRole();
                 RoleDTO roleDto = new RoleDTO();

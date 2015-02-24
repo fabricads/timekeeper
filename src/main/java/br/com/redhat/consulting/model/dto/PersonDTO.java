@@ -50,7 +50,10 @@ public class PersonDTO  {
 	    country = p.getCountry();
 	    telephone1 = p.getTelephone1();
 	    telephone2 = p.getTelephone2();
-	    
+	    personType = p.getPersonType();
+	    enabled = p.isEnabled();
+	    registered = p.getRegistered();
+	    lastModification = p.getLastModification();
 	}
 	
     public PersonDTO(String oraclePAId, String name, String email, String city, String state, PartnerOrganizationDTO partnerOrganization) {
