@@ -22,11 +22,13 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.jboss.security.SimpleGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +84,39 @@ public class AuthenticatorRest {
             response = Response.ok(responseObj);
         }
 
+        return response.build();
+    }
+    
+    @GET
+    @Path("/forgot/{email}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response forgotPassword(@PathParam("email") String email) throws LoginException {
+        Response.ResponseBuilder response = null;
+        if (StringUtils.isNotBlank(email)) {
+            try {
+                Person ps = personService.findByEmail(email);
+                if (ps != null) {
+                    LOG.info("Send e-mail to " + email);
+                    response = Response.ok();
+                } else {
+                    String msg = "E-mail " + email + " not found or disabled."; 
+                    LOG.warn(msg);
+                    Map<String, String> responseObj = new HashMap<>();
+                    responseObj.put("error", msg);
+                    response = Response.status(Response.Status.NOT_FOUND).entity(responseObj);
+                }
+            } catch (GeneralException e) {
+                LOG.error(email + "not found " , e);
+                Map<String, String> responseObj = new HashMap<>();
+                responseObj.put("error", e.getMessage());
+                response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+            }
+        } else {
+            Map<String, String> responseObj = new HashMap<>();
+            responseObj.put("error", "e-mail is required");
+            response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+        }
+        
         return response.build();
     }
     

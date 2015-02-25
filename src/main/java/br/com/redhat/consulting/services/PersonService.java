@@ -118,6 +118,7 @@ public class PersonService {
         List<Person> res = null;
         PersonSearchFilter filter = new PersonSearchFilter();
         filter.setEmail(email);
+        filter.setEnabled(true);
         res = personDao.find(filter);
         Person person = null;
         if (res.size() > 0)

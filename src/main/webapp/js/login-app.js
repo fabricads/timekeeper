@@ -1,4 +1,4 @@
-var loginApp = angular.module("loginApp", [ "ngRoute", "ngResource", "servicesApp"]);
+var loginApp = angular.module("loginApp", [ "ngRoute", "ngResource", "ui.bootstrap", "servicesApp"]);
 
 loginApp.config([ "$routeProvider", function($routeProvider) {
 	
@@ -15,7 +15,7 @@ loginApp.config([ "$routeProvider", function($routeProvider) {
 
 ]);
 
-loginApp.controller("login_ctrl", function($scope, $rootScope, $location, $window, AUTH_EVENTS, auth_service) {
+loginApp.controller("login_ctrl", function($scope, $rootScope, $location, $window, AUTH_EVENTS, auth_service, $modal) {
 
     $scope.error_msg = $rootScope.error_msg;
     
@@ -36,8 +36,43 @@ loginApp.controller("login_ctrl", function($scope, $rootScope, $location, $windo
             }
         });
     };
+    
+    $scope.forget_password = function () {
+        var modalInstance = $modal.open({
+          templateUrl: 'modal_forget_password.html',
+          controller: 'modal_instance'
+        });
+      };
 
 });
+
+loginApp.controller("modal_instance", function($rootScope, $scope, $http, $window, $modalInstance) {
+
+    $scope.send = function () {
+        console.log($scope.email);
+        $http.get("/timekeeper/svc/auth/forgot/" + $scope.email).success(
+            function(data, status, header, config) {
+                $scope.msg = "Check your e-mail";
+                $modalInstance.close();
+            }).
+            error(function(data, status, header, config) {
+                if (status == 404) {
+                    $scope.error_msg = {};
+                    $scope.error_msg.error = "E-mail " + $scope.email + " not found.";
+                } else {
+                    $scope.error_msg = data;
+                    
+                }
+            });
+        
+    };
+
+    $scope.cancel = function () {
+        $modalInstance.dismiss();
+    };
+    
+});
+
 
 loginApp.constant('AUTH_EVENTS', {
     loginSuccess    : 'auth-login-success',

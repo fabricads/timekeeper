@@ -62,7 +62,7 @@
         <div class="col-md-2">
             <p class="input-group">
                 <input type="text" class="form-control" name="startdate" datepicker-popup="dd-MMMM-yyyy" ng-model="project.initialDate" is-open="opened"
-                    required close-text="Close" datepicker-options="dateOptions"/> 
+                    ng-required="true" close-text="Close" datepicker-options="dateOptions" readonly="readonly"/> 
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default" ng-click="open($event)">
                         <i class="glyphicon glyphicon-calendar"></i>
@@ -79,7 +79,7 @@
         <div class="col-md-2">
             <p class="input-group">
                 <input type="text" class="form-control" name="enddate" datepicker-popup="dd-MMMM-yyyy" ng-model="project.endDate" is-open="opened2"
-                    required close-text="Close" datepicker-options="dateOptions"/> 
+                    ng-required="true" close-text="Close" datepicker-options="dateOptions" readonly="readonly"/> 
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default" ng-click="open2($event)">
                         <i class="glyphicon glyphicon-calendar"></i>
