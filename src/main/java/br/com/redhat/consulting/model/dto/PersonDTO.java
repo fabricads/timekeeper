@@ -36,6 +36,7 @@ public class PersonDTO  {
 	
 	private Date registered;
 	private Date lastModification;
+	private String hash;
 	
 	public PersonDTO() {}
 	
@@ -252,6 +253,14 @@ public class PersonDTO  {
         boolean permit = currentRole.equals(RoleEnum.ADMIN);
         permit = permit || currentRole.equals(RoleEnum.REDHAT_MANAGER);
         return permit;
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
     }
     
 	

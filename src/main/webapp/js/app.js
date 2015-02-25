@@ -852,6 +852,9 @@ timekeeperApp.controller("timecard_view_ctrl", function($scope, $http, $routePar
 timekeeperApp.controller("menu_ctrl", function(MessageService, $scope, $rootScope, $window, $http) {
     if ($rootScope.user != null) {
         $scope.user = $rootScope.user;
+    } else {
+        console.log("user is null, authentication required.");
+        $window.location.href = "pub.html";
     }
     
     $scope.role = function(roles) {
@@ -866,7 +869,7 @@ timekeeperApp.controller("menu_ctrl", function(MessageService, $scope, $rootScop
         $http.get("/timekeeper/svc/auth/logout").
         success(function(data, status, header, config) {
             sessionStorage.removeItem("user");
-            $window.location.href = "login.html";
+            $window.location.href = "pub.html";
         });
     };
     
@@ -1021,7 +1024,7 @@ timekeeperApp.factory('authHttpResponseInterceptor',['$q','$location', '$window'
         responseError: function(rejection) {
             if (rejection.status === 401) {
                 console.log("Response Error 401",rejection);
-                $window.location.href = "login.html";
+                $window.location.href = "pub.html";
             } else if (rejection.status === 400) {
                 console.log("Response Error 400",rejection);
             } else if (rejection.status === 403) {

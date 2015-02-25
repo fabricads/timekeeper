@@ -1,13 +1,10 @@
 package br.com.redhat.consulting.services;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +12,9 @@ import org.slf4j.LoggerFactory;
 import br.com.redhat.consulting.dao.PersonDao;
 import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.PersonType;
-import br.com.redhat.consulting.model.dto.PersonDTO;
 import br.com.redhat.consulting.model.filter.PersonSearchFilter;
-import br.com.redhat.consulting.rest.PersonRest;
 import br.com.redhat.consulting.util.GeneralException;
+import br.com.redhat.consulting.util.Util;
 
 public class PersonService {
 
@@ -67,6 +63,18 @@ public class PersonService {
         return person;
     }
     
+    public Person findByIdEnabled(Integer id) throws GeneralException  {
+        List<Person> res = null;
+        PersonSearchFilter filter = new PersonSearchFilter();
+        filter.setId(id);
+        filter.setEnabled(true);
+        res = personDao.find(filter);
+        Person person = null;
+        if (res.size() > 0)
+            person = res.get(0);
+        return person;
+    }
+    
     public void disable(Integer personId) throws GeneralException {
         Person person = findById(personId);
         person.setEnabled(false);
@@ -86,7 +94,7 @@ public class PersonService {
     public void persist(Person person) throws GeneralException {
         Date today = new Date();
         if (StringUtils.isNotEmpty(person.getPassword())) {
-            person.setPassword(hash(person.getPassword()));
+            person.setPassword(Util.hash(person.getPassword()));
         }
         if (person.getId() != null) {
             if (StringUtils.isEmpty(person.getPassword())) {
@@ -136,20 +144,4 @@ public class PersonService {
         return res;
     }
     
-    
-    public String hash(String clearPasswd) {
-        MessageDigest md = null;
-        byte[] bytes = null;
-        try {
-            md = MessageDigest.getInstance("SHA-256");
-            bytes = clearPasswd.getBytes(("UTF-8"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        md.update(bytes);
-        byte[] digest = md.digest();
-        String encPasswd = Base64.encodeBase64String(digest);
-        return encPasswd;
-    }
-
 }

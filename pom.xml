@@ -140,7 +140,7 @@
             <artifactId>commons-beanutils</artifactId>
             <version>1.9.2</version>
         </dependency>
-        
+
         <!-- necessary as recent jackson version fix some serialization bugs -->
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
@@ -191,22 +191,11 @@
             <artifactId>jboss-jacc-api_1.4_spec</artifactId>
             <scope>provided</scope>
         </dependency>
-        <!-- 
-        <dependency>
-            <groupId>org.jboss.web</groupId>
-            <artifactId>jbossweb</artifactId>
-            <version>7.4.9.Final-redhat-1</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.as</groupId>
-            <artifactId>jboss-as-web</artifactId>
-            <version>7.4.2.Final-redhat-2</version>
-            <scope>provided</scope>
-        </dependency>
-         -->
-        
-        
+        <!-- <dependency> <groupId>org.jboss.web</groupId> <artifactId>jbossweb</artifactId> <version>7.4.9.Final-redhat-1</version> <scope>provided</scope> 
+            </dependency> <dependency> <groupId>org.jboss.as</groupId> <artifactId>jboss-as-web</artifactId> <version>7.4.2.Final-redhat-2</version> <scope>provided</scope> 
+            </dependency> -->
+
+
 
 
         <!-- upgrade jackson -->
@@ -239,6 +228,16 @@
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-jaxb-annotations</artifactId>
             <version>${version.com.fasterxml.jackson}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.21</version>
         </dependency>
 
     </dependencies>

@@ -12,10 +12,10 @@ import org.slf4j.LoggerFactory;
 public class Resources {
 
     private static Logger LOG = LoggerFactory.getLogger(Resources.class);
-    
+
     @PersistenceContext
     private EntityManager em;
-    
+
     @Produces
     public EntityManager produceEntityManager() {
         return em;
@@ -26,5 +26,5 @@ public class Resources {
             entityManager.close();
         }
     }
-    
+
 }

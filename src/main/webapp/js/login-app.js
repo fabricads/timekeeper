@@ -3,12 +3,15 @@ var loginApp = angular.module("loginApp", [ "ngRoute", "ngResource", "ui.bootstr
 loginApp.config([ "$routeProvider", function($routeProvider) {
 	
 	$routeProvider.
-	when("/", {
+	when("/login", {
 	    templateUrl : "login.html",
+	}).
+	when("/reset-password/:hash", {
+	    templateUrl : "reset-password.html",
 	}).
 	
     otherwise({
-		redirectTo : "/"
+		redirectTo : "/login"
 	});
 	
 }
@@ -44,6 +47,33 @@ loginApp.controller("login_ctrl", function($scope, $rootScope, $location, $windo
         });
       };
 
+});
+
+loginApp.controller("reset_password_ctrl", function($scope, $rootScope, $location, $window, $routeParams, $http) {
+    
+    $scope.password_confirmation = null;
+    
+    $http.get('/timekeeper/svc/auth/check/' + $routeParams.hash).
+        success(function(data) {
+            $scope.person = data;
+        }).
+        error(function(data, status, header, config) {
+            $scope.error_msg = data;
+        });
+
+    
+    $scope.reset = function(person) {
+        person.hash = $routeParams.hash;
+        $http.post("/timekeeper/svc/auth/reset", person)
+            .success(function(data, status, header, config) {
+                $scope.resetOk = true;
+            }).
+            error(function(data, status, header, config) {
+                $scope.error_msg = data;
+                    
+            });
+    };
+    
 });
 
 loginApp.controller("modal_instance", function($rootScope, $scope, $http, $window, $modalInstance) {
@@ -87,7 +117,7 @@ loginApp.factory('authHttpResponseInterceptor',['$q','$location', '$window', fun
     return {
         responseError: function(rejection) {
             if (rejection.status === 401) {
-                $window.location.href = "login.html";
+                $window.location.href = "#/login";
             }
             return $q.reject(rejection);
         }
@@ -98,3 +128,38 @@ loginApp.config(['$httpProvider',function($httpProvider) {
     //Http Intercpetor to check auth failures for xhr requests
     $httpProvider.interceptors.push('authHttpResponseInterceptor');
 }]);
+
+//from https://github.com/TheSharpieOne/angular-input-match/blob/master/dist/angular-input-match.js
+//used to test password confirmation on person-edit.html person-new.html
+loginApp.directive('match', function($parse) {
+ return {
+     require: '?ngModel',
+     restrict: 'A',
+     link: function(scope, elem, attrs, ctrl) {
+         if(!ctrl) {
+             if(console && console.warn){
+                 console.warn('Match validation requires ngModel to be on the element');
+             }
+             return;
+         }
+
+         var matchGetter = $parse(attrs.match);
+
+         scope.$watch(getMatchValue, function(){
+             ctrl.$validate();
+         });
+
+         ctrl.$validators.match = function(){
+             return ctrl.$viewValue === getMatchValue();
+         };
+
+         function getMatchValue(){
+             var match = matchGetter(scope);
+             if(angular.isObject(match) && match.hasOwnProperty('$viewValue')){
+                 match = match.$viewValue;
+             }
+             return match;
+         }
+     }
+ };
+});

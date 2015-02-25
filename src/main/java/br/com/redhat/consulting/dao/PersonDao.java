@@ -19,6 +19,10 @@ public class PersonDao extends BaseDao<Person, PersonSearchFilter> {
             query.append(" and ENT.enabled = ? ");
             params.add(filter.isEnabled());
         }
+        if (filter.getId() != null) {
+            query.append(" and ENT.id = ? ");
+            params.add(filter.getId());
+        }
         
         if (StringUtils.isNotBlank(filter.getName())) {
             query.append(" and lower(ENT.name) = ? ");

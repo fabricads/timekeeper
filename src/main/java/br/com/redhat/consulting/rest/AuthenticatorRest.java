@@ -37,6 +37,8 @@ import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.RoleEnum;
 import br.com.redhat.consulting.model.dto.PersonDTO;
 import br.com.redhat.consulting.model.dto.RoleDTO;
+import br.com.redhat.consulting.services.EmailService;
+import br.com.redhat.consulting.services.ForgotPassword;
 import br.com.redhat.consulting.services.PersonService;
 import br.com.redhat.consulting.util.GeneralException;
 
@@ -49,11 +51,17 @@ public class AuthenticatorRest {
     @Inject 
     private PersonService personService;
     
+    @Inject
+    private ForgotPassword forgotPassword;
+    
+    @Context 
+    private HttpServletRequest req;
+    
     @POST
     @Path("/login")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response login(PersonDTO user, @Context HttpServletRequest req) throws LoginException {
+    public Response login(PersonDTO user) throws LoginException {
         Principal userPrincipal = req.getUserPrincipal();
         Response.ResponseBuilder response = null;
         if (userPrincipal == null) {
@@ -87,6 +95,40 @@ public class AuthenticatorRest {
         return response.build();
     }
     
+    @POST
+    @Path("/reset")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response reset(PersonDTO user)  {
+        Response.ResponseBuilder response = null;
+        if (user != null && StringUtils.isNotBlank(user.getHash())) {
+            Person p = forgotPassword.check(user.getHash());
+            if (p != null) {
+                p.setPassword(user.getPassword());
+                try {
+                    personService.persist(p);
+                    response = Response.ok();                    
+                } catch (GeneralException e) {
+                    LOG.error("Error reset password " + user.getEmail(), e);
+                    Map<String, String> responseObj = new HashMap<>();
+                    responseObj.put("error", e.getMessage());
+                    response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+                }
+            } else {
+                String msg = user.getHash() + "not found ";
+                LOG.error(msg);
+                Map<String, String> responseObj = new HashMap<>();
+                responseObj.put("error", msg);
+                response = Response.status(Response.Status.NOT_FOUND).entity(responseObj);
+            }
+        } else {
+            Map<String, String> responseObj = new HashMap<>();
+            responseObj.put("error", "hash is required");
+            response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+        }
+        return response.build();
+    }
+    
     @GET
     @Path("/forgot/{email}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -96,7 +138,7 @@ public class AuthenticatorRest {
             try {
                 Person ps = personService.findByEmail(email);
                 if (ps != null) {
-                    LOG.info("Send e-mail to " + email);
+                    forgotPassword.requestPasswordReset(req.getRemoteAddr(), ps);
                     response = Response.ok();
                 } else {
                     String msg = "E-mail " + email + " not found or disabled."; 
@@ -117,6 +159,32 @@ public class AuthenticatorRest {
             response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
         }
         
+        return response.build();
+    }
+    
+    @GET
+    @Path("/check/{hash}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response checkHash(@PathParam("hash") String hash) throws LoginException {
+        Response.ResponseBuilder response = null;
+        if (StringUtils.isNotBlank(hash)) {
+            Person p = forgotPassword.check(hash);
+            if (p != null) {
+                p.nullifyAttributes();
+                PersonDTO psDto = new PersonDTO(p);
+                response = Response.ok(psDto);                    
+            } else {
+                String msg = hash + "not found ";
+                LOG.error(msg);
+                Map<String, String> responseObj = new HashMap<>();
+                responseObj.put("error", msg);
+                response = Response.status(Response.Status.NOT_FOUND).entity(responseObj);
+            }
+        } else {
+            Map<String, String> responseObj = new HashMap<>();
+            responseObj.put("error", "hash is required");
+            response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+        }
         return response.build();
     }
     
