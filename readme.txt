@@ -30,8 +30,6 @@ echo -n admin123 | openssl dgst -sha256 -binary | openssl base64
 
 TODO:
 - revisao do envers, guardar o login do usuario quem fez a ação
-- adicionar seguranca, por classe e metodo. autenticacao e autorizacao
-- na seguranca, ao retornar objetos, para consultores, não pode retornar todos os atributos
 - colocar um aviso na tela, caso não tenha conexões no endpoint rest.
 
 git clone ssh://54b5c4603b696efd7e0004a5@brazil-consulting.itos.redhat.com/~/git/brazil.git/
@@ -67,9 +65,7 @@ insert into role(name,short_name) values('Red Hat Manager','redhat_manager');
 insert into partner_org(name,enabled) values('Red Hat',true);
 insert into person(name, email,password,enabled,persontype,id_role,id_partner_org,city,country,state) values('Claudio Miranda','claudio@redhat.com','gOqk39ARU+xpdTuMv8/ZSVREd7X8EYS6H8v1vlekO5Y=', true,4,4,4,'Brasilia','Brasil','DF');
 
-** autenticacao
-- adicionar msg de erro de autenticacao
-- adicionar lembrador de senha
-- redirecionar quando usuario ja esta autenticado na tela de login
+*** pendencias
+- lembrador de senha na pagina de login
+- editar projeto, coloca campo data com erro de preenchimento
 - 
-

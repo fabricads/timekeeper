@@ -1,4 +1,4 @@
-var timekeeperApp = angular.module("timekeeperApp", [ "ngRoute", "ngResource", "ui.bootstrap", "servicesApp" ]);
+var timekeeperApp = angular.module("timekeeperApp", [ "ngRoute", "ngResource", "ui.utils", "ui.bootstrap", "servicesApp" ]);
 
 timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 	$routeProvider.
