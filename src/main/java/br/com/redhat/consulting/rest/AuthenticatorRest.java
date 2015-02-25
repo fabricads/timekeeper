@@ -174,7 +174,7 @@ public class AuthenticatorRest {
                 PersonDTO psDto = new PersonDTO(p);
                 response = Response.ok(psDto);                    
             } else {
-                String msg = hash + "not found ";
+                String msg = "Error processing password reset token.";
                 LOG.error(msg);
                 Map<String, String> responseObj = new HashMap<>();
                 responseObj.put("error", msg);

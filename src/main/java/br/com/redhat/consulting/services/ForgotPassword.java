@@ -44,15 +44,11 @@ public class ForgotPassword {
     
     public void requestPasswordReset(String remoteAddress, Person person) {
 
-        String clearText = person.getId() + person.getEmail() + person.getRegistered();
-        String hash = Util.hash(clearText);
-        hash = (FACTOR + person.getId()) + hash;
-
         Map<String, String> root = new HashMap<>();
         root.put("name", person.getName());
         root.put("ip_address", remoteAddress);
         root.put("host_address", System.getProperty("timekeeper.host.address", "http://localhost:8080"));
-        root.put("hash", hash);
+        root.put("hash", buildToken(person));
         Template temp;
         try {
             temp = freemarkerCfg.getTemplate("forgot_password.ftl");
@@ -64,10 +60,9 @@ public class ForgotPassword {
         } catch (IOException | TemplateException e) {
             LOG.error("Error processing freemarker template", e);
         }  
-
     }
 
-    public Person check(String hash) {
+    public Person check(String hash)  {
         int offset = ("" + FACTOR).length();
         String strId = hash.substring(0, offset);
         Integer personId = Integer.parseInt(strId) - FACTOR;
@@ -75,14 +70,29 @@ public class ForgotPassword {
         try {
             ps = personService.findByIdEnabled(personId);
             if (ps != null) {
-                LOG.debug("Person found = " + ps);
+                String token = buildToken(ps);
+                if (token.equals(hash)) {
+                    LOG.debug("Person found = " + ps);
+                } else {
+                    LOG.warn("Person found " + ps + " but token differs");
+                    LOG.warn("submitted hash: " + hash);
+                    LOG.warn("expected      : " + token);
+                    ps = null;
+                }
             } else {
                 LOG.debug("Person not found");
             }
         } catch (GeneralException e) {
-            e.printStackTrace();
+            LOG.error("Error checking hash for password reset.", e);
         }
         return ps;
+    }
+    
+    private String buildToken(Person person) {
+        String clearText = person.getId() + person.getEmail() + person.getRegistered();
+        String hash = Util.hash(clearText);
+        hash = (FACTOR + person.getId()) + hash;
+        return hash;
     }
 
 }
