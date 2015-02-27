@@ -58,7 +58,6 @@ public class Person extends AbstractEntity {
 	public Person() {}
 	
     public Person(String oraclePAId, String name, String email, String city, String state, PartnerOrganization partnerOrganization) {
-        super();
         this.oraclePAId = oraclePAId;
         this.name = name;
         this.email = email;

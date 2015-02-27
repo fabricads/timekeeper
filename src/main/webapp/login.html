@@ -1,14 +1,14 @@
-  <form class="form-horizontal" ng-controller="login_ctrl" ng-submit="login(person)" novalidate>
+  <form class="form-horizontal" name="form" ng-controller="login_ctrl" ng-submit="login(person)" novalidate>
     <div class="form-group">
       <label for="inputUsername" class="col-sm-2 col-md-2 control-label">E-mail</label>
       <div class="col-sm-10 col-md-10">
-        <input type="text" class="form-control" id="inputUsername" placeholder="" tabindex="1" ng-model="person.email">
+        <input type="text" class="form-control" id="inputUsername" required tabindex="1" ng-model="person.email">
       </div>
     </div>
     <div class="form-group">
       <label for="inputPassword" class="col-sm-2 col-md-2 control-label">Password</label>
       <div class="col-sm-10 col-md-10">
-        <input type="password" class="form-control" id="inputPassword" placeholder="" tabindex="2" ng-model="person.password">
+        <input type="password" class="form-control" id="inputPassword" required tabindex="2" ng-model="person.password">
       </div>
     </div>
     <div class="form-group">
@@ -56,7 +56,7 @@
       </div> 
       
       <div class="col-xs-4 col-sm-4 col-md-4 submit">
-        <button type="submit" class="btn btn-primary btn-lg" tabindex="4">Log In</button>
+        <button type="submit" class="btn btn-primary btn-lg" tabindex="4" ng-disabled="form.$invalid">Log In</button>
       </div>
     </div>
   </form>

@@ -66,9 +66,9 @@ public class ProjectDao extends BaseDao<Project, ProjectSearchFilter> {
         
     }
     
-    public Integer countProjectsByPM(Integer pmId) {
-        Integer count = 0;
-        TypedQuery<Integer> query= getEntityManager().createQuery("select count(p) from Project where p.projectManager.id = ?0", Integer.class);
+    public Long countProjectsByPM(Integer pmId) {
+        Long count = 0L;
+        TypedQuery<Long> query= getEntityManager().createQuery("select count(p) from Project p where p.projectManager.id = ?0", Long.class);
         query.setParameter(0, pmId);
         count = query.getSingleResult();
         return count;

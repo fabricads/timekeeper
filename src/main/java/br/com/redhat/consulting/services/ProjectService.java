@@ -81,6 +81,7 @@ public class ProjectService {
     public List<Project> findAll() throws GeneralException {
         List<Project> res = Collections.emptyList();
         ProjectSearchFilter filter = new ProjectSearchFilter();
+        projectDao.setFetchCollection("consultants");
         res = projectDao.find(filter);
         return res;
         
@@ -112,8 +113,8 @@ public class ProjectService {
         return prj;
     }
     
-    public Integer countProjectsByPM(Integer pmId) throws GeneralException {
-        Integer count = projectDao.countProjectsByPM(pmId);
+    public Long countProjectsByPM(Integer pmId) throws GeneralException {
+        Long count = projectDao.countProjectsByPM(pmId);
         return count;
     }
     

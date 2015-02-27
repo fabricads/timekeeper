@@ -33,6 +33,7 @@ public class ProjectDTO  {
     private List<TaskDTO> tasks = new ArrayList<>();
     private List<Integer> tasksToRemove = new ArrayList<>();
     private Date lastFilledDay;
+    private int qtyConsultants;
     
     public ProjectDTO() {}
     
@@ -202,6 +203,14 @@ public class ProjectDTO  {
         prj.setRegistered(registered);
         prj.setLastModification(lastModification);
         return prj;
+    }
+
+    public int getQtyConsultants() {
+        return qtyConsultants;
+    }
+
+    public void setQtyConsultants(int qtyConsultants) {
+        this.qtyConsultants = qtyConsultants;
     }
 
     @Override

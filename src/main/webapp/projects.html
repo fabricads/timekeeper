@@ -27,7 +27,7 @@
                 <td style="vertical-align: middle;">
                     <a class="btn btn-default" ng-show="prj.enabled" ng-click="disable(prj.id)">Disable</a> 
                     <a class="btn btn-default" ng-show="!prj.enabled" ng-click="enable(prj.id)">Enable</a>
-                    <a class="btn btn-danger" ng-show="prj.consultants == null || prj.consultants.length == 0" ng-click="delete(prj.id)">Delete</a>
+                    <a class="btn btn-danger" ng-show="prj.QtyConsultants == 0" ng-click="delete(prj.id)">Delete</a>
                 </td>
             </tr>
         </tbody>

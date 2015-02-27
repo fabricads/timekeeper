@@ -34,7 +34,7 @@
     <div class="form-group" ng-class="{'has-error': form.pa.$invalid}">
         <label for="prj_pa_number" class="col-md-2 control-label">PA Number</label>
         <div class="col-md-1">
-            <input type="text" class="form-control" name="pa" required ng-model="project.paNumber">
+            <input type="text" class="form-control" ui-mask="?9999999999" name="pa" ng-required="true" ng-model="project.paNumber">
         </div>
         <div class="col-md-4">
             <span class="help-block" ng-show="form.pa.$error.required">Required field</span>

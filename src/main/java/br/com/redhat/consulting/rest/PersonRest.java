@@ -36,6 +36,7 @@ import br.com.redhat.consulting.model.dto.PartnerOrganizationDTO;
 import br.com.redhat.consulting.model.dto.PersonDTO;
 import br.com.redhat.consulting.model.dto.RoleDTO;
 import br.com.redhat.consulting.services.PersonService;
+import br.com.redhat.consulting.services.ProjectService;
 import br.com.redhat.consulting.util.GeneralException;
 
 @RequestScoped
@@ -50,6 +51,9 @@ public class PersonRest {
     
     @Inject
     private PersonService personService;
+    
+    @Inject
+    private ProjectService projectService;
     
     @Path("/pms")
     @Produces(MediaType.APPLICATION_JSON)
@@ -101,6 +105,10 @@ public class PersonRest {
                     Role role = p.getRole();
                     if (type == FIND_ALL) 
                         personDto.setNumberOfProjects(p.getProjects().size());
+                    if (p.getPersonTypeEnum().equals(PersonType.MANAGER_REDHAT)) { 
+                        int nrProjects = projectService.countProjectsByPM(p.getId()).intValue();
+                        personDto.setNumberOfProjects(nrProjects);
+                    }
                     RoleDTO roleDto = new RoleDTO();
                     BeanUtils.copyProperties(roleDto, role);
                     personDto.setOrganization(orgDto);

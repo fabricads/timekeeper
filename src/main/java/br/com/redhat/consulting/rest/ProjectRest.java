@@ -96,6 +96,8 @@ public class ProjectRest {
                 for (Project project: projects) {
                     ProjectDTO prjDto = new ProjectDTO();
                     BeanUtils.copyProperties(prjDto, project);
+                    int qty = project.getConsultants().size();
+                    prjDto.setQtyConsultants(qty);
                     projectsDto.add(prjDto);
                 }
                 response = Response.ok(projectsDto);
