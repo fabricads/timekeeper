@@ -59,6 +59,7 @@ http://brazil-consulting.itos.redhat.com/jboss-kitchensink/index.jsf
 /subsystem=security/security-domain=timekeeper:add(cache-type=default)
 /subsystem=security/security-domain=timekeeper/authentication=classic:add(login-modules=[{"code"=>"Database", "flag"=>"required", "module-options"=>[("dsJndiName"=>"java:/jdbc/partners_timekeeper"),("principalsQuery"=>"select password from person where enabled = true and email = ?"), ("rolesQuery"=>"select r.short_name, 'Roles' from role r inner join person p on p.id_role=r.id_role where p.email = ?"), ("hashAlgorithm"=>"SHA-256"),("hashEncoding"=>"base64")]}])
 
+/system-property=timekeeper.host.address:add(value="https://brazil-consulting.itos.redhat.com")
 
 insert into role(name,short_name) values('Partner Consultant','partner_consultant');
 insert into role(name,short_name) values('Red Hat Manager','redhat_manager');

@@ -13,11 +13,10 @@ import br.com.redhat.consulting.dao.TaskDao;
 import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.Project;
 import br.com.redhat.consulting.model.Task;
-import br.com.redhat.consulting.model.Timecard;
-import br.com.redhat.consulting.model.TimecardEntry;
 import br.com.redhat.consulting.model.filter.ProjectSearchFilter;
 import br.com.redhat.consulting.util.GeneralException;
 
+@RequestScoped
 public class ProjectService {
     
     @Inject

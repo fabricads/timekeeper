@@ -22,6 +22,8 @@ loginApp.controller("login_ctrl", function($scope, $rootScope, $location, $windo
 
     $scope.error_msg = $rootScope.error_msg;
     
+    
+    
     $scope.login = function(person) {
         auth_service.login(person, function(data, status) {
             if (status == 200) {
@@ -31,6 +33,7 @@ loginApp.controller("login_ctrl", function($scope, $rootScope, $location, $windo
                     $window.location.href = ".";
                 } else {
                     console.log("already logged in");
+                    $window.location.href = ".";
                 }
             } else {
                 console.log(">> login failed");
