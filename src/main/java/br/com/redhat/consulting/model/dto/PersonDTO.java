@@ -37,6 +37,7 @@ public class PersonDTO  {
 	private Date registered;
 	private Date lastModification;
 	private String hash;
+	private boolean dissociateOfProject;
 	
 	public PersonDTO() {}
 	
@@ -261,6 +262,14 @@ public class PersonDTO  {
 
     public void setHash(String hash) {
         this.hash = hash;
+    }
+
+    public boolean isDissociateOfProject() {
+        return dissociateOfProject;
+    }
+
+    public void setDissociateOfProject(boolean dissociateOfProject) {
+        this.dissociateOfProject = dissociateOfProject;
     }
     
 	

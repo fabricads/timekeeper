@@ -1,6 +1,5 @@
 package br.com.redhat.consulting.rest;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,7 +25,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +40,7 @@ import br.com.redhat.consulting.model.dto.TaskDTO;
 import br.com.redhat.consulting.services.PersonService;
 import br.com.redhat.consulting.services.ProjectService;
 import br.com.redhat.consulting.services.TaskService;
+import br.com.redhat.consulting.services.TimecardService;
 import br.com.redhat.consulting.util.GeneralException;
 import br.com.redhat.consulting.util.Util;
 
@@ -54,6 +53,9 @@ public class ProjectRest {
     
     @Inject
     private ProjectService projectService;
+    
+    @Inject
+    private TimecardService timecardService;
     
     @Inject
     private PersonService personService;
@@ -94,15 +96,14 @@ public class ProjectRest {
             } else {
                 projectsDto = new ArrayList<ProjectDTO>(projects.size());
                 for (Project project: projects) {
-                    ProjectDTO prjDto = new ProjectDTO();
-                    BeanUtils.copyProperties(prjDto, project);
+                    ProjectDTO prjDto = new ProjectDTO(project);
                     int qty = project.getConsultants().size();
                     prjDto.setQtyConsultants(qty);
                     projectsDto.add(prjDto);
                 }
                 response = Response.ok(projectsDto);
             }
-        } catch (GeneralException | IllegalAccessException | InvocationTargetException e) {
+        } catch (GeneralException e) {
             LOG.error("Error to find projects.", e);
             Map<String, String> responseObj = new HashMap<>();
             responseObj.put("error", e.getMessage());
@@ -135,8 +136,7 @@ public class ProjectRest {
                     // OU verifica se o ultimo timecardentry lancado e menor que a data fim do projeto
                     if (project.getTimecards().size() == 0 || projectService.checkProjectCanFillMoreTimecards(project.getId())) {
                         LOG.debug(loggedUser.getName() + " can fill more timecards to project: " + project.getName());
-                        ProjectDTO prjDto = new ProjectDTO();
-                        BeanUtils.copyProperties(prjDto, project);
+                        ProjectDTO prjDto = new ProjectDTO(project);
                         projectsDto.add(prjDto);
                     } else {
                         LOG.debug(loggedUser.getName() + " CANNOT fill new timecards to project: " + project.getName());
@@ -144,7 +144,7 @@ public class ProjectRest {
                 }
                 response = Response.ok(projectsDto);
             }
-        } catch (GeneralException | IllegalAccessException | InvocationTargetException e) {
+        } catch (GeneralException e) {
             LOG.error("Error to find projects.", e);
             Map<String, String> responseObj = new HashMap<>();
             responseObj.put("error", e.getMessage());
@@ -166,7 +166,6 @@ public class ProjectRest {
     @GET
     @RolesAllowed({"redhat_manager", "admin"})
     public Response get(@PathParam("pr") @DefaultValue("-1") int projectId) {
-        ProjectDTO projectDto = new ProjectDTO();
         Project projectEnt = null;
         Response.ResponseBuilder response = null;
         try {
@@ -179,21 +178,22 @@ public class ProjectRest {
                 Person pm = projectEnt.getProjectManager();
                 pm.nullifyAttributes();
                 
-                PersonDTO pmDto = new PersonDTO();
-                BeanUtils.copyProperties(pmDto, pm);
-                BeanUtils.copyProperties(projectDto, projectEnt);
+                ProjectDTO projectDto = new ProjectDTO(projectEnt);
+                PersonDTO pmDto = new PersonDTO(pm);
                 projectDto.setProjectManagerDTO(pmDto);
                 for (Person consultant: projectEnt.getConsultants()) {
                     consultant.nullifyAttributes();
-                    PersonDTO consultantDto = new PersonDTO();
+                    PersonDTO consultantDto = new PersonDTO(consultant);
                     PartnerOrganizationDTO orgDto = new PartnerOrganizationDTO(consultant.getPartnerOrganization());
-                    BeanUtils.copyProperties(consultantDto, consultant);
                     consultantDto.setOrganization(orgDto);
+                    Long qtyTimecards = timecardService.countByConsultantAndProject(consultant.getId(), projectId);
+                    consultantDto.setDissociateOfProject(qtyTimecards < 1);
                     projectDto.addConsultant(consultantDto);
                 }
                 for (Task task: projectEnt.getTasks()) {
-                    TaskDTO taskDto = new TaskDTO();
-                    BeanUtils.copyProperties(taskDto, task);
+                    TaskDTO taskDto = new TaskDTO(task);
+                    Long qtyTimecardEntries = timecardService.countByTask(task.getId());
+                    taskDto.setDissociateOfProject(qtyTimecardEntries < 1);
                     projectDto.addTask(taskDto);
                 }
                 response = Response.ok(projectDto);
@@ -212,7 +212,6 @@ public class ProjectRest {
     @GET
     @RolesAllowed({"redhat_manager", "admin", "partner_consultant"})
     public Response getWithTimecards(@PathParam("pr") @DefaultValue("-1") int projectId) {
-        ProjectDTO projectDto = new ProjectDTO();
         Project projectEnt = null;
         Response.ResponseBuilder response = null;
         PersonDTO loggedUser = Util.loggedUser(httpReq);
@@ -226,9 +225,8 @@ public class ProjectRest {
                 Person pm = projectEnt.getProjectManager();
                 pm.nullifyAttributes();
                 
-                PersonDTO pmDto = new PersonDTO();
-                BeanUtils.copyProperties(pmDto, pm);
-                BeanUtils.copyProperties(projectDto, projectEnt);
+                PersonDTO pmDto = new PersonDTO(pm);
+                ProjectDTO projectDto = new ProjectDTO(projectEnt);
                 projectDto.setProjectManagerDTO(pmDto);
                 
                 Date lastFilledDate = projectService.lastFilledTimecard(projectId);
@@ -236,8 +234,7 @@ public class ProjectRest {
                 projectDto.setLastFilledDay(lastFilledDate);
                 
                 for (Task task: projectEnt.getTasks()) {
-                    TaskDTO taskDto = new TaskDTO();
-                    BeanUtils.copyProperties(taskDto, task);
+                    TaskDTO taskDto = new TaskDTO(task);
                     projectDto.addTask(taskDto);
                 }
                 response = Response.ok(projectDto);
@@ -271,24 +268,26 @@ public class ProjectRest {
                 responseObj.put("error", "Project with duplicated name: " + projectDto.getName());
                 builder = Response.status(Response.Status.CONFLICT).entity(responseObj);
             } else {
-                projectEnt = new Project();
-                Person pm = personService.findById(projectDto.getProjectManagerDTO().getId());
-                List<Integer> consultantsId = new ArrayList<>(projectDto.getConsultants().size());
-                for (PersonDTO pdto: projectDto.getConsultants()) {
-                    consultantsId.add(pdto.getId());
+                Person pm = new Person();
+                pm.setId(projectDto.getProjectManagerDTO().getId());
+                projectEnt = projectDto.toProject();
+                if (projectDto.getConsultants().size() > 0) {
+                    List<Integer> consultantsId = new ArrayList<>(projectDto.getConsultants().size());
+                    for (PersonDTO pdto: projectDto.getConsultants()) {
+                        consultantsId.add(pdto.getId());
+                    }
+                    List<Person> consultants = new ArrayList<Person>(projectDto.getConsultants().size());
+                    consultants = personService.findPersonsById(consultantsId);
+                    projectEnt.setConsultants(consultants);
+                    for (Person p: consultants) {
+                        p.getProjects().add(projectEnt);
+                    }
                 }
-                List<Person> consultants = personService.findPersonsById(consultantsId);
                 projectDto.setConsultantsDTO(null);
-                BeanUtils.copyProperties(projectEnt, projectDto);
                 projectEnt.setProjectManager(pm);
-                projectEnt.setConsultants(consultants);
-                for (Person p: consultants) {
-                    p.getProjects().add(projectEnt);
-                }
                 
                 for (TaskDTO taskDto: projectDto.getTasksDTO()) {
-                    Task task = new Task();
-                    BeanUtils.copyProperties(task, taskDto);
+                    Task task = taskDto.toTask();
                     projectEnt.addTask(task);
                     task.setProject(projectEnt);
                 }

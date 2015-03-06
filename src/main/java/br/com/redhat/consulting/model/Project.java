@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -97,7 +98,7 @@ public class Project extends AbstractEntity {
         this.projectManager = projectManager;
     }
 
-    @ManyToMany
+    @ManyToMany(cascade=CascadeType.MERGE)
     @JoinTable(name="person_project", joinColumns=@JoinColumn(name="id_project"), inverseJoinColumns=@JoinColumn(name="id_person"))
     public List<Person> getConsultants() {
         return consultants;

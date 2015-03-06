@@ -103,7 +103,7 @@
             <div class="com-sm-2">
                 <label>Selected consultants</label>
                 <ul>
-                    <li data-ng-repeat="c in selected_consultants">{{c.name}} - {{c.organization.name}} - <a href="" ng-click="remove_consultant(c)">Remove</a></li>
+                    <li data-ng-repeat="c in selected_consultants">{{c.name}} - {{c.organization.name}} - <a href="" ng-show="c.dissociateOfProject" ng-click="remove_consultant(c)">Remove</a></li>
                 </ul>
             </div>
         </div>
@@ -121,7 +121,7 @@
             <div class="com-sm-2">
                 <label>Tasks</label>
                 <ul>
-                    <li data-ng-repeat="task in selected_tasks">{{task.name}} - <a href="" ng-click="remove_task(task)">Remove</a></li>
+                    <li data-ng-repeat="task in selected_tasks">{{task.name}} - <a href="" ng-show="task.dissociateOfProject" ng-click="remove_task(task)">Remove</a></li>
                 </ul>
             </div>
         </div>

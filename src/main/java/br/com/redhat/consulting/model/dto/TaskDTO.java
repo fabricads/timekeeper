@@ -7,6 +7,7 @@ public class TaskDTO  {
 
     private Integer id;
     private String name;
+    private boolean dissociateOfProject;
     
     public TaskDTO() { }
     
@@ -35,6 +36,14 @@ public class TaskDTO  {
         this.name = name;
     }
     
+    public boolean isDissociateOfProject() {
+        return dissociateOfProject;
+    }
+
+    public void setDissociateOfProject(boolean dissociateOfProject) {
+        this.dissociateOfProject = dissociateOfProject;
+    }
+
     public Task toTask() {
         Task task = new Task();
         task.setId(id);

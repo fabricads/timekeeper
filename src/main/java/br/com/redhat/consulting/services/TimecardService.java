@@ -54,6 +54,16 @@ public class TimecardService {
         return tc;
     }
     
+    public Long countByConsultantAndProject(Integer consultantId, Integer projectId) throws GeneralException {
+        Long res = timecardDao.countByConsultantAndProject(projectId, consultantId);
+        return res;
+    }
+    
+    public Long countByTask(Integer taskId) throws GeneralException {
+        Long res = timecardDao.countByTask(taskId);
+        return res;
+    }
+    
     public Long countByDate(Integer consultantId, Integer projectId, Date initDate, Date endDate) throws GeneralException {
         Long res = timecardDao.countByDate(projectId, consultantId, initDate, endDate);
         return res;

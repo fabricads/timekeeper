@@ -54,7 +54,26 @@ public class TimecardDao extends BaseDao<Timecard, TimecardSearchFilter> {
         qry.setParameter(3, endDate);
         Long res = qry.getSingleResult();
         return res; 
-        
+    }
+    
+    public Long countByConsultantAndProject(Integer projectId, Integer consultantId) {
+        String qryStr = "select count(tce.id) from Timecard tc inner join tc.timecardEntries tce "
+                + "where tc.project.id = ?0 "
+                + "  and tc.consultant.id = ?1 ";
+        TypedQuery<Long> qry = getEntityManager().createQuery(qryStr, Long.class);
+        qry.setParameter(0, projectId);
+        qry.setParameter(1, consultantId);
+        Long res = qry.getSingleResult();
+        return res; 
+    }
+    
+    public Long countByTask(Integer taskId) {
+        String qryStr = "select count(tce.id) from Timecard tc inner join tc.timecardEntries tce "
+                + "where tce.task.id = ?0 ";
+        TypedQuery<Long> qry = getEntityManager().createQuery(qryStr, Long.class);
+        qry.setParameter(0, taskId);
+        Long res = qry.getSingleResult();
+        return res; 
     }
     
 }

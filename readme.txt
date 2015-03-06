@@ -67,6 +67,7 @@ insert into partner_org(name,enabled) values('Red Hat',true);
 insert into person(name, email,password,enabled,persontype,id_role,id_partner_org,city,country,state) values('Claudio Miranda','claudio@redhat.com','gOqk39ARU+xpdTuMv8/ZSVREd7X8EYS6H8v1vlekO5Y=', true,4,4,4,'Brasilia','Brasil','DF');
 
 *** pendencias
-- lembrador de senha na pagina de login
-- editar projeto, coloca campo data com erro de preenchimento
+- adicionar paginacao 
+- adicionar filtros
+- adicionar tela para consultas de entidades DISABLED
 - 
