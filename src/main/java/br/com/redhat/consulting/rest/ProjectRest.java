@@ -79,14 +79,14 @@ public class ProjectRest {
         List<Project> projects = null;
         List<ProjectDTO> projectsDto = null;
         Response.ResponseBuilder response = null;
-       
+        PersonDTO loggedUser = Util.loggedUser(httpReq);
         // TODO: colocar validacao do consultor e PM pode buscar tc soment dele
         try {
             if (pmId != null)
                 projects = projectService.findByPM(pmId);
             else if (consultantId != null) 
                 projects = projectService.findByConsultant(consultantId);
-            else 
+            else if (loggedUser.isAdminOrProjectManager())
                 projects = projectService.findAll();
             if (projects == null || projects.size() == 0) {
                 Map<String, Object> responseObj = new HashMap<>();
@@ -97,8 +97,10 @@ public class ProjectRest {
                 projectsDto = new ArrayList<ProjectDTO>(projects.size());
                 for (Project project: projects) {
                     ProjectDTO prjDto = new ProjectDTO(project);
-                    int qty = project.getConsultants().size();
-                    prjDto.setQtyConsultants(qty);
+                    if (loggedUser.isAdminOrProjectManager()) {
+                        int qty = project.getConsultants().size();
+                        prjDto.setQtyConsultants(qty);
+                    }
                     projectsDto.add(prjDto);
                 }
                 response = Response.ok(projectsDto);
