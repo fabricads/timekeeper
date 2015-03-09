@@ -19,6 +19,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -59,37 +60,42 @@ public class PersonRest {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @RolesAllowed({"redhat_manager", "admin"})
-    public Response listProjectManagers() {
-        return list(FIND_PM);
+    public Response listProjectManagers(@QueryParam("e") Integer listDisabled) {
+        return list(FIND_PM, listDisabled);
     }
     
     @Path("/list")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @RolesAllowed({"redhat_manager", "admin"})
-    public Response listPersons() {
-        return list(FIND_ALL);
+    public Response listPersons(@QueryParam("e") Integer listDisabled) {
+        return list(FIND_ALL, listDisabled);
     }
     
     @Path("/consultants")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @RolesAllowed({"redhat_manager", "admin"})
-    public Response listConsultants() {
-        return list(FIND_CONSULTANTS);
+    public Response listConsultants(@QueryParam("e") Integer listDisabled) {
+        return list(FIND_CONSULTANTS, listDisabled);
     }
     
-    private Response list(int type) {
+    private Response list(int type, int listType) {
         List<Person> persons = null;
         List<PersonDTO> personsDto = null;
         Response.ResponseBuilder response = null;
         try {
+            int LIST_ENABLED = 1;
+            Boolean listOnlyEnabled = null;
+            if (listType == LIST_ENABLED)
+                listOnlyEnabled = true;
             if (type == FIND_PM) 
                 persons = personService.findProjectMangers();
             else if (type == FIND_CONSULTANTS)
                 persons = personService.findConsultants();
-            else if (type == FIND_ALL)
-                persons = personService.findPersons();
+            else if (type == FIND_ALL) {
+                persons = personService.findPersons(listOnlyEnabled);
+            }
             
             if (persons.size() == 0) {
                 Map<String, Object> responseObj = new HashMap<>();

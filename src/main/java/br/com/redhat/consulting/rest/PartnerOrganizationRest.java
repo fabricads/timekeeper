@@ -42,13 +42,17 @@ public class PartnerOrganizationRest {
     @Path("/list")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    public Response listOrgs(@QueryParam("e") Boolean enabled) {
+    public Response listOrgs(@QueryParam("e") @DefaultValue("1") Integer listType) {
         List<PartnerOrganization> orgs = null;
         List<PartnerOrganizationDTO> orgsDto = null;
         Response.ResponseBuilder response = null;
        
         try {
-            orgs = orgService.findOrganizations(enabled);
+            int LIST_ENABLED = 1;
+            Boolean listOnlyEnabled = null;
+            if (listType == LIST_ENABLED)
+                listOnlyEnabled = true;
+            orgs = orgService.findOrganizations(listOnlyEnabled);
             if (orgs.size() == 0) {
                 Map<String, Object> responseObj = new HashMap<>();
                 responseObj.put("msg", "No organizations found");

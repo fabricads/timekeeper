@@ -39,11 +39,13 @@ public class PersonService {
         return res;
     }
     
-    public List<Person> findPersons() throws GeneralException {
+    public List<Person> findPersons(Boolean enabled) throws GeneralException {
         List<Person> res = null;
         PersonSearchFilter filter = new PersonSearchFilter();
         filter.setPersonTypes(new int[]{PersonType.CONSULTANT_PARTNER.getId(), PersonType.MANAGER_REDHAT.getId()});
-        personDao.setFetchCollection(new String[]{"projects"});
+        personDao.setFetchCollection("projects");
+        if (enabled != null)
+            filter.setEnabled(enabled);
         res = personDao.find(filter);
         return res;
     }

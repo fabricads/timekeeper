@@ -17,7 +17,7 @@ public class PartnerOrganizationDao extends BaseDao<PartnerOrganization, Partner
             query.append(" and ENT.id = ? ");
             params.add(filter.getId());
         }
-        if (filter.isEnabled()) {
+        if (filter.isEnabled() != null) {
             query.append(" and ENT.enabled = ? ");
             params.add(filter.isEnabled());
         }

@@ -1,9 +1,11 @@
 <script src="js/lib/jquery.dataTables.js"></script>
 <h1>Organizations</h1>
 
-<p><a class="btn btn-primary" href="#/organization-new">Add an organization</a></p>
-
 <div class="table-responsive" ng-controller="org_listing_ctrl" ng-cloak>
+<p><a class="btn btn-primary" href="#/organization-new">Add an organization</a>
+<input type="checkbox" ng-model="list_enabled" ng-true-value="2" ng-false-value="1" ng-click="refresh()"/>  List disabled organizations
+</p>
+
     <div ng-show="loading">Loading..</div>
     <div class="alert alert-info" ng-show="orgs.orgs.length == 0">
         <span class="pficon pficon-info"></span> There is no organization to list, do you want to <a href="#/organization-new">add an

@@ -359,20 +359,26 @@ timekeeperApp.controller("organization_edit_ctrl", function($scope, $http, $rout
 
 timekeeperApp.controller("org_listing_ctrl", function($scope, $http, $routeParams, $window) {
 	
+    $scope.list_enabled = 1;
     $scope.loading = true;
-	$http.get('/timekeeper/svc/organization/list').
-	    success(function(data) {
-    		$scope.orgs = data;
-    		$scope.loading = false;
-    	}).
-    	error(function(data, status, header, config) {
-            $scope.error_msg = data;
-            $scope.loading = false;
-        });
+    
+	$scope.refresh = function() {
+	    $http.get('/timekeeper/svc/organization/list?e='+$scope.list_enabled).
+    	    success(function(data) {
+        		$scope.orgs = data;
+        		$scope.loading = false;
+        	}).
+        	error(function(data, status, header, config) {
+                $scope.error_msg = data;
+                $scope.loading = false;
+            });
+	};
+	
+	$scope.refresh();
 	
 	$scope.disable = function(orgId) {
-		$http.get("/timekeeper/svc/organization/"+orgId+"/disable");
-		$window.location.reload();
+	    $http.get("/timekeeper/svc/organization/"+orgId+"/disable");
+	    $window.location.reload();
 	};
 	$scope.enable = function(orgId) {
 		$http.get("/timekeeper/svc/organization/"+orgId+"/enable");
@@ -394,11 +400,16 @@ timekeeperApp.controller("org_listing_ctrl", function($scope, $http, $routeParam
 
 timekeeperApp.controller("person_listing_ctrl", function($scope, $http, $window) {
 	
+    $scope.list_enabled = 1;
     $scope.loading = true;
-	$http.get('/timekeeper/svc/person/list').success(function(data) {
-		$scope.persons = data;
-		$scope.loading = false;
-	});
+    
+    $scope.refresh = function() {
+    	$http.get('/timekeeper/svc/person/list?e='+$scope.list_enabled).success(function(data) {
+    		$scope.persons = data;
+    		$scope.loading = false;
+    	});
+    };
+    $scope.refresh();
 	
 	$scope.disable = function(personId) {
 		$http.get("/timekeeper/svc/person/"+personId+"/disable");
@@ -432,7 +443,7 @@ timekeeperApp.controller("person_new_ctrl", function($scope, $http, $rootScope) 
 		$scope.roles = data;
 	});
 	
-	$http.get('/timekeeper/svc/organization/list?e=true').success(function(data) {
+	$http.get('/timekeeper/svc/organization/list?e=1').success(function(data) {
 		$scope.orgs = data;
 	});
 	
@@ -470,7 +481,7 @@ timekeeperApp.controller("person_edit_ctrl", function($scope, $http, $routeParam
 		$scope.roles = data;
 	});
 	
-	$http.get('/timekeeper/svc/organization/list?e=true').success(function(data) {
+	$http.get('/timekeeper/svc/organization/list?e=1').success(function(data) {
 		$scope.orgs = data;
 	});
 	

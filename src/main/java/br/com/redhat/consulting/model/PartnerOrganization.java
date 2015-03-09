@@ -30,7 +30,7 @@ public class PartnerOrganization extends AbstractEntity {
     private static final long serialVersionUID = 1L;
     
     private String name;
-    private boolean enabled;
+    private Boolean enabled;
     private List<Person> persons = new ArrayList<>();
     private List<Contact> contacts = new ArrayList<>();
     
@@ -60,11 +60,11 @@ public class PartnerOrganization extends AbstractEntity {
         this.name = name;
     }
 
-    public boolean isEnabled() {
+    public Boolean isEnabled() {
         return enabled;
     }
 
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
 
