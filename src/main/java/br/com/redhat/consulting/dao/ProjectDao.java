@@ -21,7 +21,7 @@ public class ProjectDao extends BaseDao<Project, ProjectSearchFilter> {
             params.add(filter.getId());
         }
         
-        if (filter.isEnabled()) {
+        if (filter.isEnabled() != null) {
             query.append(" and ENT.enabled = ? ");
             params.add(filter.isEnabled());
         }

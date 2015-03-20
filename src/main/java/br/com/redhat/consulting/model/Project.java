@@ -41,7 +41,7 @@ public class Project extends AbstractEntity {
     // Red Hat project manager
     private Person projectManager;
     private List<Person> consultants = new ArrayList<>();
-    private boolean enabled;
+    private Boolean enabled;
     private Boolean usePMSubstitute;
 
     private Date initialDate;
@@ -112,11 +112,11 @@ public class Project extends AbstractEntity {
         consultants.add(consultant);
     }
 
-    public boolean isEnabled() {
+    public Boolean isEnabled() {
         return enabled;
     }
 
-    public void setEnabled(boolean active) {
+    public void setEnabled(Boolean active) {
         this.enabled = active;
     }
 

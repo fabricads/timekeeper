@@ -73,11 +73,22 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 timekeeperApp.controller("project_list_ctrl", function($scope, $http, $window) {
 
     $scope.loading = true;
-	$http.get('/timekeeper/svc/project/list').
-	    success(function(data) {
-        	$scope.projects = data;
-        	$scope.loading = false;
-        });
+    $scope.list_enabled = 1;
+	
+    $scope.refresh = function() {
+        $http.get('/timekeeper/svc/project/list?e='+$scope.list_enabled).
+            success(function(data) {
+                $scope.projects = data;
+                $scope.loading = false;
+            }).
+            error(function(data, status, header, config) {
+                $scope.error_msg = data;
+                $scope.loading = false;
+            });
+    };
+    
+    $scope.refresh();
+
 	
 	$scope.disable = function(projectId) {
         $http.get("/timekeeper/svc/project/"+projectId+"/disable");

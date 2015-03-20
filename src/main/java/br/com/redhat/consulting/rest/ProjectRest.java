@@ -71,23 +71,26 @@ public class ProjectRest {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @RolesAllowed({"redhat_manager", "admin"})
-    public Response listProjectsByPM(@QueryParam("by-pm") Integer pmId) {
-        return listProjects(null, null);
+    public Response listProjectsByPM(@QueryParam("by-pm") Integer pmId, @QueryParam("e") @DefaultValue("1") Integer listType) {
+        return listProjects(null, null, listType);
     }
     
-    public Response listProjects(Integer pmId, Integer consultantId) {
+    public Response listProjects(Integer pmId, Integer consultantId, Integer listType) {
         List<Project> projects = null;
         List<ProjectDTO> projectsDto = null;
         Response.ResponseBuilder response = null;
         PersonDTO loggedUser = Util.loggedUser(httpReq);
-        // TODO: colocar validacao do consultor e PM pode buscar tc soment dele
         try {
+            int LIST_ENABLED = 1;
+            Boolean listOnlyEnabled = null;
+            if (listType == LIST_ENABLED)
+                listOnlyEnabled = true;
             if (pmId != null)
                 projects = projectService.findByPM(pmId);
             else if (consultantId != null) 
                 projects = projectService.findByConsultant(consultantId);
             else if (loggedUser.isAdminOrProjectManager())
-                projects = projectService.findAll();
+                projects = projectService.findAll(listOnlyEnabled);
             if (projects == null || projects.size() == 0) {
                 Map<String, Object> responseObj = new HashMap<>();
                 responseObj.put("msg", "No projects found");
@@ -160,7 +163,7 @@ public class ProjectRest {
     @GET
     @RolesAllowed({"redhat_manager", "admin", "partner_consultant"})
     public Response listProjectsByConsultant(@QueryParam("cs") Integer consultantId) {
-        return listProjects(null, consultantId);
+        return listProjects(null, consultantId, 1);
     }
     
     @Path("/{pr}")

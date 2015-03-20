@@ -1,9 +1,11 @@
 <script src="js/lib/jquery.dataTables.js"></script>
 <h1>Projects</h1>
-
-<p><a class="btn btn-primary" href="#/project-new">Add a project</a></p>
-
 <div class="table-responsive" ng-controller="project_list_ctrl" ng-cloak>
+
+<p><a class="btn btn-primary" href="#/project-new">Add a project</a>
+<input type="checkbox" ng-model="list_enabled" ng-true-value="2" ng-false-value="1" ng-click="refresh()"/>  List disabled projects
+</p>
+
     <div ng-show="loading">Loading..</div>
     <div class="alert alert-info" ng-show="projects.projects.length == 0">
         <span class="pficon pficon-info"></span> There is no project to list, do you want to <a href="#/project-new">add a project</a> ?.<br> 

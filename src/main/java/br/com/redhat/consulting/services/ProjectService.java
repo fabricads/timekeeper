@@ -77,9 +77,11 @@ public class ProjectService {
         return prj;
     }
     
-    public List<Project> findAll() throws GeneralException {
-        List<Project> res = Collections.emptyList();
+    public List<Project> findAll(Boolean enabled) throws GeneralException {
+        List<Project> res = null;
         ProjectSearchFilter filter = new ProjectSearchFilter();
+        if (enabled != null) 
+            filter.setEnabled(enabled);
         projectDao.setFetchCollection("consultants");
         res = projectDao.find(filter);
         return res;
