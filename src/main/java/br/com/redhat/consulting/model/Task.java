@@ -8,6 +8,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.envers.Audited;
@@ -21,6 +22,7 @@ public class Task extends AbstractEntity {
     
     private String name;
     private Project project;
+    private Integer taskType;
     
     public Task() { }
     
@@ -52,6 +54,24 @@ public class Task extends AbstractEntity {
 
     public void setProject(Project project) {
         this.project = project;
+    }
+    
+    @Transient
+    public TaskTypeEnum getTaskTypeEnum() {
+        return TaskTypeEnum.find(getTaskType());
+    }
+    
+    @Transient
+    public String getTaskTypeEnumDescription() {
+        return TaskTypeEnum.find(getTaskType()).getDescription();
+    }
+
+    public Integer getTaskType() {
+        return taskType;
+    }
+
+    public void setTaskType(Integer taskType) {
+        this.taskType = taskType;
     }
 
     @Override

@@ -13,7 +13,6 @@ loginApp.config([ "$routeProvider", function($routeProvider) {
     otherwise({
 		redirectTo : "/login"
 	});
-	
 }
 
 ]);
@@ -21,9 +20,6 @@ loginApp.config([ "$routeProvider", function($routeProvider) {
 loginApp.controller("login_ctrl", function($scope, $rootScope, $location, $window, AUTH_EVENTS, auth_service, $modal) {
 
     $scope.error_msg = $rootScope.error_msg;
-    
-    
-    
     $scope.login = function(person) {
         auth_service.login(person, function(data, status) {
             if (status == 200) {

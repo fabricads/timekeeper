@@ -60,7 +60,7 @@ public class PersonRest {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @RolesAllowed({"redhat_manager", "admin"})
-    public Response listProjectManagers(@QueryParam("e") Integer listDisabled) {
+    public Response listProjectManagers(@QueryParam("e") @DefaultValue("1") Integer listDisabled) {
         return list(FIND_PM, listDisabled);
     }
     
@@ -68,7 +68,7 @@ public class PersonRest {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @RolesAllowed({"redhat_manager", "admin"})
-    public Response listPersons(@QueryParam("e") Integer listDisabled) {
+    public Response listPersons(@QueryParam("e") @DefaultValue("1") Integer listDisabled) {
         return list(FIND_ALL, listDisabled);
     }
     
@@ -76,7 +76,7 @@ public class PersonRest {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @RolesAllowed({"redhat_manager", "admin"})
-    public Response listConsultants(@QueryParam("e") Integer listDisabled) {
+    public Response listConsultants(@QueryParam("e") @DefaultValue("1") Integer listDisabled) {
         return list(FIND_CONSULTANTS, listDisabled);
     }
     

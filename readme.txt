@@ -1,31 +1,3 @@
-
-Requisitos - Colocar tudo em Inglês
-
-cadastro de pessoas
-- campos: Oralce PA ID, nome, email, empresa, país, estado, cidade de residência , telefone, senha, grupo
-
-* cadastro de projetos 
-- campos: nome, número PA, Project Manager, consultores associados
-
-* suporte a permissões
-- admin    : administração completa do sistema
-- consultor: visualização do histórico de lançamentos de horas nos projetos associados
-
-* relatórios
-- geração de relatórios em formatos (csv, xls) por projeto, por consultor, por período
-
-* histórico
-- guardar histórico de operações: lançamentos, projetos e consultores
-
-Todos os cadastros (pessoas, projetos), terão desativação, consultas, alteração, remoção.
-Consultores poderão ser cadastrados apenas por convites de gerentes da Red Hat. Para não deixar aberto na web, para qualquer um se cadastrar.
-
-Status: quando a hora é submetida, aparece S, quando aprovada A e ficar verde, quando reprovada R - vermelha;
-Message: quando há um erro = ERROR
-Type: vem escrito Contingent
-Task: Task do projeto
-Type: Labor
-
 echo -n admin123 | openssl dgst -sha256 -binary | openssl base64
 
 TODO:
@@ -47,10 +19,9 @@ Connection URL: postgresql://$OPENSHIFT_POSTGRESQL_DB_HOST:$OPENSHIFT_POSTGRESQL
 
 ssh 54b5c4603b696efd7e0004a5@brazil-consulting.itos.redhat.com
 
-scp ~/tmp/jboss-eap-quickstarts-master/kitchensink/target/jboss-kitchensink.war  54b5c4603b696efd7e0004a5@brazil-consulting.itos.redhat.com:app-root/dependencies/jbosseap/deployments/
-./jbosseap/bin/tools/jboss-cli.sh -c --controller=127.2.67.129
 https://help.openshift.com/hc/en-us/articles/202399740-How-to-deploy-pre-compiled-java-applications-WAR-and-EAR-files-onto-your-OpenShift-gear-using-the-java-cartridges
-http://brazil-consulting.itos.redhat.com/jboss-kitchensink/index.jsf
+
+./jbosseap/bin/tools/jboss-cli.sh -c --controller=$OPENSHIFT_JBOSSEAP_IP
 
 /subsystem=datasources/data-source=timekeeper:add(connection-url="jdbc:postgresql://${env.OPENSHIFT_POSTGRESQL_DB_HOST}:${env.OPENSHIFT_POSTGRESQL_DB_PORT}/brazil",check-valid-connection-sql="SELECT 1",driver-name=postgresql,jndi-name="java:/jdbc/partners_timekeeper",jta=true,password="asQW12#$",user-name=timekeeper)
 /subsystem=datasources/data-source=timekeeper:enable
@@ -70,4 +41,59 @@ insert into person(name, email,password,enabled,persontype,id_role,id_partner_or
 - adicionar paginacao 
 - adicionar filtros
 - adicionar tela para consultas de entidades DISABLED
-- 
+=================
+
+tarefas pendentes, por ordem de implementação:
+
+1) definir o tipo da task no cadastro.
+
+As tasks devem ter classificação Labor ou Expense. Essa classificação é chamada Type.
+viculação do consultor com task
+O consultor deve ser cadastrado em uma task, e ao cair na tela de lançamento, aparecer somente a task que ele é cadastrado
+
+2) lançamento de timecards.
+
+Quando o consultor for lançar a hora, cair exatamente na semana corrente.
+Permitir lançamentos para o consultor de 1 semana atrás e até 2 semanas para frente.
+
+3) Alertas e tarefas background
+
+O gerente de projetos deve receber um alerta do projeto dele, se não houverem horas lançadas no projeto até as 16 horas, todas as sextas feiras
+Quando o consultor submeter horas para aprovação, o gerente do projeto deverá receber um e-mail avisando.
+O consultor que estiver cadastradpo em um projeto ativo, deve receber alerta toda sexta feira, as 8 horas da manha, para lancar suas horas
+Quando a data fim do projeto chegar, o projeto deve se tornar inativo e não permitir o lançamento de horas. Ter um campo de status do projeto na folha de cadastro (ativo ou inativo)
+
+
+4) Vinculação de habilidades do consultor
+
+Na tela de profile do consultor, ele deve informar o perfil dele (colocar um quadro com todas as tecnologias red hat as quais ele poderá marcar um X se tiver conhecimento)
+Na tela de profile do consultor, ele pode informar as certificações dele
+
+5) Campo de cliente no projeto
+
+Ao adicionar um projeto, tem que ser informado o nome do cliente e esta informação tem que ser mostrada na página dos projetos.
+
+6) cadastro de consultor
+
+Não permitir cadastrar dois consultores com o mesmo email
+Todo consultor ao ser criado, deve ser reconhecido por um número que será o mesmo do Oracle PA (Oracle Employee ID)
+O consultor nao poderá lancar horas se pelo menos 1 campo de telefone, estiver preenchidos
+
+7) Preenchimento de timecard
+
+ao lançar hora, o consultor não pode lançar horas quebradas (4.19 ou 3.8). Ou lança 4 ou 4.5 (0,5 horas é a única opção).
+
+8) Listagem de projetos
+
+Na folha de rosto "projects" , aparecer o nome do PM
+Na folha de rosto "project", permitir que a organização seja por PM assim como é por ordem alfabética (tipo um organizar por tipo)
+Na folha de rosto do projeto, criar um filtro por PM, cliente, e Status do projeto (ativo ou inativo)
+
+9) Relatórios
+
+Os Relatórios de Saída para o gerente de projeto: 
+
+anexar imagem do email.
+
+10) Projetos com o mesmo número (ID do Projeto) podem ser salvos com nomes diferentes. Não permitir cadastrar dois projetos com o mesmo número.
+

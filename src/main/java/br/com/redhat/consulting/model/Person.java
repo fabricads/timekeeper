@@ -254,7 +254,7 @@ public class Person extends AbstractEntity {
     }
     
     /**
-     *  null some attributes, so whey this person is copied to a personDTO some attributes are not sent to the rest responde for security reasons.
+     *  null some attributes, so when this person is copied to a personDTO some attributes are not sent to the rest responde for security reasons.
      */
     public void nullifyAttributes() {
         setPassword(null);
