@@ -8,12 +8,14 @@ public class TaskDTO  {
     private Integer id;
     private String name;
     private boolean dissociateOfProject;
+    private Integer taskType;
     
     public TaskDTO() { }
     
     public TaskDTO(Task task) { 
         this.id = task.getId();
         this.name = task.getName();
+        this.taskType = task.getTaskType();
     }
     
     public TaskDTO(String name) {
@@ -44,10 +46,19 @@ public class TaskDTO  {
         this.dissociateOfProject = dissociateOfProject;
     }
 
+    public Integer getTaskType() {
+        return taskType;
+    }
+
+    public void setTaskType(Integer taskType) {
+        this.taskType = taskType;
+    }
+
     public Task toTask() {
         Task task = new Task();
         task.setId(id);
         task.setName(name);
+        task.setTaskType(taskType);
         return task;
     }
 

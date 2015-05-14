@@ -114,14 +114,24 @@
         <div class="col-md-2">
             <input type="text" class="form-control" name="task" ng-model="temp_task.name" />
         </div>
-        <button type="button" class="btn btn-primary" ng-click="add_task()">Add task</button>
+        <button type="button" class="btn btn-primary" ng-disabled="taskType.id == -1" ng-click="add_task()">Add task</button>
+        <small ng-hide="taskType.id != -1">You must select a task type to enable this button</small>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <div class="com-sm-2">
+                <div class="btn-group">
+                    <label data-ng-repeat="tt in taskTypes" class="btn btn-success" ng-model="taskType.id" btn-radio="tt.id">{{tt.name}}</label>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
             <div class="com-sm-2">
                 <label>Tasks</label>
                 <ul>
-                    <li data-ng-repeat="task in selected_tasks">{{task.name}} - <a href="" ng-show="task.dissociateOfProject" ng-click="remove_task(task)">Remove</a></li>
+                    <li data-ng-repeat="task in selected_tasks">{{task.name}} ({{taskTypes | taskName:task.taskType}}) - <a href="" ng-show="task.dissociateOfProject" ng-click="remove_task(task)">Remove</a></li>
                 </ul>
             </div>
         </div>

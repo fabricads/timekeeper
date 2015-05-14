@@ -33,6 +33,7 @@ import br.com.redhat.consulting.config.Authenticated;
 import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.Project;
 import br.com.redhat.consulting.model.Task;
+import br.com.redhat.consulting.model.TaskTypeEnum;
 import br.com.redhat.consulting.model.dto.PartnerOrganizationDTO;
 import br.com.redhat.consulting.model.dto.PersonDTO;
 import br.com.redhat.consulting.model.dto.ProjectDTO;
@@ -326,6 +327,24 @@ public class ProjectRest {
             responseObj.put("error", e.getMessage());
             response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
         }
+        return response.build();
+    }
+    
+    @Path("/task_types")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @RolesAllowed({"redhat_manager", "admin"})
+    public Response taskTypes() {
+        Response.ResponseBuilder response = null;
+        TaskTypeEnum[] vs = TaskTypeEnum.values();
+        List<Map<String, String>> l = new ArrayList<>();
+        for (TaskTypeEnum t: vs)  {
+            Map<String, String> values = new HashMap<>(vs.length*2);
+            values.put("id", "" + t.getId()); 
+            values.put("name", t.getDescription());
+            l.add(values);
+        }
+        response = Response.ok(l);
         return response.build();
     }
     
