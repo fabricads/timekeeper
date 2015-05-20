@@ -226,6 +226,8 @@ timecardApp.controller("timecard_edit_ctrl", function($scope, $http, $routeParam
     
     $scope.save = function(timecard) {
         timecard.timecardEntriesDTO = [];
+        //it makes a complete copy
+        var tasksDTOBk =  JSON.parse( JSON.stringify(timecard.project.tasksDTO)); 
         while (timecard.project.tasksDTO.length > 0) {
             var task = timecard.project.tasksDTO.shift();
             while (task.tcEntries.length > 0) {
@@ -235,6 +237,7 @@ timecardApp.controller("timecard_edit_ctrl", function($scope, $http, $routeParam
         }
         $http.post("/timekeeper/svc/timecard/save", timecard).
         success(function(data, status, header, config) {
+        	timecard.project.tasksDTO = tasksDTOBk;
             $scope.saved = true;
             $scope.error_msg = null;
         }).
@@ -246,6 +249,8 @@ timecardApp.controller("timecard_edit_ctrl", function($scope, $http, $routeParam
     $scope.submit = function(timecard) {
         timecard.timecardEntriesDTO = [];
         timecard.status = 4;
+        //it makes a complete copy
+        var tasksDTOBk =  JSON.parse( JSON.stringify(timecard.project.tasksDTO)); 
         while (timecard.project.tasksDTO.length > 0) {
             var task = timecard.project.tasksDTO.shift();
             while (task.tcEntries.length > 0) {
@@ -256,8 +261,10 @@ timecardApp.controller("timecard_edit_ctrl", function($scope, $http, $routeParam
         console.log("timecard.status: " + timecard.status);
         $http.post("/timekeeper/svc/timecard/save", timecard).
         success(function(data, status, header, config) {
+        	timecard.project.tasksDTO = tasksDTOBk;
             $scope.saved = true;
             $scope.error_msg = null;
+            $scope.edit = false;
         }).
         error(function(data, status, header, config) {
             $scope.error_msg = data;

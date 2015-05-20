@@ -1,5 +1,7 @@
 package br.com.redhat.consulting.dao;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
@@ -8,7 +10,6 @@ import javax.persistence.TypedQuery;
 import org.apache.commons.lang.StringUtils;
 
 import br.com.redhat.consulting.model.Person;
-import br.com.redhat.consulting.model.PersonType;
 import br.com.redhat.consulting.model.filter.PersonSearchFilter;
 
 @RequestScoped
@@ -74,5 +75,33 @@ public class PersonDao extends BaseDao<Person, PersonSearchFilter> {
         }
         query.append(" order by ENT.name");
     }
+    
+    public List<Person> findConsultantsAndActiveProjects() {
+        String jql = "select distinct c from Person c inner join fetch c.projects p "
+        		+ "where p.enabled = :enabled "
+        		+ "and (p.initialDate <= :today) "
+        		+ "and	( "
+        		+ "(p.endDate >= :today) or (p.endDate between :weekBeginning and :weekEnd) "
+        		+ " ) ";
+        TypedQuery<Person> query= getEntityManager().createQuery(jql, Person.class);
+        
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+        Date weekBeginning = calendar.getTime();
+        
+        calendar.add(Calendar.WEEK_OF_YEAR, 1);
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        Date weekEnd = calendar.getTime();
+        
+        query.setParameter("enabled", true);
+        query.setParameter("weekBeginning", weekBeginning);
+        query.setParameter("weekEnd", weekEnd);
+        query.setParameter("today", new Date());
+        
+        
+        List<Person> res = query.getResultList();
+        return res;
+    }
+    
     
 }

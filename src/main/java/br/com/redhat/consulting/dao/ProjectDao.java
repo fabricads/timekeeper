@@ -1,10 +1,12 @@
 package br.com.redhat.consulting.dao;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 import javax.persistence.NoResultException;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.apache.commons.lang.StringUtils;
@@ -72,6 +74,57 @@ public class ProjectDao extends BaseDao<Project, ProjectSearchFilter> {
         query.setParameter(0, pmId);
         count = query.getSingleResult();
         return count;
+    }
+    
+    public List<Project> findNoEntriesThisWeekProjects() {
+        String jql = "select p from Project p "
+        		+ "where p not in ( "
+        		+ "select p2 "
+        		+ "from Project p2 "
+        		+ "inner join p2.timecards tc "
+        		+ "inner join tc.timecardEntries tce "
+        		+ "where tce.day between :weekBeginning and :weekEnd "
+        		+ ") "
+        		+ "and (p.initialDate <= :today) "
+        		+ "and	( "
+        		+ " (p.endDate >= :today) or (p.endDate between :weekBeginning and :weekEnd) "
+        		+ " ) "
+        		+ "order by p.projectManager ";
+        
+        TypedQuery<Project> query= getEntityManager().createQuery(jql, Project.class);
+      
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+        Date weekBeginning = calendar.getTime();
+        
+        calendar.add(Calendar.WEEK_OF_YEAR, 1);
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        Date weekEnd = calendar.getTime();
+        
+        query.setParameter("weekBeginning", weekBeginning);
+        query.setParameter("weekEnd", weekEnd);
+        query.setParameter("today", new Date());
+        
+        List<Project> res = query.getResultList();
+        return res;
+    }
+    
+    public void disableJustEndedProjects() {
+    	String jqlUpdate = "update Project p set p.enabled = :disabled where p.endDate < :today and p.enabled = :enabled";
+    	Query queryUpdate = getEntityManager().createQuery(jqlUpdate);
+        queryUpdate.setParameter("today", new Date());
+        queryUpdate.setParameter("enabled", true);
+        queryUpdate.setParameter("disabled", false);
+    }
+    
+    public List<Project> findJustEndedProjects() {
+    	String jqlSelect = "select p from Project p inner join fetch p.projectManager pm where p.endDate < :today and p.enabled = :enabled ";
+    	TypedQuery<Project> querySelect = getEntityManager().createQuery(jqlSelect, Project.class);
+    	querySelect.setParameter("today", new Date());
+    	querySelect.setParameter("enabled", true);
+    	
+    	List<Project> projects = querySelect.getResultList();
+    	return projects;
     }
     
     public List<Project> findProjectsByConsultant(Integer consultantId) {

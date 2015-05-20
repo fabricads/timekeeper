@@ -39,6 +39,7 @@ import br.com.redhat.consulting.model.dto.ProjectDTO;
 import br.com.redhat.consulting.model.dto.TaskDTO;
 import br.com.redhat.consulting.model.dto.TimecardDTO;
 import br.com.redhat.consulting.model.dto.TimecardEntryDTO;
+import br.com.redhat.consulting.services.AlertService;
 import br.com.redhat.consulting.services.TimecardService;
 import br.com.redhat.consulting.util.GeneralException;
 import br.com.redhat.consulting.util.TimecardEntryDateComparator;
@@ -56,6 +57,9 @@ public class TimecardRest {
     
     @Context
     private HttpServletRequest httpReq;
+    
+    @Inject
+    private AlertService alertService;
     
     @Path("/list-cs")
     @Produces(MediaType.APPLICATION_JSON)
@@ -233,7 +237,12 @@ public class TimecardRest {
                     tcEntry.setTimecard(timecardEnt);
                     timecardEnt.addTimecardEntry(tcEntry);
                 }
+                Timecard dbTimecard = timecardService.findById(timecardDto.getId());
                 timecardService.persist(timecardEnt);
+                if((timecardEnt.getStatusEnum() == TimecardStatusEnum.SUBMITTED)
+                		&& (dbTimecard.getStatusEnum() != TimecardStatusEnum.SUBMITTED)){
+                	alertService.alertSubmittedTimecard(dbTimecard);
+                }
                 response = Response.ok();
             }
         } catch (Exception e) {

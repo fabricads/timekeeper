@@ -146,4 +146,9 @@ public class PersonService {
         return res;
     }
     
+    public List<Person> findConsultantsAndActiveProjects() {
+    	List<Person> consultants = personDao.findConsultantsAndActiveProjects();
+    	return consultants;
+    }
+    
 }
