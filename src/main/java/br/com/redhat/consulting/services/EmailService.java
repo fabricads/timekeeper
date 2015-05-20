@@ -18,13 +18,13 @@ public class EmailService {
     @Resource(mappedName = "java:jboss/mail/Default")
     private Session mailSession;
 
-    public void sendPlain(String to, String body) {
+    public void sendPlain(String to, String subject, String body) {
         String from = "no-reply@redhat.com";
         try {
             MimeMessage message = new MimeMessage(mailSession);
             message.setFrom(new InternetAddress(from));
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
-            message.setSubject("Password definition for timekeeper");
+            message.setSubject(subject);
             message.setContent(body, "text/plain");
             Transport.send(message);
             LOG.debug("Sent message successfully to " + to);

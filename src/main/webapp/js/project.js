@@ -140,6 +140,7 @@ projectApp.controller("project_edit_ctrl", function($scope, $http, $routeParams,
     $http.get('/timekeeper/svc/project/'+$routeParams.projectId).
         success(function(data) {
             $scope.project = data;
+            
             $scope.selected_consultants = $scope.project.consultants;
             $scope.selected_tasks = $scope.project.tasksDTO;
         }).
@@ -159,6 +160,16 @@ projectApp.controller("project_edit_ctrl", function($scope, $http, $routeParams,
         project.consultants = $scope.selected_consultants;
         project.tasksDTO = $scope.selected_tasks;
         project.tasksToRemove = $scope.tasks_to_remove;
+        
+        //alert(project.endDate);
+        if(project.endDate instanceof Date){
+        	project.endDate.setMinutes(project.endDate.getMinutes() - project.endDate.getTimezoneOffset());
+        }
+        if(project.initialDate instanceof Date){
+        	project.initialDate.setMinutes(project.initialDate.getMinutes() - project.initialDate.getTimezoneOffset());
+        }
+        
+        //alert(project.endDate + ' ' + JSON.stringify(project.endDate));
         $http.post("/timekeeper/svc/project/save", project).success(
                 function(data, status, header, config) {
                     $scope.saved = true;

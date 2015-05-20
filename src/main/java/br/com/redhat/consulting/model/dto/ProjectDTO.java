@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import br.com.redhat.consulting.model.Project;
 
 public class ProjectDTO  {
@@ -23,7 +26,12 @@ public class ProjectDTO  {
     private boolean enabled;
     private Boolean usePMSubstitute;
 
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    @JsonDeserialize(using = CustomJsonDateDeserializer.class)
     private Date initialDate;
+    
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    @JsonDeserialize(using = CustomJsonDateDeserializer.class)
     private Date endDate;
     
     private Date registered;

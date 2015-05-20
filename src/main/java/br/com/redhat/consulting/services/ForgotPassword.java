@@ -1,9 +1,5 @@
 package br.com.redhat.consulting.services;
 
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,11 +10,10 @@ import org.slf4j.LoggerFactory;
 
 import br.com.redhat.consulting.config.Resources;
 import br.com.redhat.consulting.model.Person;
+import br.com.redhat.consulting.util.FreeMarkerUtil;
 import br.com.redhat.consulting.util.GeneralException;
 import br.com.redhat.consulting.util.Util;
 import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 
 public class ForgotPassword {
@@ -49,17 +44,12 @@ public class ForgotPassword {
         root.put("ip_address", remoteAddress);
         root.put("host_address", System.getProperty("timekeeper.host.address", "http://localhost:8080"));
         root.put("hash", buildToken(person));
-        Template temp;
-        try {
-            temp = freemarkerCfg.getTemplate("forgot_password.ftl");
-            Writer out = new StringWriter();
-            temp.process(root, out);  
-            String body = out.toString();
-            emailService.sendPlain(person.getEmail(), body);
-            LOG.debug(body);
-        } catch (IOException | TemplateException e) {
-            LOG.error("Error processing freemarker template", e);
-        }  
+        
+        String text = FreeMarkerUtil.processTemplate("forgot_password.ftl", root);
+        if(text != null){
+        	emailService.sendPlain(person.getEmail(), "Password definition for timekeeper", text);
+        }
+        
     }
 
     public Person check(String hash)  {

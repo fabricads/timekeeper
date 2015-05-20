@@ -1,6 +1,5 @@
 package br.com.redhat.consulting.services;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -86,6 +85,19 @@ public class ProjectService {
         res = projectDao.find(filter);
         return res;
         
+    }
+    
+    
+    public List<Project> findNoEntriesThisWeekProjects() {
+    	List<Project> projects = projectDao.findNoEntriesThisWeekProjects();
+    	return projects;
+    }
+    
+    @TransactionalMode
+    public List<Project> findAndDisableJustEndedProjects() {
+    	List<Project> projects = projectDao.findJustEndedProjects();
+    	projectDao.disableJustEndedProjects();
+    	return projects;
     }
     
     public Project findById(Integer pid) {
