@@ -89,25 +89,6 @@
             <span class="help-block" ng-show="form.enddate.$error.required">Required field</span>
         </div>
     </div>
-    <div class="form-group">
-        <label for="prj_consultants" class="col-md-2 control-label">Consultants</label>
-        <div class="col-md-2">
-            <select class="form-control" ng-model="temp_consultant"
-                ng-options="consultant.name + ' - ' + consultant.organization.name for consultant in consultants track by consultant.id">
-            </select>
-        </div>
-        <button type="button" class="btn btn-primary" ng-click="add_consultant()">Add consultant</button>
-    </div>
-    <div class="form-group">
-        <div class="col-md-offset-2 col-md-10">
-            <div class="com-sm-2">
-                <label>Selected consultants</label>
-                <ul>
-                    <li data-ng-repeat="c in selected_consultants">{{c.name}} - {{c.organization.name}} - <a href="" ng-show="c.dissociateOfProject" ng-click="remove_consultant(c)">Remove</a></li>
-                </ul>
-            </div>
-        </div>
-    </div>
 
     <div class="form-group" >
         <label for="prj_tasks" class="col-md-2 control-label">New task name</label>

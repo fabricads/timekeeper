@@ -1,0 +1,63 @@
+<h1>Associate consultants to a project and task</h1>
+
+<div ng-controller="project_associate_consultants" ng-cloak>
+
+    <div class="alert alert-warning" ng-show="error_msg != null">
+        <span class="pficon-layered">
+          <span class="pficon pficon-warning-triangle"></span>
+          <span class="pficon pficon-warning-exclamation"></span>
+        </span> 
+            {{error_msg.error}}
+    </div>
+    
+    <div class="alert alert-success" ng-show="saved">
+      <span class="pficon pficon-ok"></span>
+            Project {{prj_name}} was successfully saved.
+    </div>
+
+<form class="form-horizontal" name="form">
+    <div class="form-group" ng-class="{'has-error': form.name.$invalid}">
+        <label for="prj_name" class="col-md-2 control-label">Project name</label>
+        <div class="col-md-6">
+            <label>{{project.name}}</label>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="prj_desc" class="col-md-2 control-label">Consultant</label>
+        <div class="col-md-2">
+            <input class="form-control" autocomplete="off" type="text" placeholder="Type name here" ng-model="temp_consultant" typeahead="c as c.name for c in consultants | filter:$viewValue" typeahead-editable="false" />
+        </div>
+    </div>
+
+    <div class="form-group" >
+        <label for="prj_consultants" class="col-md-2 control-label">Tasks</label>
+        <div class="col-md-2">
+            <select class="form-control" ng-model="temp_task" ng-options="task.name for task in tasks track by task.id">
+            </select>
+        </div>
+        <button type="button" class="btn btn-primary" ng-click="add_consultant()">Add consultant</button>
+    </div>
+    
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <div class="com-sm-2">
+                <label>Consultants</label>
+                <ul>
+                    <div ng-repeat="c in selected_consultants">
+                        <li ng-repeat="task in c.tasks">{{c.name}} - {{task.name}}</li>
+                    </div>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <button type="submit" class="btn btn-primary" ng-click="project_submit(project)" ng-disabled="saved || form.$invalid">Save</button>
+        </div>
+    </div>
+</form>
+
+</div>
+
+<a class="btn btn-default" href="#/projects">Go to main project list page.</a>

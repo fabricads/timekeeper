@@ -1,6 +1,5 @@
 package br.com.redhat.consulting.rest;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,7 +22,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,18 +105,14 @@ public class TimecardRest {
                 timecardsDto = new ArrayList<TimecardDTO>(timecards.size());
                 for (Timecard timecard: timecards) {
                     TimecardDTO tcDto = new TimecardDTO(timecard);
-//                    BeanUtils.copyProperties(tcDto, timecard);
                     ProjectDTO prjDto = new ProjectDTO(timecard.getProject());
-//                    BeanUtils.copyProperties(prjDto, timecard.getProject());
                     PersonDTO consultantDto = new PersonDTO(timecard.getConsultant());
                     timecard.getConsultant().nullifyAttributes();
-//                    BeanUtils.copyProperties(consultantDto, timecard.getConsultant());
                     tcDto.setConsultantDTO(consultantDto);
                     tcDto.setProjectDTO(prjDto);
                     List<TimecardEntryDTO> tceDtos = new ArrayList<>(timecard.getTimecardEntries().size());
                     for (TimecardEntry tce: timecard.getTimecardEntries()) {
                         TimecardEntryDTO tceDto = new TimecardEntryDTO(tce);
-//                        BeanUtils.copyProperties(tceDto, tce);
                         tceDtos.add(tceDto);
                     }
                     tcDto.setFirstDate(tceDtos.get(0).getDay());
@@ -215,8 +209,8 @@ public class TimecardRest {
                     prj.setId(timecardDto.getProject().getId());
                     timecardEnt.setProject(prj);
                     for (TimecardEntryDTO tcEntryDto: timecardDto.getTimecardEntriesDTO()) {
-                        TimecardEntry tcEntry = new TimecardEntry();
-                        BeanUtils.copyProperties(tcEntry, tcEntryDto);
+                        TimecardEntry tcEntry = tcEntryDto.toTimecardEntry();
+//                        BeanUtils.copyProperties(tcEntry, tcEntryDto);
                         timecardEnt.addTimecardEntry(tcEntry);
                         Task task = new Task();
                         task.setId(tcEntryDto.getTaskDTO().getId());

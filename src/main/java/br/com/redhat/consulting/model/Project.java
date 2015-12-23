@@ -2,7 +2,9 @@ package br.com.redhat.consulting.model;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -40,7 +42,7 @@ public class Project extends AbstractEntity {
     
     // Red Hat project manager
     private Person projectManager;
-    private List<Person> consultants = new ArrayList<>();
+    private Set<Person> consultants = new HashSet<>();
     private Boolean enabled;
     private Boolean usePMSubstitute;
 
@@ -100,11 +102,11 @@ public class Project extends AbstractEntity {
 
     @ManyToMany(cascade=CascadeType.MERGE)
     @JoinTable(name="person_project", joinColumns=@JoinColumn(name="id_project"), inverseJoinColumns=@JoinColumn(name="id_person"))
-    public List<Person> getConsultants() {
+    public Set<Person> getConsultants() {
         return consultants;
     }
 
-    public void setConsultants(List<Person> consultants) {
+    public void setConsultants(Set<Person> consultants) {
         this.consultants = consultants;
     }
     

@@ -27,6 +27,7 @@ public class PersonDTO  {
 	
 	private List<TimecardDTO> timecards = new ArrayList<>();
 	private List<ProjectDTO> projects = new ArrayList<>();
+	private List<TaskDTO> tasks = new ArrayList<>();
 	private int numberOfProjects;
 	
 	// type: consultant partner, redhat manager
@@ -214,6 +215,18 @@ public class PersonDTO  {
     
     public void addProject(ProjectDTO project) {
         projects.add(project);
+    }
+
+    public List<TaskDTO> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<TaskDTO> tasks) {
+        this.tasks = tasks;
+    }
+    
+    public void addTask(TaskDTO task) {
+        this.tasks.add(task);
     }
 
     public int getNumberOfProjects() {

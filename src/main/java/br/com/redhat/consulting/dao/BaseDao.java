@@ -179,10 +179,6 @@ public class BaseDao<ENTITY, SEARCH_FILTER> {
         return fetchCollection;
     }
     
-    public void OLDsetFetchCollection2(String[] coll) {
-        this.fetchCollection = coll;
-    }
-    
     public void setFetchCollection(String ...colls) {
         fetchCollection = new String[colls.length];
         int i = 0;

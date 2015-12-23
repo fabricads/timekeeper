@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import br.com.redhat.consulting.config.Authenticated;
 import br.com.redhat.consulting.model.Person;
+import br.com.redhat.consulting.model.PersonTask;
 import br.com.redhat.consulting.model.Project;
 import br.com.redhat.consulting.model.Task;
 import br.com.redhat.consulting.model.TaskTypeEnum;
@@ -39,6 +40,7 @@ import br.com.redhat.consulting.model.dto.PersonDTO;
 import br.com.redhat.consulting.model.dto.ProjectDTO;
 import br.com.redhat.consulting.model.dto.TaskDTO;
 import br.com.redhat.consulting.services.PersonService;
+import br.com.redhat.consulting.services.PersonTaskService;
 import br.com.redhat.consulting.services.ProjectService;
 import br.com.redhat.consulting.services.TaskService;
 import br.com.redhat.consulting.services.TimecardService;
@@ -63,6 +65,9 @@ public class ProjectRest {
     
     @Inject
     private TaskService taskService;
+    
+    @Inject
+    private PersonTaskService personTaskService;
     
     @Context
     private HttpServletRequest httpReq;
@@ -159,6 +164,39 @@ public class ProjectRest {
         return response.build();
     }
     
+    @Path("/{projectId}/tasks")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @RolesAllowed({"redhat_manager", "admin"})
+    public Response tasks(@PathParam("projectId") Integer projectId) {
+        List<TaskDTO> tasksDto = null;
+        List<Task> tasks = null;
+        Response.ResponseBuilder response = null;
+        try {
+            if (projectId != null) 
+                tasks = taskService.findByProject(projectId);
+            if (tasks == null || tasks.size() == 0) {
+                Map<String, Object> responseObj = new HashMap<>();
+                responseObj.put("msg", "No tasks found");
+                responseObj.put("projects", new ArrayList());
+                response = Response.ok(responseObj);
+            } else {
+                tasksDto = new ArrayList<TaskDTO>(tasks.size());
+                for (Task task: tasks) {
+                    TaskDTO taskDto = new TaskDTO(task);
+                    tasksDto.add(taskDto);
+                }
+                response = Response.ok(tasksDto);
+            }
+        } catch (GeneralException e) {
+            LOG.error("Error to find tasks by project id: " + projectId, e);
+            Map<String, String> responseObj = new HashMap<>();
+            responseObj.put("error", e.getMessage());
+            response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+        }
+        return response.build();
+    }
+    
     @Path("/list-by-cs")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
@@ -175,7 +213,7 @@ public class ProjectRest {
         Project projectEnt = null;
         Response.ResponseBuilder response = null;
         try {
-            projectEnt = projectService.findByIdWithConsultants(projectId);
+            projectEnt = projectService.findByIdWithConsultantsAndTasks(projectId);
             if (projectEnt == null) {
                 Map<String, String> responseObj = new HashMap<>();
                 responseObj.put("error", "Project " + projectId + " not found.");
@@ -194,6 +232,11 @@ public class ProjectRest {
                     consultantDto.setOrganization(orgDto);
                     Long qtyTimecards = timecardService.countByConsultantAndProject(consultant.getId(), projectId);
                     consultantDto.setDissociateOfProject(qtyTimecards < 1);
+                    for (PersonTask constask: consultant.getPersonTasks()) {
+                        Task task = constask.getTask();
+                        TaskDTO taskDto = new TaskDTO(task);
+                        consultantDto.addTask(taskDto);
+                    }
                     projectDto.addConsultant(consultantDto);
                 }
                 for (Task task: projectEnt.getTasks()) {
@@ -277,7 +320,7 @@ public class ProjectRest {
                 Person pm = new Person();
                 pm.setId(projectDto.getProjectManagerDTO().getId());
                 projectEnt = projectDto.toProject();
-                if (projectDto.getConsultants().size() > 0) {
+/*                if (projectDto.getConsultants().size() > 0) {
                     List<Integer> consultantsId = new ArrayList<>(projectDto.getConsultants().size());
                     for (PersonDTO pdto: projectDto.getConsultants()) {
                         consultantsId.add(pdto.getId());
@@ -289,11 +332,13 @@ public class ProjectRest {
                         p.getProjects().add(projectEnt);
                     }
                 }
+                */
                 projectDto.setConsultantsDTO(null);
                 projectEnt.setProjectManager(pm);
                 
                 for (TaskDTO taskDto: projectDto.getTasksDTO()) {
                     Task task = taskDto.toTask();
+                    task.setProject(projectEnt);
                     projectEnt.addTask(task);
                     task.setProject(projectEnt);
                 }
@@ -305,6 +350,52 @@ public class ProjectRest {
             builder = createViolationResponse("Error to insert project.", e.getConstraintViolations());
         } catch (Exception e) {
             LOG.error("Error to insert project.", e);
+            Map<String, String> responseObj = new HashMap<String, String>();
+            responseObj.put("error", e.getMessage());
+            builder = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+        }
+        return builder.build();
+    }
+
+    @Path("/associate-consultants")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    @RolesAllowed({"redhat_manager", "admin"})
+    public Response associateTasksToConsultant(ProjectDTO projectDto) {
+        Response.ResponseBuilder builder = null;
+        LOG.debug(projectDto.toString());
+        try {
+            if (projectDto == null || projectDto.getId() == null || projectDto.getId() == 0) {
+                Map<String, String> responseObj = new HashMap<String, String>();
+                responseObj.put("error", "No project submitted");
+                builder = Response.status(Response.Status.NOT_FOUND).entity(responseObj);
+            } else {
+//                Project projectEnt = projectService.findByIdWithConsultants(projectDto.getId());
+                List<PersonTask> personTasks = personTaskService.findByProject(projectDto.getId());
+//                    if (projectDto.getConsultants().size() > 0) {
+//                    if (projectEnt.getConsultants().size() > 0) {
+                        for (PersonDTO consultantDto: projectDto.getConsultants()) {
+                            Person consultantEnt = personService.findByIdWithTasks(consultantDto.getId());
+                            consultantEnt.setPassword(null);
+                            List<TaskDTO> tasksDto = consultantDto.getTasks();
+                            for (TaskDTO taskDto: tasksDto) {
+                                Task task = taskDto.toTask();
+                                PersonTask consTask = new PersonTask(consultantEnt, task);
+                                consultantEnt.addPersonTask(consTask);
+                            }
+//                            projectEnt.addConsultant(consultantEnt);
+//                            consultantEnt.addProject(projectEnt);
+//                            personService.persist(consultantEnt);
+                        }
+//                        projectService.persist(projectEnt);
+//                    }
+                    builder = Response.ok("Consultants sucessfully associated to tasks.");
+            }
+        } catch (ConstraintViolationException e) {
+            builder = createViolationResponse("Error to associate consultants to tasks.", e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.error("Error to associate consultants to tasks.", e);
             Map<String, String> responseObj = new HashMap<String, String>();
             responseObj.put("error", e.getMessage());
             builder = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);

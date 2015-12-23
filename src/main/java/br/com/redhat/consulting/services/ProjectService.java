@@ -109,13 +109,18 @@ public class ProjectService {
         Project prj = null;
         ProjectSearchFilter filter = new ProjectSearchFilter();
         filter.setId(pid);
-        projectDao.setFetchCollection(new String[]{"consultants"});
+        projectDao.setFetchCollection("consultants");
         List<Project> res = projectDao.find(filter);
         if (res.size() > 0) 
             prj = res.get(0);
         return prj;
     }
-    
+
+    public Project findByIdWithConsultantsAndTasks(Integer pid) throws GeneralException {
+        Project prj = projectDao.findByIdWithConsultantsAndTasks(pid);
+        return prj;
+    }
+
     public Project findByIdWithTimecards(Integer pid) throws GeneralException {
         Project prj = null;
         ProjectSearchFilter filter = new ProjectSearchFilter();

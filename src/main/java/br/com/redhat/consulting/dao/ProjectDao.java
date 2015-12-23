@@ -1,5 +1,6 @@
 package br.com.redhat.consulting.dao;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -11,6 +12,7 @@ import javax.persistence.TypedQuery;
 
 import org.apache.commons.lang.StringUtils;
 
+import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.Project;
 import br.com.redhat.consulting.model.filter.ProjectSearchFilter;
 
@@ -43,7 +45,8 @@ public class ProjectDao extends BaseDao<Project, ProjectSearchFilter> {
             query.append(" and cons.id in (");
             for (int i = 0; i < filter.getConsultants().size(); i++) {
                 query.append("?");
-                params.add(filter.getConsultants().get(i).getId());
+                List<Person> coll = new ArrayList<>(filter.getConsultants());
+                params.add(coll.get(i).getId());
                 if (i+1 < filter.getConsultants().size())
                     query.append(",");
             }
@@ -169,6 +172,16 @@ public class ProjectDao extends BaseDao<Project, ProjectSearchFilter> {
         return res;
     }
     
-    
+    public Project findByIdWithConsultantsAndTasks(Integer id) {
+//        String jql = "select distinct p from Project p left join fetch p.consultants c left join fetch c.personTasks t where p.id = :projectId";
+        String jql = "select distinct p from Project p left join fetch p.consultants c left join fetch c.personTasks pt left join pt.task t where p.id=:projectId";
+        TypedQuery<Project> query= getEntityManager().createQuery(jql, Project.class);
+        query.setParameter("projectId", id);
+        List<Project> res = query.getResultList();
+        Project prj = null;
+        if (res != null && res.size() > 0)
+            prj = res.get(0);
+        return prj;
+    }    
     
 }

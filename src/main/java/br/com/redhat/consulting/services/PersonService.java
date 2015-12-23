@@ -65,6 +65,18 @@ public class PersonService {
         return person;
     }
     
+    public Person findByIdWithTasks(Integer id) throws GeneralException  {
+        List<Person> res = null;
+        PersonSearchFilter filter = new PersonSearchFilter();
+        filter.setId(id);
+        personDao.setFetchCollection("tasks");
+        res = personDao.find(filter);
+        Person person = null;
+        if (res.size() > 0)
+            person = res.get(0);
+        return person;
+    }
+    
     public Person findByIdEnabled(Integer id) throws GeneralException  {
         List<Person> res = null;
         PersonSearchFilter filter = new PersonSearchFilter();
@@ -141,7 +153,7 @@ public class PersonService {
         PersonSearchFilter filter = new PersonSearchFilter();
         filter.setPersonIds(consultantsId);
         filter.setEnabled(true);
-        personDao.setFetchCollection(new String[]{"projects"});
+        personDao.setFetchCollection("projects");
         res = personDao.find(filter);
         return res;
     }

@@ -20,7 +20,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +45,6 @@ public class ProfileRest {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     public Response get(@PathParam("pd") int personId, @Context HttpServletRequest req) {
-        PersonDTO personDto = new PersonDTO();
         Person person = null;
         Response.ResponseBuilder response = null;
         try {
@@ -75,7 +73,7 @@ public class ProfileRest {
                     person.setTimecards(null);
                     person.setPassword(null);
                     
-                    BeanUtils.copyProperties(personDto, person);
+                    PersonDTO personDto = new PersonDTO(person);
                     response = Response.ok(personDto);
                 }
             }

@@ -119,10 +119,10 @@ public class PersonRest {
                     BeanUtils.copyProperties(roleDto, role);
                     personDto.setOrganization(orgDto);
                     personDto.setRoleDTO(roleDto);
-                    personsDto.add(personDto);
-                    
                     // exclude fields from response
                     personDto.setPassword(null);
+                    personsDto.add(personDto);
+                    
                 }
                 response = Response.ok(personsDto);
             }

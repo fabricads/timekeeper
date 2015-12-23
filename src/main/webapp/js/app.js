@@ -41,9 +41,11 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 	when("/project/:projectId", {
 	    templateUrl: "project-edit.html",
 	}).
-	
     when("/projects-cs", {
         templateUrl : "projects-cs.html",
+    }).
+    when("/project-consultants/:projectId", {
+        templateUrl : "project-consultants.html",
     }).
 	
 	

@@ -68,11 +68,6 @@ projectApp.controller("project_new_ctrl", function($scope, $http, $filter) {
 		$scope.pms = data;
 	});
 	
-	// retrieve all consultants
-	$http.get('/timekeeper/svc/person/consultants').success(function(data) {
-		$scope.consultants = data;
-	});
-
 	// retrieve all task types
     $http.get('/timekeeper/svc/project/task_types').success(function(data) {
         $scope.taskTypes = data;
@@ -80,7 +75,6 @@ projectApp.controller("project_new_ctrl", function($scope, $http, $filter) {
 
     // save a new project
 	$scope.project_submit = function(project) {
-		project.consultants = $scope.selected_consultants;
 		project.tasksDTO = $scope.selected_tasks;
 		$http.post("/timekeeper/svc/project/save", project).success(
 			function(data, status, header, config) {
@@ -108,24 +102,6 @@ projectApp.controller("project_new_ctrl", function($scope, $http, $filter) {
 		"show-weeks": false	
 	};
 
-	$scope.selected_consultants = [];
-	$scope.temp_consultant = {};
-	
-	$scope.add_consultant = function() {
-	    // control if the selected consultant is already added
-	    found = $filter('findById')($scope.selected_consultants, $scope.temp_consultant.id);
-        if (found == null && $scope.temp_consultant.id != null ) {
-			$scope.selected_consultants.push($scope.temp_consultant);
-		}
-	};
-	
-	$scope.remove_consultant = function(consultant) {
-		idx = $scope.selected_consultants.indexOf(consultant);
-		if (idx > -1) {
-			$scope.selected_consultants.splice(idx, 1);
-		}
-	};
-	
 	$scope.temp_task = {};
 	$scope.temp_task.name = "";
 	$scope.temp_task.dissociateOfProject = true;
@@ -167,8 +143,6 @@ projectApp.controller("project_edit_ctrl", function($scope, $http, $routeParams,
     $http.get('/timekeeper/svc/project/'+$routeParams.projectId).
         success(function(data) {
             $scope.project = data;
-            
-            $scope.selected_consultants = $scope.project.consultants;
             $scope.selected_tasks = $scope.project.tasksDTO;
         }).
         error(function(data, status, header, config) {
@@ -179,16 +153,11 @@ projectApp.controller("project_edit_ctrl", function($scope, $http, $routeParams,
         $scope.pms = data;
     });
     
-    $http.get('/timekeeper/svc/person/consultants').success(function(data) {
-        $scope.consultants = data;
-    });
-    
     $http.get('/timekeeper/svc/project/task_types').success(function(data) {
         $scope.taskTypes = data;
     });
     
     $scope.project_submit = function(project) {
-        project.consultants = $scope.selected_consultants;
         project.tasksDTO = $scope.selected_tasks;
         project.tasksToRemove = $scope.tasks_to_remove;
         
@@ -227,23 +196,6 @@ projectApp.controller("project_edit_ctrl", function($scope, $http, $routeParams,
         "show-weeks": false 
     };
 
-    $scope.temp_consultant = {};
-    
-    $scope.add_consultant = function() {
-        found = $filter('findById')($scope.selected_consultants, $scope.temp_consultant.id);
-        if (found == null && $scope.temp_consultant.id != null ) {
-            $scope.temp_consultant.dissociateOfProject = true;
-            $scope.selected_consultants.push($scope.temp_consultant);
-        }
-    };
-    
-    $scope.remove_consultant = function(consultant) {
-        idx = $scope.selected_consultants.indexOf(consultant);
-        if (idx > -1) {
-            $scope.selected_consultants.splice(idx, 1);
-        }
-    };
-
     $scope.temp_task = {};
     $scope.temp_task.name = "";
     $scope.temp_task.dissociateOfProject = true;
@@ -279,7 +231,77 @@ projectApp.controller("project_edit_ctrl", function($scope, $http, $routeParams,
     
 });
 
-// retrieve a specific task name given a task id
+projectApp.controller("project_associate_consultants", function($scope, $http, $routeParams, $filter) {
+    
+    $http.get('/timekeeper/svc/project/'+$routeParams.projectId).
+        success(function(data) {
+            $scope.project = data;
+            $scope.selected_consultants = $scope.project.consultants;
+            $scope.selected_tasks = $scope.project.tasksDTO;
+            
+            $http.get('/timekeeper/svc/project/' + $scope.project.id + '/tasks').success(function(data) {
+                $scope.tasks = data;
+            });
+        }).
+        error(function(data, status, header, config) {
+            $scope.error_msg = data;
+        });
+
+    $http.get('/timekeeper/svc/person/consultants').success(function(data) {
+        $scope.consultants = data;
+    });
+    
+    $scope.project_submit = function(project) {
+        project.consultants = $scope.selected_consultants;
+        project.tasksDTO = $scope.selected_tasks;
+        project.tasksToRemove = $scope.tasks_to_remove;
+        $http.post("/timekeeper/svc/project/associate-consultants", project).success(
+            function(data, status, header, config) {
+                $scope.saved = true;
+                $scope.error_msg = null;
+                $scope.prj_name = project.name;
+            }).
+            error(function(data, status, header, config) {
+                $scope.error_msg = data;
+            });
+    };
+    
+    $scope.temp_consultant = {name: ""};
+    $scope.temp_consultant.tasks = [];
+    $scope.temp_task;
+    
+    $scope.add_consultant = function() {
+        if ($scope.temp_consultant.id != null ) {
+            // add the task, if it is not already associated to the consultant
+            found = $filter('findById')($scope.temp_consultant.tasks, $scope.temp_task.id);
+            if (found == null) {
+                $scope.temp_consultant.dissociateOfProject = true;
+                $scope.temp_consultant.tasks.push($scope.temp_task);
+                found = $filter('findById')($scope.selected_consultants, $scope.temp_consultant.id);
+                if (found == null && $scope.temp_consultant.id != null ) {
+                    $scope.selected_consultants.push($scope.temp_consultant);
+                }
+//                console.log($scope.selected_consultants);
+
+                // clean temp_consultant
+                $scope.temp_consultant = {name: ""};
+                $scope.temp_consultant.tasks = [];
+                $scope.temp_task;
+            }
+        }
+    };
+    
+    $scope.remove_consultant = function(consultant) {
+        idx = $scope.selected_consultants.indexOf(consultant);
+        if (idx > -1) {
+            $scope.selected_consultants.splice(idx, 1);
+        }
+    };
+
+    
+});
+
+//retrieve a specific task name given a task id
 projectApp.filter('taskName', function() {
     return function(input, id) {
         var i=0, len=input.length;
