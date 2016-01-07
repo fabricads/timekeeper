@@ -12,7 +12,10 @@ import br.com.redhat.consulting.model.filter.TimecardSearchFilter;
 @RequestScoped
 public class TimecardDao extends BaseDao<Timecard, TimecardSearchFilter> {
 
+    private TimecardSearchFilter filter;
+    
     protected void configQuery(StringBuilder query, TimecardSearchFilter filter, List<Object> params) {
+        this.filter = filter;
         if (filter.getId() != null) {
             query.append(" and ENT.id = ? ");
             params.add(filter.getId());
@@ -41,6 +44,13 @@ public class TimecardDao extends BaseDao<Timecard, TimecardSearchFilter> {
         query.append(getOrderBy());
 
     }
+    
+    protected void addJoinToFromClause(StringBuilder ql) { 
+        if (filter.isClausulasJoinPesquisa()) {
+            ql.append(" join fetch ent.timecardEntries");
+        }
+    }
+
     
     public Long countByDate(Integer projectId, Integer consultantId, Date startDate, Date endDate) {
         String qryStr = "select count(tce.id) from Timecard tc inner join tc.timecardEntries tce "

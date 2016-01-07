@@ -5,13 +5,12 @@ import java.util.List;
 import br.com.redhat.consulting.model.Person;
 
 public class PersonSearchFilter extends Person {
-    
-    private static final long serialVersionUID = 1L;
-    
+
     private int[] types;
     private String partialName;
     private List<Integer> personIds;
-    
+    private String joinClause;
+
     public void setPersonTypes(int[] _types) {
         this.types = _types;
     }
@@ -35,5 +34,14 @@ public class PersonSearchFilter extends Person {
     public void setPersonIds(List<Integer> personIds) {
         this.personIds = personIds;
     }
-    
+
+    public String getJoinClause() {
+        return joinClause;
+    }
+
+    public void setJoinClause(String joinClause) {
+        this.joinClause = joinClause;
+    }
+
+
 }

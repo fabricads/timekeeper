@@ -2,22 +2,14 @@ package br.com.redhat.consulting.model;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -25,11 +17,13 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.envers.Audited;
 
 @Entity
 @Table(name="project")
 @Audited
+@DynamicUpdate
 public class Project extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
@@ -42,7 +36,6 @@ public class Project extends AbstractEntity {
     
     // Red Hat project manager
     private Person projectManager;
-    private Set<Person> consultants = new HashSet<>();
     private Boolean enabled;
     private Boolean usePMSubstitute;
 
@@ -90,7 +83,7 @@ public class Project extends AbstractEntity {
     }
 
     @OneToOne
-    @JoinColumn(name="id_project_manager")
+    @JoinColumn(name="id_pm")
     @NotNull
     public Person getProjectManager() {
         return projectManager;
@@ -100,21 +93,22 @@ public class Project extends AbstractEntity {
         this.projectManager = projectManager;
     }
 
-    @ManyToMany(cascade=CascadeType.MERGE)
-    @JoinTable(name="person_project", joinColumns=@JoinColumn(name="id_project"), inverseJoinColumns=@JoinColumn(name="id_person"))
-    public Set<Person> getConsultants() {
-        return consultants;
-    }
+//    @ManyToMany(cascade=CascadeType.MERGE)
+//    @JoinTable(name="person_project", joinColumns=@JoinColumn(name="id_project"), inverseJoinColumns=@JoinColumn(name="id_person"))
+//    public Set<Person> getConsultants() {
+//        return consultants;
+//    }
+//
+//    public void setConsultants(Set<Person> consultants) {
+//        this.consultants = consultants;
+//    }
+//    
+//    public void addConsultant(Person consultant) {
+//        consultants.add(consultant);
+//    }
 
-    public void setConsultants(Set<Person> consultants) {
-        this.consultants = consultants;
-    }
-    
-    public void addConsultant(Person consultant) {
-        consultants.add(consultant);
-    }
-
-    public Boolean isEnabled() {
+    @Column(name="enabled")
+    public Boolean getEnabled() {
         return enabled;
     }
 
@@ -122,6 +116,8 @@ public class Project extends AbstractEntity {
         this.enabled = active;
     }
 
+    @Column(name="registration_date")
+    @Temporal(TemporalType.TIMESTAMP)
     public Date getRegistered() {
         return registered;
     }
@@ -131,6 +127,7 @@ public class Project extends AbstractEntity {
     }
 
     @Column(name="last_modification")
+    @Temporal(TemporalType.TIMESTAMP)
     public Date getLastModification() {
         return lastModification;
     }
@@ -179,7 +176,7 @@ public class Project extends AbstractEntity {
         this.usePMSubstitute = usePMSubstitute;
     }
 
-    @OneToMany(mappedBy="project", fetch=FetchType.EAGER)
+    @OneToMany(mappedBy="project")
     public List<Task> getTasks() {
         return tasks;
     }
@@ -190,6 +187,7 @@ public class Project extends AbstractEntity {
     
     public void addTask(Task task) {
         this.tasks.add(task);
+        task.setProject(this);
     }
 
     @Override

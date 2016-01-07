@@ -2,9 +2,7 @@ package br.com.redhat.consulting.model;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,41 +11,42 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
 @Entity
 @Table(name="person")
 @Audited
+@DynamicUpdate
 public class Person extends AbstractEntity {
 
 	private static final long serialVersionUID = 1L;
 	
-	private String oraclePAId;
+	private Integer oraclePAId;
 	private String name;
 	private String email;
 	private String password;
 	private String city;
 	private String state;
 	private String country;
-	private String telephone1;
-	private String telephone2;
+	private Long telephone1;
+	private Long telephone2;
 	private PartnerOrganization partnerOrganization;
 	
 	private Role role;
 	
 	private List<Timecard> timecards = new ArrayList<>();
-	private List<Project> projects = new ArrayList<>();
-	private Set<PersonTask> tasks = new HashSet<>();
+	private List<Task> tasks = new ArrayList<>();
 	
 	// type: consultant partner, redhat manager
 	private Integer personType;
@@ -59,7 +58,11 @@ public class Person extends AbstractEntity {
 	
 	public Person() {}
 	
-    public Person(String oraclePAId, String name, String email, String city, String state, PartnerOrganization partnerOrganization) {
+	public Person(Integer id) {
+	    setId(id);
+	}
+	
+    public Person(Integer oraclePAId, String name, String email, String city, String state, PartnerOrganization partnerOrganization) {
         this.oraclePAId = oraclePAId;
         this.name = name;
         this.email = email;
@@ -75,12 +78,12 @@ public class Person extends AbstractEntity {
         return super.getId();
     }
 
-    @Column(name="oracle_pa_id")
-	public String getOraclePAId() {
+    @Column(name="pa_number")
+	public Integer getOraclePAId() {
 		return oraclePAId;
 	}
 
-	public void setOraclePAId(String oraclePAId) {
+	public void setOraclePAId(Integer oraclePAId) {
 		this.oraclePAId = oraclePAId;
 	}
 
@@ -134,21 +137,21 @@ public class Person extends AbstractEntity {
 		this.country = country;
 	}
 
-	@Column
-	public String getTelephone1() {
+	@Column(name="telephone1")
+	public Long getTelephone1() {
 		return telephone1;
 	}
 
-	public void setTelephone1(String telephone1) {
+	public void setTelephone1(Long telephone1) {
 		this.telephone1 = telephone1;
 	}
 
-	@Column
-	public String getTelephone2() {
+	@Column(name="telephone2")
+	public Long getTelephone2() {
 		return telephone2;
 	}
 
-	public void setTelephone2(String telephone2) {
+	public void setTelephone2(Long telephone2) {
 		this.telephone2 = telephone2;
 	}
 
@@ -162,7 +165,8 @@ public class Person extends AbstractEntity {
 		this.password = password;
 	}
 
-	@Column
+	@Column(name="registration_date")
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getRegistered() {
 		return registered;
 	}
@@ -172,6 +176,7 @@ public class Person extends AbstractEntity {
 	}
 
 	@Column(name="last_modification")
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getLastModification() {
 		return lastModification;
 	}
@@ -181,7 +186,7 @@ public class Person extends AbstractEntity {
 	}
 	
 	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name="id_partner_org")
+	@JoinColumn(name="id_org")
     public PartnerOrganization getPartnerOrganization() {
         return partnerOrganization;
     }
@@ -201,6 +206,7 @@ public class Person extends AbstractEntity {
         this.role = role;
     }
     
+    @Column(name="person_type")
     public Integer getPersonType() {
         return personType;
     }
@@ -223,7 +229,7 @@ public class Person extends AbstractEntity {
         setPersonType(_personType.getId());
     }
     
-    @Column
+    @Column(name="enabled")
     public boolean isEnabled() {
         return enabled;
     }
@@ -243,29 +249,16 @@ public class Person extends AbstractEntity {
     }
 
     @ManyToMany(mappedBy="consultants")
-    public List<Project> getProjects() {
-        return projects;
-    }
-
-    public void setProjects(List<Project> projects) {
-        this.projects = projects;
-    }
-    
-    public void addProject(Project project) {
-        projects.add(project);
-    }
-    
-    @OneToMany(mappedBy="consultant")
     @Audited(targetAuditMode=RelationTargetAuditMode.NOT_AUDITED)
-    public Set<PersonTask> getPersonTasks() {
+    public List<Task> getTasks() {
         return tasks;
     }
 
-    public void setPersonTasks(Set<PersonTask> tasks) {
+    public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
     }
     
-    public void addPersonTask(PersonTask task) {
+    public void addTask(Task task) {
         this.tasks.add(task);
     }
 
@@ -282,7 +275,7 @@ public class Person extends AbstractEntity {
         setLastModification(null);
         setCity(null);
         setCountry(null);
-        setProjects(null);
+        setTasks(null);
         setTelephone1(null);
         setTelephone2(null);
         setTimecards(null);

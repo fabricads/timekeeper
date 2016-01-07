@@ -126,7 +126,9 @@ public class AlertService {
     private void sendConsultantWeeklyTimecardEmail(Person consultant) {
         Map<String, Object> root = new HashMap<>();
         root.put("name", consultant.getName());
-        root.put("projects", consultant.getProjects());
+        // TODO
+//        consultant.getPersonTasks()
+//        root.put("projects", consultant.getProjects());
 
         String text = FreeMarkerUtil.processTemplate("consultant_weekly_timecard.ftl", root);
         if (text != null) {

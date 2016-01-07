@@ -18,10 +18,10 @@ orgApp.controller("organization_new_ctrl", function($scope, $http) {
 	
 	$scope.org_submit = function(org) {
 	    org.contacts = [];
-	    if ($scope.contact1.name != null) {
+	    if ($scope.contact1 && $scope.contact1.name && $scope.contact1.name.trim() != '') {
 	        org.contacts.push($scope.contact1);
 	    }
-	    if ($scope.contact2.name != null) {
+	    if ($scope.contact2 && $scope.contact2.name && $scope.contact2.name.trim() != '') {
 	        org.contacts.push($scope.contact2);
 	    }
 		$http.post("/timekeeper/svc/organization/save", org)
@@ -58,10 +58,10 @@ orgApp.controller("organization_edit_ctrl", function($scope, $http, $routeParams
 	
 	$scope.org_submit = function(org) {
 	    org.contacts = [];
-        if ($scope.contact1.name != null) {
+	    if ($scope.contact1 && $scope.contact1.name && $scope.contact1.name.trim() != '') {
             org.contacts.push($scope.contact1);
         }
-        if ($scope.contact2.name != null) {
+        if ($scope.contact2 && $scope.contact2.name && $scope.contact2.name.trim() != '') {
             org.contacts.push($scope.contact2);
         }
 		$http.post("/timekeeper/svc/organization/save", org).

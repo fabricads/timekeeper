@@ -67,7 +67,7 @@ public class ProfileRest {
                     person.setOraclePAId(null);
                     person.setLastModification(null);
                     person.setPartnerOrganization(null);
-                    person.setProjects(null);
+                    person.setTasks(null);
                     person.setRegistered(null);
                     person.setRole(null);
                     person.setTimecards(null);

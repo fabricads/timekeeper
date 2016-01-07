@@ -67,4 +67,12 @@ public class TaskDao extends BaseDao<Task, TaskSearchFilter> {
         return res;
     }
 
+
+    public void associateTasks(Integer consultantId, Integer taskId) {
+        // bypass entitymanager to insert the relation data directly into 
+        // the relation table person_task
+        // otherwise, it would require the load of each task and person, and subsequent update operations and inserts
+        
+    }
+
 }

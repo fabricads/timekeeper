@@ -43,7 +43,6 @@ public class PersonService {
         List<Person> res = null;
         PersonSearchFilter filter = new PersonSearchFilter();
         filter.setPersonTypes(new int[]{PersonType.CONSULTANT_PARTNER.getId(), PersonType.MANAGER_REDHAT.getId()});
-        personDao.setFetchCollection("projects");
         if (enabled != null)
             filter.setEnabled(enabled);
         res = personDao.find(filter);
@@ -55,7 +54,6 @@ public class PersonService {
         PersonSearchFilter filter = new PersonSearchFilter();
         filter.setPersonTypeEnum(PersonType.CONSULTANT_PARTNER);
         filter.setEnabled(true);
-        personDao.setFetchCollection(new String[]{"projects"});
         res = personDao.find(filter);
         return res;
     }
@@ -69,7 +67,6 @@ public class PersonService {
         List<Person> res = null;
         PersonSearchFilter filter = new PersonSearchFilter();
         filter.setId(id);
-        personDao.setFetchCollection("tasks");
         res = personDao.find(filter);
         Person person = null;
         if (res.size() > 0)
@@ -101,7 +98,7 @@ public class PersonService {
         personDao.update(person);
     }
     
-    public void delete(Integer personId) throws GeneralException {
+    public void remove(Integer personId) throws GeneralException {
         personDao.remove(personId);
     }
     
@@ -153,7 +150,6 @@ public class PersonService {
         PersonSearchFilter filter = new PersonSearchFilter();
         filter.setPersonIds(consultantsId);
         filter.setEnabled(true);
-        personDao.setFetchCollection("projects");
         res = personDao.find(filter);
         return res;
     }

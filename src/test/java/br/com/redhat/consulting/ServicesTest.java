@@ -6,8 +6,11 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.jglue.cdiunit.ActivatedAlternatives;
+import org.jglue.cdiunit.CdiRunner;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,32 +19,15 @@ import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.filter.PersonSearchFilter;
 import br.com.redhat.consulting.util.GeneralException;
 
-//@RunWith(Arquillian.class)
+@RunWith(CdiRunner.class)
+@ActivatedAlternatives(EntityManagerTestProducers.class)
 public class ServicesTest  {
 
     static Logger LOG = LoggerFactory.getLogger(ServicesTest.class);
     
-//    WeldContainer weld;
-    
     @Inject
     PersonDao personDao;
 
-/*    @Deployment
-    public static Archive<?> createDeployment() {
-        return ShrinkWrap.create(WebArchive.class, "test.war")
-                .addPackages(true, "br.com.redhat")
-                // enable JPA
-                .addAsResource("META-INF/persistence.xml", "META-INF/persistence.xml")
-                // enable CDI interceptors
-                .addAsWebInfResource("META-INF/beans.xml", "beans.xml");
-    }
-*/    
-/*    @Before
-    public void setup() {
-        weld = new Weld().initialize();
-        personDao = weld.instance().select(PersonDao.class).get();
-    }
-*/
     @Test
     public void findById() {
         Person p1 = personDao.findById(1);

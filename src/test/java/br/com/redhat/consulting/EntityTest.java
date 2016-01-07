@@ -42,23 +42,23 @@ public class EntityTest  {
         par2.setName("Red Hat");
         par2.setRegistered(today);
         
-        Person pm = new Person("PA 723737", "Camila Mantila 2", "camila2@redhat.com", "Rio de Janeiro", "RJ", par2);
+        Person pm = new Person(723737, "Camila Mantila 2", "camila2@redhat.com", "Rio de Janeiro", "RJ", par2);
         pm.setEnabled(false);
         pm.setCountry("Brasil");
         pm.setLastModification(today);
         pm.setRegistered(today);
         pm.setPassword("admin123");
         pm.setPersonTypeEnum(PersonType.MANAGER_REDHAT);
-        pm.setTelephone1("2182828282");
+        pm.setTelephone1(2182828282L);
         
-        Person consultant = new Person("PA 9876", "Claudio Miranda 2", "claudio2@redhat.com", "Brasilia", "DF", par);
+        Person consultant = new Person(9876, "Claudio Miranda 2", "claudio2@redhat.com", "Brasilia", "DF", par);
         consultant.setEnabled(false);
         consultant.setCountry("Brasil");
         consultant.setLastModification(today);
         consultant.setRegistered(today);
         consultant.setPassword("admin123");
         consultant.setPersonTypeEnum(PersonType.CONSULTANT_REDHAT);
-        consultant.setTelephone1("6191249387");
+        consultant.setTelephone1(6191249387L);
         
         Project prj = new Project();
         prj.setEnabled(true);
@@ -72,8 +72,8 @@ public class EntityTest  {
         prj.setInitialDate(dtInit.toDate());
         prj.setEndDate(dtEnd.toDate());
         prj.setLastModification(today);
-        pm.addProject(prj);
-        prj.addConsultant(pm);
+//        pm.addProject(prj);
+//        prj.addConsultant(pm);
 
         Timecard tc = new Timecard();
         tc.setProject(prj);

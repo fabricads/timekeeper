@@ -8,4 +8,9 @@
         <class>br.com.redhat.consulting.config.TransactionalModeInterceptor</class>
     </interceptors>
        
+    <alternatives>
+        <class>br.com.redhat.consulting.EntityManagerTestProducers</class>
+    </alternatives>
+    
+    
 </beans>       

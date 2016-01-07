@@ -65,7 +65,7 @@
         <div class="form-group" ng-class="{'has-error': form.oracleId.$invalid}">
             <label for="prj_name" class="col-md-2 control-label">Oracle PA ID</label>
             <div class="col-md-2">
-                <input type="text" class="form-control" name="oracleId" required ng-model="person.oraclePAId">
+                <input type="text" ui-mask="?9?9?9?9?9?9?9?9?9?9?9" class="form-control" name="oracleId" required ng-model="person.oraclePAId">
             </div>
             <div class="col-md-4">
                 <span class="help-block" ng-show="form.oracleId.$error.required">Required field</span>
@@ -102,14 +102,14 @@
         <div class="form-group">
             <label for="prj_name" class="col-md-2 control-label">Telephone 1</label>
             <div class="col-md-2">
-                <input type="text" id="telephone1" class="form-control" ui-mask="(99) 999999999" ng-model="person.telephone1">
+                <input type="text" id="telephone1" class="form-control" ui-mask="(99) 99999999?9"  ng-model="person.telephone1">
             </div>
             
         </div>
         <div class="form-group">
             <label for="prj_name" class="col-md-2 control-label">Telephone 2</label>
             <div class="col-md-2">
-                <input type="text" id="telephone2" class="form-control" ui-mask="(99) 999999999" ng-model="person.telephone2">
+                <input type="text" id="telephone2" class="form-control" ui-mask="(99) 99999999?9"  ng-model="person.telephone2">
             </div>
         </div>
         <div class="form-group" ng-class="{'has-error': form.org.$invalid}">

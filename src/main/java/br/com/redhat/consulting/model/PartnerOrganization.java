@@ -13,18 +13,20 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.annotations.CollectionId;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
-import org.hibernate.envers.RelationTargetAuditMode;
 
 @Entity
-@Table(name="partner_org")
+@Table(name="organization")
 @Audited
+@DynamicUpdate
 public class PartnerOrganization extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
@@ -45,7 +47,7 @@ public class PartnerOrganization extends AbstractEntity {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="id_partner_org")
+    @Column(name="id_org")
     public Integer getId() {
         return super.getId();
     }
@@ -77,6 +79,8 @@ public class PartnerOrganization extends AbstractEntity {
         this.persons = persons;
     }
 
+    @Column(name="registration_date")
+    @Temporal(TemporalType.TIMESTAMP)
     public Date getRegistered() {
         return registered;
     }
@@ -86,9 +90,9 @@ public class PartnerOrganization extends AbstractEntity {
     }
 
     @ElementCollection
-    @CollectionTable(name="org_contact", joinColumns=@JoinColumn(name="id_partner_org"))
+    @CollectionTable(name="org_contact", joinColumns=@JoinColumn(name="id_org"))
     @NotAudited
-//    @CollectionId(columns= {@Column(name="id_contact")}, generator="identity", type=@Type(type="int"))
+    @OrderColumn(name="id_contact")
     public List<Contact> getContacts() {
         return contacts;
     }

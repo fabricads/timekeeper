@@ -4,7 +4,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.enterprise.context.RequestScoped;
 import javax.persistence.TypedQuery;
 
 import org.apache.commons.lang.StringUtils;
@@ -12,10 +11,12 @@ import org.apache.commons.lang.StringUtils;
 import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.filter.PersonSearchFilter;
 
-@RequestScoped
 public class PersonDao extends BaseDao<Person, PersonSearchFilter> {
+    
+    private PersonSearchFilter filter;
 
     protected void configQuery(StringBuilder query, PersonSearchFilter filter, List<Object> params) {
+        this.filter = filter;
         if (filter.isEnabled()) {
             query.append(" and ENT.enabled = ? ");
             params.add(filter.isEnabled());
@@ -75,6 +76,12 @@ public class PersonDao extends BaseDao<Person, PersonSearchFilter> {
         }
         query.append(" order by ENT.name");
     }
+    
+    protected void addJoinToFromClause(StringBuilder ql) {
+        if (StringUtils.isNotBlank(filter.getJoinClause()))
+            ql.append(filter.getJoinClause());
+    }
+
     
     public List<Person> findConsultantsAndActiveProjects() {
         String jql = "select distinct c from Person c inner join fetch c.projects p "

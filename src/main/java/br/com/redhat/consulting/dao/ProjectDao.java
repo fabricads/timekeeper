@@ -1,11 +1,11 @@
 package br.com.redhat.consulting.dao;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
-import javax.enterprise.context.RequestScoped;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
@@ -16,18 +16,20 @@ import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.Project;
 import br.com.redhat.consulting.model.filter.ProjectSearchFilter;
 
-@RequestScoped
 public class ProjectDao extends BaseDao<Project, ProjectSearchFilter> {
 
+    private ProjectSearchFilter filter;
+    
     protected void configQuery(StringBuilder query, ProjectSearchFilter filter, List<Object> params) {
+        this.filter = filter;
         if (filter.getId() != null) {
             query.append(" and ENT.id = ? ");
             params.add(filter.getId());
         }
         
-        if (filter.isEnabled() != null) {
+        if (filter.getEnabled() != null) {
             query.append(" and ENT.enabled = ? ");
-            params.add(filter.isEnabled());
+            params.add(filter.getEnabled());
         }
         
         if (StringUtils.isNotBlank(filter.getName())) {
@@ -40,19 +42,26 @@ public class ProjectDao extends BaseDao<Project, ProjectSearchFilter> {
             params.add(filter.getPartialName().toLowerCase());
         }
         
-        if (filter.getConsultants().size() > 0) {
-            addInnerJoin("inner join ENT.consultants cons");
-            query.append(" and cons.id in (");
-            for (int i = 0; i < filter.getConsultants().size(); i++) {
-                query.append("?");
-                List<Person> coll = new ArrayList<>(filter.getConsultants());
-                params.add(coll.get(i).getId());
-                if (i+1 < filter.getConsultants().size())
-                    query.append(",");
+        if (filter.isJoinConsultants()) {
+            Set<Person> consultants = filter.getConsultants();
+            if (!consultants.isEmpty()) {
+                Iterator<Person> iter = consultants.iterator();
+                if (consultants.size() > 0) {
+                    query.append(" and ct.id in (");
+                    int i = 0;
+                    while (iter.hasNext()) {
+                        query.append("?");
+                        params.add(iter.next().getId());
+                        i++;
+                        if (i < consultants.size())
+                            query.append(",");
+                    }
+                    query.append(")");
+                }
             }
-            query.append(")");
         }
         
+
         if (filter.getPaNumber() != null) {
             query.append(" and ENT.paNumber = ? ");
             params.add(filter.getPaNumber());
@@ -70,6 +79,17 @@ public class ProjectDao extends BaseDao<Project, ProjectSearchFilter> {
         query.append(" order by ENT.name");
         
     }
+    
+    protected void addJoinToFromClause(StringBuilder ql) { 
+        if (filter.isJoinTasks()) {
+            ql.append("left join fetch ent.tasks t");
+        }
+        if (filter.isJoinConsultants() && !filter.isJoinTasks()) {
+            ql.append("left join fetch ent.tasks t");
+            ql.append("left join t.consultants ct");
+        }
+    }
+
     
     public Long countProjectsByPM(Integer pmId) {
         Long count = 0L;
@@ -131,7 +151,7 @@ public class ProjectDao extends BaseDao<Project, ProjectSearchFilter> {
     }
     
     public List<Project> findProjectsByConsultant(Integer consultantId) {
-        String jql = "select p from Project p inner join p.consultants c where c.id = ?0 order by p.name";
+        String jql = "select distinct p from Project p inner join p.tasks t inner join t.consultants c where c.id = ?0 order by p.name";
         TypedQuery<Project> query= getEntityManager().createQuery(jql, Project.class);
         query.setParameter(0, consultantId);
         List<Project> res = query.getResultList();
@@ -139,7 +159,7 @@ public class ProjectDao extends BaseDao<Project, ProjectSearchFilter> {
     }
     
     public List<Project> findProjectsToFill(Integer consultantId) {
-        String jql = "select distinct p from Project p inner join p.consultants c left join fetch p.timecards tc where p.enabled=true and c.id = ?0 order by p.name";
+        String jql = "select distinct p from Project p inner join p.tasks t inner join t.consultants c left join fetch p.timecards tc where p.enabled=true and c.id = ?0 order by p.name";
         TypedQuery<Project> query= getEntityManager().createQuery(jql, Project.class);
         query.setParameter(0, consultantId);
         List<Project> res = query.getResultList();
@@ -173,8 +193,7 @@ public class ProjectDao extends BaseDao<Project, ProjectSearchFilter> {
     }
     
     public Project findByIdWithConsultantsAndTasks(Integer id) {
-//        String jql = "select distinct p from Project p left join fetch p.consultants c left join fetch c.personTasks t where p.id = :projectId";
-        String jql = "select distinct p from Project p left join fetch p.consultants c left join fetch c.personTasks pt left join pt.task t where p.id=:projectId";
+        String jql = "select distinct p from Project p left join fetch p.tasks t left join fetch t.consultants where p.id=:projectId";
         TypedQuery<Project> query= getEntityManager().createQuery(jql, Project.class);
         query.setParameter("projectId", id);
         List<Project> res = query.getResultList();

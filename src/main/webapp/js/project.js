@@ -1,10 +1,10 @@
 var projectApp = angular.module("project_ctrl", [ "ngRoute", "ngResource", "ui.utils", "ui.bootstrap", "servicesApp", "timekeeperApp" ]);
 
-/* ********************************************************
+/*******************************************************************************
  * 
  * Project controllers
  * 
- * ******************************************************** 
+ * ********************************************************
  */
 
 // display all enabled projects
@@ -13,7 +13,8 @@ projectApp.controller("project_list_ctrl", function($scope, $http, $window) {
     // variable to control the printing "loading" while ajax is running
     $scope.loading = true;
     
-    // control the parameter e=1, where the query returns only the projects set as enabled.
+    // control the parameter e=1, where the query returns only the projects set
+    // as enabled.
     $scope.list_enabled = 1;
 	
     $scope.refresh = function() {
@@ -161,7 +162,6 @@ projectApp.controller("project_edit_ctrl", function($scope, $http, $routeParams,
         project.tasksDTO = $scope.selected_tasks;
         project.tasksToRemove = $scope.tasks_to_remove;
         
-        //alert(project.endDate);
         if(project.endDate instanceof Date){
         	project.endDate.setMinutes(project.endDate.getMinutes() - project.endDate.getTimezoneOffset());
         }
@@ -169,7 +169,7 @@ projectApp.controller("project_edit_ctrl", function($scope, $http, $routeParams,
         	project.initialDate.setMinutes(project.initialDate.getMinutes() - project.initialDate.getTimezoneOffset());
         }
         
-        //alert(project.endDate + ' ' + JSON.stringify(project.endDate));
+        // alert(project.endDate + ' ' + JSON.stringify(project.endDate));
         $http.post("/timekeeper/svc/project/save", project).success(
             function(data, status, header, config) {
                 $scope.saved = true;
@@ -237,7 +237,7 @@ projectApp.controller("project_associate_consultants", function($scope, $http, $
         success(function(data) {
             $scope.project = data;
             $scope.selected_consultants = $scope.project.consultants;
-            $scope.selected_tasks = $scope.project.tasksDTO;
+// $scope.selected_tasks = $scope.project.tasksDTO;
             
             $http.get('/timekeeper/svc/project/' + $scope.project.id + '/tasks').success(function(data) {
                 $scope.tasks = data;
@@ -253,8 +253,8 @@ projectApp.controller("project_associate_consultants", function($scope, $http, $
     
     $scope.project_submit = function(project) {
         project.consultants = $scope.selected_consultants;
-        project.tasksDTO = $scope.selected_tasks;
-        project.tasksToRemove = $scope.tasks_to_remove;
+// project.tasksDTO = $scope.selected_tasks;
+// project.tasksToRemove = $scope.tasks_to_remove;
         $http.post("/timekeeper/svc/project/associate-consultants", project).success(
             function(data, status, header, config) {
                 $scope.saved = true;
@@ -272,16 +272,17 @@ projectApp.controller("project_associate_consultants", function($scope, $http, $
     
     $scope.add_consultant = function() {
         if ($scope.temp_consultant.id != null ) {
-            // add the task, if it is not already associated to the consultant
             found = $filter('findById')($scope.temp_consultant.tasks, $scope.temp_task.id);
+            // add the task, if it is not already associated to the consultant
             if (found == null) {
                 $scope.temp_consultant.dissociateOfProject = true;
                 $scope.temp_consultant.tasks.push($scope.temp_task);
                 found = $filter('findById')($scope.selected_consultants, $scope.temp_consultant.id);
+                // add the consultant to the list, if not added previously
                 if (found == null && $scope.temp_consultant.id != null ) {
                     $scope.selected_consultants.push($scope.temp_consultant);
                 }
-//                console.log($scope.selected_consultants);
+// console.log($scope.selected_consultants);
 
                 // clean temp_consultant
                 $scope.temp_consultant = {name: ""};
@@ -301,7 +302,7 @@ projectApp.controller("project_associate_consultants", function($scope, $http, $
     
 });
 
-//retrieve a specific task name given a task id
+// retrieve a specific task name given a task id
 projectApp.filter('taskName', function() {
     return function(input, id) {
         var i=0, len=input.length;

@@ -110,7 +110,8 @@ public class PersonRest {
                     PartnerOrganizationDTO orgDto = new PartnerOrganizationDTO(org);
                     Role role = p.getRole();
                     if (type == FIND_ALL) 
-                        personDto.setNumberOfProjects(p.getProjects().size());
+                        // TODO
+//                        personDto.setNumberOfProjects(p.getProjects().size());
                     if (p.getPersonTypeEnum().equals(PersonType.MANAGER_REDHAT)) { 
                         int nrProjects = projectService.countProjectsByPM(p.getId()).intValue();
                         personDto.setNumberOfProjects(nrProjects);
@@ -220,10 +221,10 @@ public class PersonRest {
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @RolesAllowed({"redhat_manager", "admin"})
-    public Response delete(@PathParam("pd") @DefaultValue("-1") int personId) {
+    public Response remove(@PathParam("pd") @DefaultValue("-1") int personId) {
         Response.ResponseBuilder response = null;
         try {
-            personService.delete(personId);
+            personService.remove(personId);
             response = Response.ok();
         } catch (GeneralException e) {
             LOG.error("Error to disable organization.", e);

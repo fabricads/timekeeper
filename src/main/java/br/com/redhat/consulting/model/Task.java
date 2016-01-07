@@ -1,6 +1,7 @@
 package br.com.redhat.consulting.model;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -21,13 +23,11 @@ import org.hibernate.envers.Audited;
 @Audited
 public class Task extends AbstractEntity {
 
-    private static final long serialVersionUID = 1L;
-    
     private String name;
     private Project project;
     private Integer taskType;
     
-//    private Set<Person> consultants;
+    private List<Person> consultants = new ArrayList<>();
     
     public Task() { }
     
@@ -73,6 +73,7 @@ public class Task extends AbstractEntity {
     }
 
     @NotNull
+    @Column(name="task_type")
     public Integer getTaskType() {
         return taskType;
     }
@@ -81,15 +82,20 @@ public class Task extends AbstractEntity {
         this.taskType = taskType;
     }
     
-/*    @ManyToMany(mappedBy="tasks")
-    public Set<Person> getConsultants() {
+    @ManyToMany
+    @JoinTable(name="person_task", joinColumns=@JoinColumn(name="id_task"), inverseJoinColumns=@JoinColumn(name="id_person"))
+    public List<Person> getConsultants() {
         return consultants;
     }
 
-    public void setConsultants(Set<Person> consultants) {
+    public void setConsultants(List<Person> consultants) {
         this.consultants = consultants;
     }
-*/
+    
+    public void addConsultant(Person consultant) {
+        this.consultants.add(consultant);
+    }
+
     @Override
     public String toString() {
         return "Task [id=" + getId() + ", name=" + name + "]";

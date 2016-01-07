@@ -28,9 +28,9 @@ public class BaseDao<ENTITY, SEARCH_FILTER> {
 
     private Class<ENTITY> entityClass;
     private String entityClassName;
-    private String[] fetchCollection = new String[]{};
     private String orderBy = "";
-    private List<String> innerJoins = new ArrayList<>(); 
+    private boolean distinct;
+    private boolean count;
 
     public BaseDao() {
         if (entityClass == null) {
@@ -76,6 +76,31 @@ public class BaseDao<ENTITY, SEARCH_FILTER> {
         return ent;
     }
 
+    /**
+     * Deleta um registro com o comando delete from entidade where id=? , sem usar o EntityManager.remove(Entidade).
+     * Delete a record with delete command rather than em.remove
+     * 
+     * @param id
+     * @throws GeneralException
+     */
+    @TransactionalMode
+    public void remove(Integer id) throws GeneralException {
+        try {
+            String ql = "delete from " + entityClassName + " ENT where ENT.id = ? ";
+            Query q = em.createQuery(ql);
+            q.setParameter(1, id);
+            int num = q.executeUpdate();
+            if (num == 0) {
+                LOG.warn(entityClassName + " not found with id=" + id);
+            }
+        } catch (Exception e) {
+            String msg = "Error to remove " + entityClassName + ", id=" + id +" of database.";
+            LOG.error(msg, e);
+            throw new GeneralException(msg, e);
+        }
+    }
+
+    
     @TransactionalMode
     public void remove(ENTITY entity) throws GeneralException {
         try {
@@ -87,18 +112,6 @@ public class BaseDao<ENTITY, SEARCH_FILTER> {
         }
     }
     
-    @TransactionalMode
-    public void remove(Integer id) throws GeneralException {
-        try {
-            ENTITY entity = findById(id);
-            em.remove(entity);
-        } catch (PersistenceException e) {
-            String msg = "Error to remove " + entityClassName + ", id=" + id +" of database.";
-            LOG.error(msg, e);
-            throw new GeneralException(msg, e);
-        }
-    }
-
     protected Class<ENTITY> getEntityClass() {
         return entityClass;
     }
@@ -157,36 +170,26 @@ public class BaseDao<ENTITY, SEARCH_FILTER> {
     }
 
     protected String configQueryFrom(SEARCH_FILTER filter) {
-        StringBuilder sql = new StringBuilder("select ");
-        sql.append("distinct ENT");
-        sql.append(" from ").append(entityClassName).append(" ENT");
-        String[] collectionsToFetch = getFetchCollection();
-        for (int i = 0; i < collectionsToFetch.length; i++) {
-            String attrName = collectionsToFetch[i];
-            sql.append(" left join fetch ENT.").append(attrName).append(" ENT").append(i+2);
-        }
-        for (String innerJoin: innerJoins)  {
-            sql.append(" ").append(innerJoin).append(" ");
-        }
-        sql.append(" where 1=1 ");
-        return sql.toString();
+        StringBuilder ql = new StringBuilder("select ");
+        if (count) 
+            ql.append("count(");
+        if (distinct) 
+            ql.append("distinct");
+        ql.append(" ENT");
+        if (count)
+            ql.append(")");
+        ql.append(" from ").append(entityClassName).append(" ENT ");
+        addJoinToFromClause(ql);
+        ql.append(" where 1=1 ");
+        return ql.toString();
     }
+    
+    protected void addJoinToFromClause(StringBuilder ql) { }
+
     
     protected void configQuery(SEARCH_FILTER filter, TypedQuery<ENTITY> query) {
     }
     
-    public String[] getFetchCollection() {
-        return fetchCollection;
-    }
-    
-    public void setFetchCollection(String ...colls) {
-        fetchCollection = new String[colls.length];
-        int i = 0;
-        for (String collName: colls) { 
-            this.fetchCollection[i++] = collName;
-        }
-    }
-
     public String getOrderBy() {
         return orderBy;
     }
@@ -194,9 +197,13 @@ public class BaseDao<ENTITY, SEARCH_FILTER> {
     public void setOrderBy(String orderBy) {
         this.orderBy = orderBy;
     }
-    
-    public void addInnerJoin(String innerJoin) {
-        innerJoins.add(innerJoin);
+
+    public boolean isDistinct() {
+        return distinct;
     }
 
+    public void setDistinct(boolean distinct) {
+        this.distinct = distinct;
+    }
+    
 }

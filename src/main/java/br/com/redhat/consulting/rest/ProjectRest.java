@@ -31,16 +31,13 @@ import org.slf4j.LoggerFactory;
 
 import br.com.redhat.consulting.config.Authenticated;
 import br.com.redhat.consulting.model.Person;
-import br.com.redhat.consulting.model.PersonTask;
 import br.com.redhat.consulting.model.Project;
 import br.com.redhat.consulting.model.Task;
 import br.com.redhat.consulting.model.TaskTypeEnum;
-import br.com.redhat.consulting.model.dto.PartnerOrganizationDTO;
 import br.com.redhat.consulting.model.dto.PersonDTO;
 import br.com.redhat.consulting.model.dto.ProjectDTO;
 import br.com.redhat.consulting.model.dto.TaskDTO;
 import br.com.redhat.consulting.services.PersonService;
-import br.com.redhat.consulting.services.PersonTaskService;
 import br.com.redhat.consulting.services.ProjectService;
 import br.com.redhat.consulting.services.TaskService;
 import br.com.redhat.consulting.services.TimecardService;
@@ -53,34 +50,30 @@ import br.com.redhat.consulting.util.Util;
 public class ProjectRest {
 
     private static Logger LOG = LoggerFactory.getLogger(ProjectRest.class);
-    
+
     @Inject
     private ProjectService projectService;
-    
+
     @Inject
     private TimecardService timecardService;
-    
+
     @Inject
     private PersonService personService;
-    
+
     @Inject
     private TaskService taskService;
-    
-    @Inject
-    private PersonTaskService personTaskService;
-    
+
     @Context
     private HttpServletRequest httpReq;
 
-    
     @Path("/list")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    @RolesAllowed({"redhat_manager", "admin"})
+    @RolesAllowed({ "redhat_manager", "admin" })
     public Response listProjectsByPM(@QueryParam("by-pm") Integer pmId, @QueryParam("e") @DefaultValue("1") Integer listType) {
         return listProjects(null, null, listType);
     }
-    
+
     public Response listProjects(Integer pmId, Integer consultantId, Integer listType) {
         List<Project> projects = null;
         List<ProjectDTO> projectsDto = null;
@@ -93,7 +86,7 @@ public class ProjectRest {
                 listOnlyEnabled = true;
             if (pmId != null)
                 projects = projectService.findByPM(pmId);
-            else if (consultantId != null) 
+            else if (consultantId != null)
                 projects = projectService.findByConsultant(consultantId);
             else if (loggedUser.isAdminOrProjectManager())
                 projects = projectService.findAll(listOnlyEnabled);
@@ -104,11 +97,11 @@ public class ProjectRest {
                 response = Response.ok(responseObj);
             } else {
                 projectsDto = new ArrayList<ProjectDTO>(projects.size());
-                for (Project project: projects) {
+                for (Project project : projects) {
                     ProjectDTO prjDto = new ProjectDTO(project);
                     if (loggedUser.isAdminOrProjectManager()) {
-                        int qty = project.getConsultants().size();
-                        prjDto.setQtyConsultants(qty);
+//                        int qty = project.getConsultants().size();
+//                        prjDto.setQtyConsultants(qty);
                     }
                     projectsDto.add(prjDto);
                 }
@@ -122,18 +115,18 @@ public class ProjectRest {
         }
         return response.build();
     }
-    
+
     @Path("/list-by-cs-fill")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    @RolesAllowed({"partner_consultant"})
+    @RolesAllowed({ "partner_consultant" })
     public Response listByConsultantToFill(@QueryParam("cs") Integer consultantId) {
         List<Project> projects = null;
         List<ProjectDTO> projectsDto = null;
         Response.ResponseBuilder response = null;
         PersonDTO loggedUser = Util.loggedUser(httpReq);
         try {
-            if (consultantId != null) 
+            if (consultantId != null)
                 projects = projectService.findByConsultantToFill(consultantId);
             if (projects == null || projects.size() == 0) {
                 Map<String, Object> responseObj = new HashMap<>();
@@ -142,9 +135,11 @@ public class ProjectRest {
                 response = Response.ok(responseObj);
             } else {
                 projectsDto = new ArrayList<ProjectDTO>(projects.size());
-                for (Project project: projects) {
-                    // se projeto nao tem timecards, entao nao foi lancado nenhum, pode lancar novo timecard
-                    // OU verifica se o ultimo timecardentry lancado e menor que a data fim do projeto
+                for (Project project : projects) {
+                    // se projeto nao tem timecards, entao nao foi lancado
+                    // nenhum, pode lancar novo timecard
+                    // OU verifica se o ultimo timecardentry lancado e menor que
+                    // a data fim do projeto
                     if (project.getTimecards().size() == 0 || projectService.checkProjectCanFillMoreTimecards(project.getId())) {
                         LOG.debug(loggedUser.getName() + " can fill more timecards to project: " + project.getName());
                         ProjectDTO prjDto = new ProjectDTO(project);
@@ -163,17 +158,17 @@ public class ProjectRest {
         }
         return response.build();
     }
-    
+
     @Path("/{projectId}/tasks")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    @RolesAllowed({"redhat_manager", "admin"})
+    @RolesAllowed({ "redhat_manager", "admin" })
     public Response tasks(@PathParam("projectId") Integer projectId) {
         List<TaskDTO> tasksDto = null;
         List<Task> tasks = null;
         Response.ResponseBuilder response = null;
         try {
-            if (projectId != null) 
+            if (projectId != null)
                 tasks = taskService.findByProject(projectId);
             if (tasks == null || tasks.size() == 0) {
                 Map<String, Object> responseObj = new HashMap<>();
@@ -182,7 +177,7 @@ public class ProjectRest {
                 response = Response.ok(responseObj);
             } else {
                 tasksDto = new ArrayList<TaskDTO>(tasks.size());
-                for (Task task: tasks) {
+                for (Task task : tasks) {
                     TaskDTO taskDto = new TaskDTO(task);
                     tasksDto.add(taskDto);
                 }
@@ -196,19 +191,19 @@ public class ProjectRest {
         }
         return response.build();
     }
-    
+
     @Path("/list-by-cs")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    @RolesAllowed({"redhat_manager", "admin", "partner_consultant"})
+    @RolesAllowed({ "redhat_manager", "admin", "partner_consultant" })
     public Response listProjectsByConsultant(@QueryParam("cs") Integer consultantId) {
         return listProjects(null, consultantId, 1);
     }
-    
+
     @Path("/{pr}")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    @RolesAllowed({"redhat_manager", "admin"})
+    @RolesAllowed({ "redhat_manager", "admin" })
     public Response get(@PathParam("pr") @DefaultValue("-1") int projectId) {
         Project projectEnt = null;
         Response.ResponseBuilder response = null;
@@ -221,25 +216,25 @@ public class ProjectRest {
             } else {
                 Person pm = projectEnt.getProjectManager();
                 pm.nullifyAttributes();
-                
+
                 ProjectDTO projectDto = new ProjectDTO(projectEnt);
                 PersonDTO pmDto = new PersonDTO(pm);
                 projectDto.setProjectManagerDTO(pmDto);
-                for (Person consultant: projectEnt.getConsultants()) {
-                    consultant.nullifyAttributes();
-                    PersonDTO consultantDto = new PersonDTO(consultant);
-                    PartnerOrganizationDTO orgDto = new PartnerOrganizationDTO(consultant.getPartnerOrganization());
-                    consultantDto.setOrganization(orgDto);
-                    Long qtyTimecards = timecardService.countByConsultantAndProject(consultant.getId(), projectId);
-                    consultantDto.setDissociateOfProject(qtyTimecards < 1);
-                    for (PersonTask constask: consultant.getPersonTasks()) {
-                        Task task = constask.getTask();
-                        TaskDTO taskDto = new TaskDTO(task);
-                        consultantDto.addTask(taskDto);
-                    }
-                    projectDto.addConsultant(consultantDto);
-                }
-                for (Task task: projectEnt.getTasks()) {
+//                for (Person consultant : projectEnt.getConsultants()) {
+//                    consultant.nullifyAttributes();
+//                    PersonDTO consultantDto = new PersonDTO(consultant);
+//                    PartnerOrganizationDTO orgDto = new PartnerOrganizationDTO(consultant.getPartnerOrganization());
+//                    consultantDto.setOrganization(orgDto);
+//                    Long qtyTimecards = timecardService.countByConsultantAndProject(consultant.getId(), projectId);
+//                    consultantDto.setDissociateOfProject(qtyTimecards < 1);
+//                    for (PersonTask constask : consultant.getPersonTasks()) {
+//                        Task task = constask.getTask();
+//                        TaskDTO taskDto = new TaskDTO(task);
+//                        consultantDto.addTask(taskDto);
+//                    }
+//                    projectDto.addConsultant(consultantDto);
+//                }
+                for (Task task : projectEnt.getTasks()) {
                     TaskDTO taskDto = new TaskDTO(task);
                     Long qtyTimecardEntries = timecardService.countByTask(task.getId());
                     taskDto.setDissociateOfProject(qtyTimecardEntries < 1);
@@ -255,11 +250,11 @@ public class ProjectRest {
         }
         return response.build();
     }
-    
+
     @Path("/{pr}/tc")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    @RolesAllowed({"redhat_manager", "admin", "partner_consultant"})
+    @RolesAllowed({ "redhat_manager", "admin", "partner_consultant" })
     public Response getWithTimecards(@PathParam("pr") @DefaultValue("-1") int projectId) {
         Project projectEnt = null;
         Response.ResponseBuilder response = null;
@@ -273,16 +268,16 @@ public class ProjectRest {
             } else {
                 Person pm = projectEnt.getProjectManager();
                 pm.nullifyAttributes();
-                
+
                 PersonDTO pmDto = new PersonDTO(pm);
                 ProjectDTO projectDto = new ProjectDTO(projectEnt);
                 projectDto.setProjectManagerDTO(pmDto);
-                
+
                 Date lastFilledDate = projectService.lastFilledTimecard(projectId);
                 LOG.debug(projectId + " ultimo dia preenchido " + lastFilledDate);
                 projectDto.setLastFilledDay(lastFilledDate);
-                
-                for (Task task: projectEnt.getTasks()) {
+
+                for (Task task : projectEnt.getTasks()) {
                     TaskDTO taskDto = new TaskDTO(task);
                     projectDto.addTask(taskDto);
                 }
@@ -296,12 +291,12 @@ public class ProjectRest {
         }
         return response.build();
     }
-    
+
     @Path("/save")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
-    @RolesAllowed({"redhat_manager", "admin"})
+    @RolesAllowed({ "redhat_manager", "admin" })
     public Response save(ProjectDTO projectDto) {
         Response.ResponseBuilder builder = null;
         try {
@@ -317,30 +312,11 @@ public class ProjectRest {
                 responseObj.put("error", "Project with duplicated name: " + projectDto.getName());
                 builder = Response.status(Response.Status.CONFLICT).entity(responseObj);
             } else {
-                Person pm = new Person();
-                pm.setId(projectDto.getProjectManagerDTO().getId());
                 projectEnt = projectDto.toProject();
-/*                if (projectDto.getConsultants().size() > 0) {
-                    List<Integer> consultantsId = new ArrayList<>(projectDto.getConsultants().size());
-                    for (PersonDTO pdto: projectDto.getConsultants()) {
-                        consultantsId.add(pdto.getId());
-                    }
-                    List<Person> consultants = new ArrayList<Person>(projectDto.getConsultants().size());
-                    consultants = personService.findPersonsById(consultantsId);
-                    projectEnt.setConsultants(consultants);
-                    for (Person p: consultants) {
-                        p.getProjects().add(projectEnt);
-                    }
-                }
-                */
-                projectDto.setConsultantsDTO(null);
-                projectEnt.setProjectManager(pm);
-                
-                for (TaskDTO taskDto: projectDto.getTasksDTO()) {
+
+                for (TaskDTO taskDto : projectDto.getTasksDTO()) {
                     Task task = taskDto.toTask();
-                    task.setProject(projectEnt);
                     projectEnt.addTask(task);
-                    task.setProject(projectEnt);
                 }
                 taskService.removeById(projectDto.getTasksToRemove());
                 projectService.persist(projectEnt);
@@ -350,9 +326,7 @@ public class ProjectRest {
             builder = createViolationResponse("Error to insert project.", e.getConstraintViolations());
         } catch (Exception e) {
             LOG.error("Error to insert project.", e);
-            Map<String, String> responseObj = new HashMap<String, String>();
-            responseObj.put("error", e.getMessage());
-            builder = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+            builder = Response.status(Response.Status.BAD_REQUEST).entity(Util.jsonMessageResponse("error", e.getMessage()));
         }
         return builder.build();
     }
@@ -361,36 +335,31 @@ public class ProjectRest {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
-    @RolesAllowed({"redhat_manager", "admin"})
+    @RolesAllowed({ "redhat_manager", "admin" })
     public Response associateTasksToConsultant(ProjectDTO projectDto) {
         Response.ResponseBuilder builder = null;
-        LOG.debug(projectDto.toString());
         try {
             if (projectDto == null || projectDto.getId() == null || projectDto.getId() == 0) {
                 Map<String, String> responseObj = new HashMap<String, String>();
                 responseObj.put("error", "No project submitted");
                 builder = Response.status(Response.Status.NOT_FOUND).entity(responseObj);
             } else {
-//                Project projectEnt = projectService.findByIdWithConsultants(projectDto.getId());
-                List<PersonTask> personTasks = personTaskService.findByProject(projectDto.getId());
-//                    if (projectDto.getConsultants().size() > 0) {
-//                    if (projectEnt.getConsultants().size() > 0) {
-                        for (PersonDTO consultantDto: projectDto.getConsultants()) {
-                            Person consultantEnt = personService.findByIdWithTasks(consultantDto.getId());
-                            consultantEnt.setPassword(null);
-                            List<TaskDTO> tasksDto = consultantDto.getTasks();
-                            for (TaskDTO taskDto: tasksDto) {
-                                Task task = taskDto.toTask();
-                                PersonTask consTask = new PersonTask(consultantEnt, task);
-                                consultantEnt.addPersonTask(consTask);
-                            }
-//                            projectEnt.addConsultant(consultantEnt);
-//                            consultantEnt.addProject(projectEnt);
-//                            personService.persist(consultantEnt);
+                if (projectDto.getConsultants().size() > 0) {
+                    for (PersonDTO consultantDto : projectDto.getConsultants()) {
+                        List<TaskDTO> tasksDto = consultantDto.getTasks();
+                        for (TaskDTO taskDto : tasksDto) {
+                            LOG.debug("associate person: " + consultantDto.getId() + " to task:" + taskDto.getId());
+                            // TODO
+//                            taskService.associateTasks(consultantDto.getId(), taskDto.getId());
+                            Task task = taskService.findById(taskDto.getId());
+                            Person consultant = consultantDto.toPerson();
+                            consultant.addTask(task);
+                            task.addConsultant(consultant);
+                            taskService.save(task);
                         }
-//                        projectService.persist(projectEnt);
-//                    }
-                    builder = Response.ok("Consultants sucessfully associated to tasks.");
+                    }
+                }
+                builder = Response.ok(Util.jsonMessageResponse("error", "Consultants sucessfully associated to tasks."));
             }
         } catch (ConstraintViolationException e) {
             builder = createViolationResponse("Error to associate consultants to tasks.", e.getConstraintViolations());
@@ -406,7 +375,7 @@ public class ProjectRest {
     @Path("/{pd}/disable")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    @RolesAllowed({"redhat_manager", "admin"})
+    @RolesAllowed({ "redhat_manager", "admin" })
     public Response disable(@PathParam("pd") @DefaultValue("-1") int projectId) {
         Response.ResponseBuilder response = null;
         try {
@@ -420,29 +389,29 @@ public class ProjectRest {
         }
         return response.build();
     }
-    
+
     @Path("/task_types")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    @RolesAllowed({"redhat_manager", "admin"})
+    @RolesAllowed({ "redhat_manager", "admin" })
     public Response taskTypes() {
         Response.ResponseBuilder response = null;
         TaskTypeEnum[] vs = TaskTypeEnum.values();
         List<Map<String, String>> l = new ArrayList<>();
-        for (TaskTypeEnum t: vs)  {
-            Map<String, String> values = new HashMap<>(vs.length*2);
-            values.put("id", "" + t.getId()); 
+        for (TaskTypeEnum t : vs) {
+            Map<String, String> values = new HashMap<>(vs.length * 2);
+            values.put("id", "" + t.getId());
             values.put("name", t.getDescription());
             l.add(values);
         }
         response = Response.ok(l);
         return response.build();
     }
-    
+
     @Path("/{pd}/enable")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    @RolesAllowed({"redhat_manager", "admin"})
+    @RolesAllowed({ "redhat_manager", "admin" })
     public Response enable(@PathParam("pd") @DefaultValue("-1") int projectId) {
         Response.ResponseBuilder response = null;
         try {
@@ -456,15 +425,15 @@ public class ProjectRest {
         }
         return response.build();
     }
-    
+
     @Path("/{pd}/delete")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    @RolesAllowed({"redhat_manager", "admin"})
+    @RolesAllowed({ "redhat_manager", "admin" })
     public Response delete(@PathParam("pd") @DefaultValue("-1") int projectId) {
         Response.ResponseBuilder response = null;
         try {
-            projectService.delete(projectId);
+            projectService.remove(projectId);
             response = Response.ok();
         } catch (GeneralException e) {
             LOG.error("Error to insert organization.", e);
@@ -475,12 +444,13 @@ public class ProjectRest {
         return response.build();
     }
 
-
     /**
-     * Creates a JAX-RS "Bad Request" response including a map of all violation fields, and their message. This can then be used
-     * by clients to show violations.
+     * Creates a JAX-RS "Bad Request" response including a map of all violation
+     * fields, and their message. This can then be used by clients to show
+     * violations.
      *
-     * @param violations A set of violations that needs to be reported
+     * @param violations
+     *            A set of violations that needs to be reported
      * @return JAX-RS response containing all violations
      */
     private Response.ResponseBuilder createViolationResponse(String msg, Set<ConstraintViolation<?>> violations) {
@@ -495,6 +465,4 @@ public class ProjectRest {
         return Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
     }
 
-
-    
 }

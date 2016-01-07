@@ -1,20 +1,22 @@
 package br.com.redhat.consulting.model;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
 public class Contact {
 
     private String name;
-    private String telephone;
+    private Long telephone;
     
     public Contact() {}
     
-    public Contact(String name, String telephone) {
+    public Contact(String name, Long telephone) {
         this.name = name;
         this.telephone = telephone;
     }
     
+    @Column(name="name", nullable=false)
     public String getName() {
         return name;
     }
@@ -23,11 +25,12 @@ public class Contact {
         this.name = name;
     }
     
-    public String getTelephone() {
+    @Column(name="telephone", nullable=false)
+    public Long getTelephone() {
         return telephone;
     }
     
-    public void setTelephone(String telephone) {
+    public void setTelephone(Long telephone) {
         this.telephone = telephone;
     }
 

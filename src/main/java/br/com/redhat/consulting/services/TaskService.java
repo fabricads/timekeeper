@@ -45,6 +45,11 @@ public class TaskService {
         taskDao.removeById(tasksToRemove);
         
     }
+
+    public void associateTasks(Integer consultantId, Integer taskId) {
+        taskDao.associateTasks(consultantId, taskId);
+        
+    }
     
 
 }

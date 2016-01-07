@@ -3,7 +3,6 @@ package br.com.redhat.consulting.services;
 import java.util.Date;
 import java.util.List;
 
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import br.com.redhat.consulting.config.TransactionalMode;
@@ -15,7 +14,6 @@ import br.com.redhat.consulting.model.Task;
 import br.com.redhat.consulting.model.filter.ProjectSearchFilter;
 import br.com.redhat.consulting.util.GeneralException;
 
-@RequestScoped
 public class ProjectService {
     
     @Inject
@@ -81,7 +79,6 @@ public class ProjectService {
         ProjectSearchFilter filter = new ProjectSearchFilter();
         if (enabled != null) 
             filter.setEnabled(enabled);
-        projectDao.setFetchCollection("consultants");
         res = projectDao.find(filter);
         return res;
         
@@ -105,32 +102,19 @@ public class ProjectService {
         return project;
     }
     
-    public Project findByIdWithConsultants(Integer pid) throws GeneralException {
-        Project prj = null;
-        ProjectSearchFilter filter = new ProjectSearchFilter();
-        filter.setId(pid);
-        projectDao.setFetchCollection("consultants");
-        List<Project> res = projectDao.find(filter);
-        if (res.size() > 0) 
-            prj = res.get(0);
-        return prj;
-    }
-
     public Project findByIdWithConsultantsAndTasks(Integer pid) throws GeneralException {
-        Project prj = projectDao.findByIdWithConsultantsAndTasks(pid);
-        return prj;
-    }
-
-    public Project findByIdWithTimecards(Integer pid) throws GeneralException {
-        Project prj = null;
+//        Project prj = projectDao.findByIdWithConsultantsAndTasks(pid);
+        
         ProjectSearchFilter filter = new ProjectSearchFilter();
         filter.setId(pid);
+        filter.setJoinTasks(true);
         List<Project> res = projectDao.find(filter);
+        Project prj = null;
         if (res.size() > 0) 
             prj = res.get(0);
         return prj;
     }
-    
+
     public Long countProjectsByPM(Integer pmId) throws GeneralException {
         Long count = projectDao.countProjectsByPM(pmId);
         return count;
@@ -166,13 +150,8 @@ public class ProjectService {
         projectDao.update(org);
     }
     
-    @TransactionalMode
-    public void delete(Integer projectId) throws GeneralException {
-        Project project = findById(projectId);
-        for (Task task: project.getTasks()) {
-            taskDao.remove(task);
-        }
-        projectDao.remove(project);
+    public void remove(Integer projectId) throws GeneralException {
+        projectDao.remove(projectId);
     }
 
 

@@ -43,9 +43,9 @@ public class TransactionalModeInterceptor implements Serializable {
                     utx.commit();
                 }
             } catch (Throwable t) {
-//                LOG.error("Error continuing business application or in transaction commit. Prepare to rollback", t);
+                LOG.error("Error continuing business application or in transaction commit. Prepare to rollback", t);
                 if (startedTransaction) {
-                    LOG.debug("Transaction rollback: " + utx);
+//                    LOG.debug("Transaction rollback: " + utx);
                     utx.rollback();
                 }
                 throw t;

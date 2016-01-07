@@ -53,7 +53,7 @@ public class TimecardEntry extends AbstractEntity {
         this.day = day;
     }
 
-    @Column(name="worked_hours")
+    @Column(name="work_hours")
     public Double getWorkedHours() {
         return workedHours;
     }

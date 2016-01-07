@@ -1,9 +1,12 @@
 package br.com.redhat.consulting.util;
 
 import java.security.MessageDigest;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -37,5 +40,11 @@ public class Util {
         return encoded;
     }
 
+    
+    public static Map<String, String> jsonMessageResponse(String key, String message) {
+        Map<String, String> responseObj = new HashMap<String, String>();
+        responseObj.put(key, message);
+        return responseObj; 
+    }
     
 }

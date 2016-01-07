@@ -12,15 +12,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class PersonDTO  {
 
 	private Integer id;
-	private String oraclePAId;
+	private Integer oraclePAId;
 	private String name;
 	private String email;
 	private String password;
 	private String city;
 	private String state;
 	private String country;
-	private String telephone1;
-	private String telephone2;
+	private Long telephone1;
+	private Long telephone2;
 	private PartnerOrganizationDTO organization;
 	
 	private RoleDTO role;
@@ -59,7 +59,7 @@ public class PersonDTO  {
 	    lastModification = p.getLastModification();
 	}
 	
-    public PersonDTO(String oraclePAId, String name, String email, String city, String state, PartnerOrganizationDTO partnerOrganization) {
+    public PersonDTO(Integer oraclePAId, String name, String email, String city, String state, PartnerOrganizationDTO partnerOrganization) {
         this.oraclePAId = oraclePAId;
         this.name = name;
         this.email = email;
@@ -76,11 +76,11 @@ public class PersonDTO  {
         this.id = id;
     }
 
-	public String getOraclePAId() {
+	public Integer getOraclePAId() {
 		return oraclePAId;
 	}
 
-	public void setOraclePAId(String oraclePAId) {
+	public void setOraclePAId(Integer oraclePAId) {
 		this.oraclePAId = oraclePAId;
 	}
 
@@ -124,19 +124,19 @@ public class PersonDTO  {
 		this.country = country;
 	}
 
-	public String getTelephone1() {
+	public Long getTelephone1() {
 		return telephone1;
 	}
 
-	public void setTelephone1(String telephone1) {
+	public void setTelephone1(Long telephone1) {
 		this.telephone1 = telephone1;
 	}
 
-	public String getTelephone2() {
+	public Long getTelephone2() {
 		return telephone2;
 	}
 
-	public void setTelephone2(String telephone2) {
+	public void setTelephone2(Long telephone2) {
 		this.telephone2 = telephone2;
 	}
 

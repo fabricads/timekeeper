@@ -4,12 +4,17 @@
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%m%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} %-5level %logger - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <logger name="br.com" level="DEBUG"/>
-    <logger name="org.hibernate" level="DEBUG"/>
+    <logger name="br" level="DEBUG"/>
+    <logger name="org.jboss.weld" level="INFO"/>
+
+    <logger name="org.hibernate.type"   level="TRACE"/>
+    <logger name="org.hibernate"   level="WARN"/>
+    <logger name="org.hibernate.SQL"   level="DEBUG"/>
+    <logger name="org.hibernate.type.BasicTypeRegistry"   level="OFF"/>
 
     <root >
         <level value="INFO" />

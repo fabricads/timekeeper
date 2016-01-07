@@ -7,6 +7,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
+import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.Project;
 
 public class ProjectDTO  {
@@ -23,7 +24,7 @@ public class ProjectDTO  {
     // Red Hat project manager
     private PersonDTO projectManager;
     private List<PersonDTO> consultants = new ArrayList<>();
-    private boolean enabled;
+    private Boolean enabled;
     private Boolean usePMSubstitute;
 
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
@@ -50,7 +51,7 @@ public class ProjectDTO  {
         this.name = prj.getName();
         this.description = prj.getDescription();
         this.paNumber = prj.getPaNumber();
-        this.enabled = prj.isEnabled();
+        this.enabled = prj.getEnabled();
         this.usePMSubstitute = prj.isUsePMSubstitute();
         this.initialDate = prj.getInitialDate();
         this.endDate = prj.getEndDate();
@@ -210,6 +211,7 @@ public class ProjectDTO  {
         prj.setEndDate(endDate);
         prj.setRegistered(registered);
         prj.setLastModification(lastModification);
+        prj.setProjectManager(new Person(getProjectManagerDTO().getId()));
         return prj;
     }
 

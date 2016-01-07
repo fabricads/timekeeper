@@ -1,3 +1,5 @@
+https://console.itos.redhat.com/console
+
 echo -n admin123 | openssl dgst -sha256 -binary | openssl base64
 
 TODO:
@@ -34,8 +36,8 @@ https://help.openshift.com/hc/en-us/articles/202399740-How-to-deploy-pre-compile
 
 insert into role(name,short_name) values('Partner Consultant','partner_consultant');
 insert into role(name,short_name) values('Red Hat Manager','redhat_manager');
-insert into partner_org(name,enabled) values('Red Hat',true);
-insert into person(name, email,password,enabled,persontype,id_role,id_partner_org,city,country,state) values('Claudio Miranda','claudio@redhat.com','gOqk39ARU+xpdTuMv8/ZSVREd7X8EYS6H8v1vlekO5Y=', true,4,4,4,'Brasilia','Brasil','DF');
+insert into organization(name,enabled) values('Red Hat',true);
+insert into person(name, email,password,enabled,person_type,id_role,id_org,city,country,state) values('Claudio Miranda','claudio@redhat.com','gOqk39ARU+xpdTuMv8/ZSVREd7X8EYS6H8v1vlekO5Y=', true,4,2,1,'Brasilia','Brasil','DF');
 
 *** pendencias
 - adicionar paginacao 
