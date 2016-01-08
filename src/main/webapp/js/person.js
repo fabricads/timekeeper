@@ -1,4 +1,4 @@
-var personApp = angular.module("person_ctrl", [ "ngRoute", "ngResource", "ui.utils", "ui.bootstrap", "servicesApp", "timekeeperApp" ]);
+var personApp = angular.module("person_ctrl", [ "ngRoute", "ngResource", "ui.bootstrap", "servicesApp", "timekeeperApp" ]);
 
 /* ********************************************************
  * 

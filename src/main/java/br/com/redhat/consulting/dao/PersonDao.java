@@ -84,11 +84,11 @@ public class PersonDao extends BaseDao<Person, PersonSearchFilter> {
 
     
     public List<Person> findConsultantsAndActiveProjects() {
-        String jql = "select distinct c from Person c inner join fetch c.projects p "
-        		+ "where p.enabled = :enabled "
-        		+ "and (p.initialDate <= :today) "
+        String jql = "select distinct c from Person c inner join fetch c.tasks t "
+        		+ "where t.project.enabled = :enabled "
+        		+ "and (t.project.initialDate <= :today) "
         		+ "and	( "
-        		+ "(p.endDate >= :today) or (p.endDate between :weekBeginning and :weekEnd) "
+        		+ "(t.project.endDate >= :today) or (t.project.endDate between :weekBeginning and :weekEnd) "
         		+ " ) ";
         TypedQuery<Person> query= getEntityManager().createQuery(jql, Person.class);
         

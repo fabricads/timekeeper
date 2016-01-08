@@ -1,4 +1,4 @@
-var orgApp = angular.module("org_ctrl", [ "ngRoute", "ngResource", "ui.utils", "ui.bootstrap", "servicesApp", "timekeeperApp" ]);
+var orgApp = angular.module("org_ctrl", [ "ngRoute", "ngResource", "ui.bootstrap", "servicesApp", "timekeeperApp" ]);
 
 /* ********************************************************
  * 

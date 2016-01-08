@@ -1,4 +1,4 @@
-var projectApp = angular.module("project_ctrl", [ "ngRoute", "ngResource", "ui.utils", "ui.bootstrap", "servicesApp", "timekeeperApp" ]);
+var projectApp = angular.module("project_ctrl", [ "ngRoute", "ngResource", "ui.bootstrap", "servicesApp", "timekeeperApp" ]);
 
 /*******************************************************************************
  * 

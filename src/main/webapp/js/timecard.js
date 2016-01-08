@@ -1,4 +1,4 @@
-var timecardApp = angular.module("timecard_ctrl", [ "ngRoute", "ngResource", "ui.utils", "ui.bootstrap", "servicesApp", "timekeeperApp" ]);
+var timecardApp = angular.module("timecard_ctrl", [ "ngRoute", "ngResource", "ui.bootstrap", "servicesApp", "timekeeperApp" ]);
 
 /* ********************************************************
  * 
