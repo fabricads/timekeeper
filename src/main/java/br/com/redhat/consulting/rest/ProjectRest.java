@@ -349,13 +349,14 @@ public class ProjectRest {
                         List<TaskDTO> tasksDto = consultantDto.getTasks();
                         for (TaskDTO taskDto : tasksDto) {
                             LOG.debug("associate person: " + consultantDto.getId() + " to task:" + taskDto.getId());
-                            // TODO
-//                            taskService.associateTasks(consultantDto.getId(), taskDto.getId());
-                            Task task = taskService.findById(taskDto.getId());
-                            Person consultant = consultantDto.toPerson();
-                            consultant.addTask(task);
-                            task.addConsultant(consultant);
-                            taskService.save(task);
+                            Task task = taskService.findByIdWithConsultants(taskDto.getId());
+                            if (task != null) { 
+                                Person consultant = consultantDto.toPerson();
+                                task.addConsultant(consultant);
+                                taskService.save(task);
+                            } else {
+                                LOG.error("User manipulated task id " + taskDto.getId());
+                            }
                         }
                     }
                 }

@@ -10,10 +10,12 @@ import br.com.redhat.consulting.config.TransactionalMode;
 import br.com.redhat.consulting.model.Task;
 import br.com.redhat.consulting.model.filter.TaskSearchFilter;
 
-@RequestScoped
 public class TaskDao extends BaseDao<Task, TaskSearchFilter> {
 
+    private TaskSearchFilter filter;
+    
     protected void configQuery(StringBuilder query, TaskSearchFilter filter, List<Object> params) {
+        this.filter = filter;
         if (filter.getId() != null) {
             query.append(" and ENT.id = ? ");
             params.add(filter.getId());
@@ -31,7 +33,14 @@ public class TaskDao extends BaseDao<Task, TaskSearchFilter> {
         query.append(getOrderBy());
     }
     
-    
+    @Override
+    protected void addJoinToFromClause(StringBuilder ql) {
+        if (filter.isJoinConsultants())
+            ql.append("left join fetch ENT.consultants");
+    }
+
+
+
     @TransactionalMode
     public void removeById(List<Integer> tasksToRemove) {
         if (tasksToRemove != null && tasksToRemove.size() > 0) {
@@ -65,14 +74,6 @@ public class TaskDao extends BaseDao<Task, TaskSearchFilter> {
         
         List<Task> res = query.getResultList();
         return res;
-    }
-
-
-    public void associateTasks(Integer consultantId, Integer taskId) {
-        // bypass entitymanager to insert the relation data directly into 
-        // the relation table person_task
-        // otherwise, it would require the load of each task and person, and subsequent update operations and inserts
-        
     }
 
 }

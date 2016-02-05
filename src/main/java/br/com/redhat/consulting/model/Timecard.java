@@ -15,11 +15,13 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.envers.Audited;
 
 @Table(name="timecard")
 @Entity
 @Audited
+@DynamicUpdate
 public class Timecard extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;

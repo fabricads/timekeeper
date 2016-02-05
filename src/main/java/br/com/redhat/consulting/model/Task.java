@@ -94,6 +94,7 @@ public class Task extends AbstractEntity {
     
     public void addConsultant(Person consultant) {
         this.consultants.add(consultant);
+        consultant.addTask(this);
     }
 
     @Override

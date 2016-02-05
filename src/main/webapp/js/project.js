@@ -233,6 +233,8 @@ projectApp.controller("project_edit_ctrl", function($scope, $http, $routeParams,
 
 projectApp.controller("project_associate_consultants", function($scope, $http, $routeParams, $filter) {
     
+    $scope.noResults = false;
+    
     $http.get('/timekeeper/svc/project/'+$routeParams.projectId).
         success(function(data) {
             $scope.project = data;

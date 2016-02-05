@@ -25,7 +25,16 @@
     <div class="form-group">
         <label for="prj_desc" class="col-md-2 control-label">Consultant</label>
         <div class="col-md-2">
-            <input class="form-control" autocomplete="off" type="text" placeholder="Type name here" ng-model="temp_consultant" typeahead="c as c.name for c in consultants | filter:$viewValue" typeahead-editable="false" />
+            <input class="form-control" autocomplete="off" type="text" placeholder="Type name here" ng-model="temp_consultant" 
+                uib-typeahead="c as c.name for c in consultants | filter:$viewValue" typeahead-editable="false" 
+                typeahead-no-results="noResults"/>
+            
+            <span ng-if="noResults" uib-dropdown uib-dropdown-toggle auto-close="disabled" is-open="true">
+              <ul class="uib-dropdown-menu" >
+                <li><a href>no results</a></li>
+              </ul>
+            </span>
+            
         </div>
     </div>
 

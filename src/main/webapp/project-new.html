@@ -61,7 +61,7 @@
         <label for="inputEmail3" class="col-md-2 control-label">Start date</label>
         <div class="col-md-2">
             <p class="input-group">
-                <input type="text" class="form-control" name="startdate" datepicker-popup="dd-MMMM-yyyy" ng-model="project.initialDate" is-open="opened"
+                <input type="text" class="form-control" name="startdate" uib-datepicker-popup="dd-MMMM-yyyy" ng-model="project.initialDate" is-open="opened"
                     ng-required="true" close-text="Close" datepicker-options="dateOptions" readonly="readonly"/> 
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default" ng-click="open($event)">
@@ -78,7 +78,7 @@
         <label for="inputEmail3" class="col-md-2 control-label">End date</label>
         <div class="col-md-2">
             <p class="input-group">
-                <input type="text" class="form-control" name="enddate" datepicker-popup="dd-MMMM-yyyy" ng-model="project.endDate" is-open="opened2"
+                <input type="text" class="form-control" name="enddate" uib-datepicker-popup="dd-MMMM-yyyy" ng-model="project.endDate" is-open="opened2"
                     ng-required="true" close-text="Close" datepicker-options="dateOptions" readonly="readonly"/> 
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-default" ng-click="open2($event)">
@@ -104,7 +104,7 @@
         <div class="col-md-offset-2 col-md-10">
             <div class="com-sm-2">
                 <div class="btn-group">
-                    <label data-ng-repeat="tt in taskTypes" class="btn btn-success" ng-model="taskType.id" btn-radio="tt.id">{{tt.name}}</label>
+                    <label data-ng-repeat="tt in taskTypes" class="btn btn-success" ng-model="taskType.id" uib-btn-radio="tt.id">{{tt.name}}</label>
                 </div>
             </div>
         </div>

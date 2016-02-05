@@ -37,6 +37,17 @@ public class TaskService {
         return res;
     }
     
+    public Task findByIdWithConsultants(Integer taskId) throws GeneralException {
+        TaskSearchFilter filter = new TaskSearchFilter();
+        filter.setId(taskId);
+        filter.setJoinConsultants(true);
+        List<Task> res = taskDao.find(filter);
+        Task task = null;
+        if (res.size() > 0) 
+            task = res.get(0);
+        return task;
+    }
+    
     public void delete(Integer taskId) throws GeneralException {
         taskDao.remove(taskId);
     }
@@ -45,11 +56,5 @@ public class TaskService {
         taskDao.removeById(tasksToRemove);
         
     }
-
-    public void associateTasks(Integer consultantId, Integer taskId) {
-        taskDao.associateTasks(consultantId, taskId);
-        
-    }
-    
 
 }

@@ -1,4 +1,4 @@
-var loginApp = angular.module("loginApp", [ "ngRoute", "ngResource", "ui.bootstrap", "servicesApp"]);
+var loginApp = angular.module("loginApp", [ "ngRoute", "ngResource", "ui.bootstrap", "servicesApp", "validation.match"]);
 
 loginApp.config([ "$routeProvider", function($routeProvider) {
 	
@@ -17,8 +17,8 @@ loginApp.config([ "$routeProvider", function($routeProvider) {
 
 ]);
 
-loginApp.controller("login_ctrl", function($scope, $rootScope, $location, $window, AUTH_EVENTS, auth_service, $modal) {
-
+loginApp.controller("login_ctrl", function($scope, $rootScope, $location, $window, AUTH_EVENTS, auth_service, $uibModal) {
+    
     $scope.error_msg = $rootScope.error_msg;
     $scope.login = function(person) {
         auth_service.login(person, function(data, status) {
@@ -40,7 +40,7 @@ loginApp.controller("login_ctrl", function($scope, $rootScope, $location, $windo
     };
     
     $scope.forget_password = function () {
-        var modalInstance = $modal.open({
+        var modalInstance = $uibModal.open({
           templateUrl: 'modal_forget_password.html',
           controller: 'modal_instance'
         });
@@ -50,6 +50,7 @@ loginApp.controller("login_ctrl", function($scope, $rootScope, $location, $windo
 
 loginApp.controller("reset_password_ctrl", function($scope, $rootScope, $location, $window, $routeParams, $http) {
     
+    console.log("url reset-password ctrl");
     $scope.password_confirmation = null;
     
     $http.get('/timekeeper/svc/auth/check/' + $routeParams.hash).
@@ -75,14 +76,13 @@ loginApp.controller("reset_password_ctrl", function($scope, $rootScope, $locatio
     
 });
 
-loginApp.controller("modal_instance", function($rootScope, $scope, $http, $window, $modalInstance) {
+loginApp.controller("modal_instance", function($rootScope, $scope, $http, $window, $uibModalInstance) {
 
     $scope.send = function () {
-        console.log($scope.email);
         $http.get("/timekeeper/svc/auth/forgot/" + $scope.email).success(
             function(data, status, header, config) {
                 $scope.msg = "Check your e-mail";
-                $modalInstance.close();
+                $uibModalInstance.close();
             }).
             error(function(data, status, header, config) {
                 if (status == 404) {
@@ -97,7 +97,7 @@ loginApp.controller("modal_instance", function($rootScope, $scope, $http, $windo
     };
 
     $scope.cancel = function () {
-        $modalInstance.dismiss();
+        $uibModalInstance.dismiss();
     };
     
 });

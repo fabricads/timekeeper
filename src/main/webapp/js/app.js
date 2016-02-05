@@ -73,20 +73,24 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
  */
 
 timekeeperApp.controller("menu_ctrl", function(MessageService, $scope, $rootScope, $window, $http) {
+    console.log("rootScope.user = " + $rootScope.user);
     if ($rootScope.user != null) {
         $scope.user = $rootScope.user;
+
+        $scope.role = function(roles) {
+            for (var i = 0; i < roles.length; i++) {
+                if (roles[i] == $scope.user.role.shortName) {
+                    return true;
+                }
+            }
+        };
+
+    
     } else {
         console.log("user is null, authentication required.");
         $window.location.href = "pub.html";
     }
     
-    $scope.role = function(roles) {
-        for (var i = 0; i < roles.length; i++) {
-            if (roles[i] == $scope.user.role.shortName) {
-                return true;
-            }
-        }
-    };
     
     $scope.logout = function() {
         $http.get("/timekeeper/svc/auth/logout").
@@ -119,41 +123,6 @@ timekeeperApp.directive('float', function() {
 			});
 		}
 	};
-});
-
-// from https://github.com/TheSharpieOne/angular-input-match/blob/master/dist/angular-input-match.js
-// used to test password confirmation on person-edit.html person-new.html
-timekeeperApp.directive('match', function($parse) {
-    return {
-        require: '?ngModel',
-        restrict: 'A',
-        link: function(scope, elem, attrs, ctrl) {
-            if(!ctrl) {
-                if(console && console.warn){
-                    console.warn('Match validation requires ngModel to be on the element');
-                }
-                return;
-            }
-
-            var matchGetter = $parse(attrs.match);
-
-            scope.$watch(getMatchValue, function(){
-                ctrl.$validate();
-            });
-
-            ctrl.$validators.match = function(){
-                return ctrl.$viewValue === getMatchValue();
-            };
-
-            function getMatchValue(){
-                var match = matchGetter(scope);
-                if(angular.isObject(match) && match.hasOwnProperty('$viewValue')){
-                    match = match.$viewValue;
-                }
-                return match;
-            }
-        }
-    };
 });
 
 timekeeperApp.filter('findById', function() {
