@@ -15,6 +15,7 @@
         <thead>
             <tr>
                 <th>Name</th>
+                <th>Project Manager</th>
                 <th>Start date</th>
                 <th>End date</th>
                 <th>Actions</th>
@@ -24,6 +25,7 @@
             <tr ng-repeat="prj in projects">
             
                 <td style="vertical-align: middle;"><a ng-href="#/project/{{prj.id}}">{{prj.name}} {{prj.enabled === true ? "" : "(DISABLED)"}}</a></td>
+                <td style="vertical-align: middle;">{{ prj.projectManagerDTO.name }}</td>
                 <td style="vertical-align: middle;">{{ prj.initialDate | date:'dd-MMMM-yyyy'}}</td>
                 <td style="vertical-align: middle;">{{ prj.endDate | date:'dd-MMMM-yyyy'}}</td>
                 <td style="vertical-align: middle;">

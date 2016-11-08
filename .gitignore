@@ -28,3 +28,4 @@ transaction.log
 *~
 # maven versions plugin
 pom.xml.versionsBackup
+/bin/

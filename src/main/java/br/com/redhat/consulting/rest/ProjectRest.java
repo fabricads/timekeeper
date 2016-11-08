@@ -98,12 +98,21 @@ public class ProjectRest {
             } else {
                 projectsDto = new ArrayList<ProjectDTO>(projects.size());
                 for (Project project : projects) {
+                	
+                	
+                    Person pm = project.getProjectManager();
+                    pm.nullifyAttributes();
+
+              
+                    PersonDTO pmDto = new PersonDTO(pm);
+                	
                     ProjectDTO prjDto = new ProjectDTO(project);
                     if (loggedUser.isAdminOrProjectManager()) {
 //                        int qty = project.getConsultants().size();
 //                        prjDto.setQtyConsultants(qty);
                     }
                     projectsDto.add(prjDto);
+                    prjDto.setProjectManagerDTO(pmDto);
                 }
                 response = Response.ok(projectsDto);
             }
@@ -140,6 +149,9 @@ public class ProjectRest {
                     // nenhum, pode lancar novo timecard
                     // OU verifica se o ultimo timecardentry lancado e menor que
                     // a data fim do projeto
+
+                	
+                	
                     if (project.getTimecards().size() == 0 || projectService.checkProjectCanFillMoreTimecards(project.getId())) {
                         LOG.debug(loggedUser.getName() + " can fill more timecards to project: " + project.getName());
                         ProjectDTO prjDto = new ProjectDTO(project);

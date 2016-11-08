@@ -1,4 +1,4 @@
-var servicesApp = angular.module("servicesApp", []);
+var servicesApp = angular.module("servicesApp");
 
 servicesApp.factory('auth_service', function($http, $window, $rootScope) {
     var authService = {};

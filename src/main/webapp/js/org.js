@@ -8,7 +8,7 @@ var orgApp = angular.module("org_ctrl", [ "ngRoute", "ngResource", "ui.bootstrap
  */
 
 orgApp.controller("organization_new_ctrl", function($scope, $http) {
-	
+	console.log("teste");
 	$scope.org = {};
 	$scope.org.enabled = true;
 	$scope.saved = false;

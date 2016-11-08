@@ -8,7 +8,7 @@ var projectApp = angular.module("project_ctrl", [ "ngRoute", "ngResource", "ui.b
  */
 
 // display all enabled projects
-projectApp.controller("project_list_ctrl", function($scope, $http, $window) {
+projectApp.controller("project_list_ctrl", function($scope, $http, $window,projectService,$log) {
 
     // variable to control the printing "loading" while ajax is running
     $scope.loading = true;
@@ -18,8 +18,9 @@ projectApp.controller("project_list_ctrl", function($scope, $http, $window) {
     $scope.list_enabled = 1;
 	
     $scope.refresh = function() {
-        $http.get('/timekeeper/svc/project/list?e='+$scope.list_enabled).
+        projectService.all($scope.list_enabled).
             success(function(data) {
+                $log.info(data);
                 $scope.projects = data;
                 $scope.loading = false;
             }).
@@ -27,6 +28,17 @@ projectApp.controller("project_list_ctrl", function($scope, $http, $window) {
                 $scope.error_msg = data;
                 $scope.loading = false;
             });
+
+
+        /*$http.get('/timekeeper/svc/project/list?e='+$scope.list_enabled).
+            success(function(data) {
+                $scope.projects = data;
+                $scope.loading = false;
+            }).
+            error(function(data, status, header, config) {
+                $scope.error_msg = data;
+                $scope.loading = false;
+            });*/
     };
     
     $scope.refresh();
@@ -66,6 +78,7 @@ projectApp.controller("project_new_ctrl", function($scope, $http, $filter) {
 	
 	// retrieve all project managers
 	$http.get('/timekeeper/svc/person/pms').success(function(data) {
+        console.log(data);
 		$scope.pms = data;
 	});
 	
@@ -231,7 +244,7 @@ projectApp.controller("project_edit_ctrl", function($scope, $http, $routeParams,
     
 });
 
-projectApp.controller("project_associate_consultants", function($scope, $http, $routeParams, $filter) {
+projectApp.controller("project_associate_consultants", function($scope, $http, $routeParams, $filter, $log) {
     
     $scope.noResults = false;
     
@@ -251,6 +264,8 @@ projectApp.controller("project_associate_consultants", function($scope, $http, $
 
     $http.get('/timekeeper/svc/person/consultants').success(function(data) {
         $scope.consultants = data;
+        $log.info("Retrieved data from server: ");
+        $log.info(data);
     });
     
     $scope.project_submit = function(project) {

@@ -1,6 +1,8 @@
 var timekeeperApp = angular.module("timekeeperApp", [ "ngRoute", "ngResource", "ui.bootstrap", "servicesApp", "org_ctrl", "person_ctrl", "project_ctrl", "timecard_ctrl" ]);
 
 timekeeperApp.config([ "$routeProvider", function($routeProvider) {
+
+	console.log("app");
 	$routeProvider.
 	
 	when("/persons", {
