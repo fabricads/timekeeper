@@ -49,13 +49,29 @@
     
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <div class="com-sm-2">
+            <div class="com-md-10">
                 <label>Consultants</label>
-                <ul>
-                    <div ng-repeat="c in selected_consultants">
-                        <li ng-repeat="task in c.tasks">{{c.name}} - {{task.name}}</li>
-                    </div>
-                </ul>
+                <div class="alert alert-info" ng-show="selected_consultants.length == 0">
+                    <span class="pficon pficon-info"></span> There is no consultants to list
+                </div>
+                <div class="table-responsive" ng-hide="selected_consultants.length == 0">
+                    <table class="table table-striped table-bordered table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="c in selected_consultants">
+                                <td style="vertical-align: middle;">{{c.name}}</td>
+                                <td style="vertical-align: middle;">
+                                    <a class="btn btn-danger" ng-click="remove_consultant(c.id)">Delete</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
