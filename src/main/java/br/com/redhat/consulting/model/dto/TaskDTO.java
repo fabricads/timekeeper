@@ -1,5 +1,9 @@
 package br.com.redhat.consulting.model.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.Task;
 
 
@@ -9,13 +13,22 @@ public class TaskDTO  {
     private String name;
     private boolean dissociateOfProject;
     private Integer taskType;
-    
+    private List<Person> consultants = new ArrayList<>(); 
     public TaskDTO() { }
     
     public TaskDTO(Task task) { 
         this.id = task.getId();
         this.name = task.getName();
         this.taskType = task.getTaskType();
+        this.consultants=task.getConsultants();
+    }
+    
+    public List<Person> getConsultants() {
+        return consultants;
+    }
+
+    public void setConsultants(List<Person> consultants) {
+        this.consultants = consultants;
     }
     
     public TaskDTO(String name) {

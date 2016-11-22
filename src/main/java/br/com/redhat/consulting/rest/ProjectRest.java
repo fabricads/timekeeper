@@ -204,6 +204,34 @@ public class ProjectRest {
         return response.build();
     }
 
+    @Path("/{projectId}/tasks/{taskId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @RolesAllowed({ "redhat_manager", "admin" })
+    public Response taskByID(@PathParam("taskId") Integer taskId) {
+    	Task task = null;
+
+        Response.ResponseBuilder response = null;
+        try {
+            if (taskId != null)
+            	task = taskService.findByIdWithConsultants(taskId);
+            if (task == null) {
+                Map<String, String> responseObj = new HashMap<>();
+                responseObj.put("error", "Project " + taskId + " not found.");
+                response = Response.status(Response.Status.NOT_FOUND).entity(responseObj);
+            } else {
+                TaskDTO tasksDto= new TaskDTO(task) ;
+                response = Response.ok(tasksDto);
+            }
+        } catch (Exception e) {
+            LOG.error("Error to find tasks by project id: " + taskId, e);
+            Map<String, String> responseObj = new HashMap<>();
+            responseObj.put("error", e.getMessage());
+            response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+        }
+        return response.build();
+    }
+    
     @Path("/list-by-cs")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
