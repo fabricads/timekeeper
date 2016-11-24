@@ -204,7 +204,7 @@ public class ProjectRest {
         return response.build();
     }
 
-    @Path("/{projectId}/tasks/{taskId}")
+    @Path("/{projectId}/task/{taskId}")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
     @RolesAllowed({ "redhat_manager", "admin" })
@@ -220,7 +220,13 @@ public class ProjectRest {
                 responseObj.put("error", "Project " + taskId + " not found.");
                 response = Response.status(Response.Status.NOT_FOUND).entity(responseObj);
             } else {
-                TaskDTO tasksDto= new TaskDTO(task) ;
+            	TaskDTO tasksDto= new TaskDTO(task);
+            	List<Person> persons = task.getConsultants();
+            	List<PersonDTO> personDTOs = new ArrayList<PersonDTO>(persons.size());
+            	for(Person person: persons){
+            		personDTOs.add(new PersonDTO(person));
+            	}
+            	tasksDto.setConsultants(personDTOs);
                 response = Response.ok(tasksDto);
             }
         } catch (Exception e) {
@@ -376,29 +382,27 @@ public class ProjectRest {
     @Produces(MediaType.APPLICATION_JSON)
     @POST
     @RolesAllowed({ "redhat_manager", "admin" })
-    public Response associateTasksToConsultant(ProjectDTO projectDto) {
+    public Response associateTasksToConsultant(TaskDTO taskDTO) {
         Response.ResponseBuilder builder = null;
         try {
-            if (projectDto == null || projectDto.getId() == null || projectDto.getId() == 0) {
+            if (taskDTO == null || taskDTO.getId() == null || taskDTO.getId() == 0) {
                 Map<String, String> responseObj = new HashMap<String, String>();
                 responseObj.put("error", "No project submitted");
                 builder = Response.status(Response.Status.NOT_FOUND).entity(responseObj);
             } else {
-                if (projectDto.getConsultants().size() > 0) {
-                    for (PersonDTO consultantDto : projectDto.getConsultants()) {
-                        List<TaskDTO> tasksDto = consultantDto.getTasks();
-                        for (TaskDTO taskDto : tasksDto) {
-                            LOG.debug("associate person: " + consultantDto.getId() + " to task:" + taskDto.getId());
-                            Task task = taskService.findByIdWithConsultants(taskDto.getId());
-                            if (task != null) { 
-                                Person consultant = consultantDto.toPerson();
-                                task.addConsultant(consultant);
-                                taskService.save(task);
-                            } else {
-                                LOG.error("User manipulated task id " + taskDto.getId());
-                            }
-                        }
+                LOG.debug("saved consultants to task:" + taskDTO.getId());
+                Task task = taskService.findByIdWithConsultants(taskDTO.getId());
+                if (task != null) {
+                	//this cleans the join table so we can add the updated date to it
+                	task.getConsultants().clear();
+                    for(PersonDTO consultant : taskDTO.getConsultants()){
+                    	task.addConsultant(consultant.toPerson());
+                    	LOG.info("Saving consultant : " + consultant.getName()+" to the task "+task.getName());
                     }
+                    taskService.save(task);
+                } else {
+                    LOG.error("User manipulated task id " + taskDTO.getId());
+
                 }
                 builder = Response.ok(Util.jsonMessageResponse("error", "Consultants sucessfully associated to tasks."));
             }

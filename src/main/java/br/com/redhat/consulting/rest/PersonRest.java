@@ -33,6 +33,7 @@ import br.com.redhat.consulting.model.PartnerOrganization;
 import br.com.redhat.consulting.model.Person;
 import br.com.redhat.consulting.model.PersonType;
 import br.com.redhat.consulting.model.Role;
+import br.com.redhat.consulting.model.dto.ConsultantDTO;
 import br.com.redhat.consulting.model.dto.PartnerOrganizationDTO;
 import br.com.redhat.consulting.model.dto.PersonDTO;
 import br.com.redhat.consulting.model.dto.RoleDTO;
@@ -136,6 +137,42 @@ public class PersonRest {
         return response.build();
     }
     
+    
+    
+    @Path("/consultant-list")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @RolesAllowed({"redhat_manager", "admin"})
+    public Response listConsultants() {
+    	List<Person> persons = null;
+        List<ConsultantDTO> consultantDTOs = null;
+        Response.ResponseBuilder response = null;
+        try {
+            persons = personService.findConsultants();
+            if (persons.size() == 0) {
+                Map<String, Object> responseObj = new HashMap<>();
+                responseObj.put("msg", "No project managers found");
+                responseObj.put("persons", new ArrayList());
+                response = Response.ok(responseObj);
+            } else {
+            	consultantDTOs = new ArrayList<ConsultantDTO>(persons.size());
+                for (Person p: persons) {
+                	ConsultantDTO consultantDTO = new ConsultantDTO(p);
+                	consultantDTO.setPassword(null);
+                    consultantDTOs.add(consultantDTO);
+                }
+                response = Response.ok(consultantDTOs);
+            }
+        } catch (GeneralException e) {
+            LOG.error("Error to find project managers.", e);
+            Map<String, String> responseObj = new HashMap<>();
+            responseObj.put("error", e.getMessage());
+            response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+        }
+        return response.build();
+    }
+    
+      
     @Path("/types")
     @Produces(MediaType.APPLICATION_JSON)
     @GET

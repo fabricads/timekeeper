@@ -13,21 +13,21 @@ public class TaskDTO  {
     private String name;
     private boolean dissociateOfProject;
     private Integer taskType;
-    private List<Person> consultants = new ArrayList<>(); 
+    private List<PersonDTO> consultants = new ArrayList<>(); 
     public TaskDTO() { }
     
     public TaskDTO(Task task) { 
         this.id = task.getId();
         this.name = task.getName();
         this.taskType = task.getTaskType();
-        this.consultants=task.getConsultants();
+        //this.consultants=task.getConsultants();
     }
     
-    public List<Person> getConsultants() {
+    public List<PersonDTO> getConsultants() {
         return consultants;
     }
 
-    public void setConsultants(List<Person> consultants) {
+    public void setConsultants(List<PersonDTO> consultants) {
         this.consultants = consultants;
     }
     

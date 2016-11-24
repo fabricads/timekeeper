@@ -12,7 +12,7 @@
     
     <div class="alert alert-success" ng-show="saved">
       <span class="pficon pficon-ok"></span>
-            Project {{prj_name}} was successfully saved.
+            Task was successfully saved.
     </div>
 
 <form class="form-horizontal" name="form">
@@ -51,7 +51,7 @@
         <div class="col-md-offset-2 col-md-10">
             <div class="com-md-10">
                 <label>Consultants</label>
-                <div class="alert alert-info" ng-show="selected_consultants.length == 0">
+                <div class="alert alert-info" ng-show="temp_task.consultants.length == 0">
                     <span class="pficon pficon-info"></span> There is no consultants to list
                 </div>
                 <div class="table-responsive" ng-hide="selected_consultants.length == 0">
@@ -63,10 +63,10 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="c in selected_consultants">
+                            <tr ng-repeat="c in temp_task.consultants">
                                 <td style="vertical-align: middle;">{{c.name}}</td>
                                 <td style="vertical-align: middle;">
-                                    <a class="btn btn-danger" ng-click="remove_consultant(c.id)">Delete</a>
+                                    <a class="btn btn-danger" ng-click="remove_consultant(c)">Delete</a>
                                 </td>
                             </tr>
                         </tbody>

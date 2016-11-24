@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -82,8 +83,10 @@ public class Task extends AbstractEntity {
         this.taskType = taskType;
     }
     
-    @ManyToMany
-    @JoinTable(name="person_task", joinColumns=@JoinColumn(name="id_task"), inverseJoinColumns=@JoinColumn(name="id_person"))
+    @ManyToMany//(targetEntity=Person.class)//(fetch=FetchType.EAGER)
+    @JoinTable(name="person_task", 
+    joinColumns=@JoinColumn(name="id_task"), 
+    inverseJoinColumns=@JoinColumn(name="id_person"))
     public List<Person> getConsultants() {
         return consultants;
     }
@@ -95,6 +98,11 @@ public class Task extends AbstractEntity {
     public void addConsultant(Person consultant) {
         this.consultants.add(consultant);
         consultant.addTask(this);
+    }
+    
+    public void removeConsultant(Person consultant){
+    	this.consultants.remove(consultant);
+    	//consultant.removeTask(this);
     }
 
     @Override

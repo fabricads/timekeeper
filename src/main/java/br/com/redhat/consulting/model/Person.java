@@ -248,7 +248,7 @@ public class Person extends AbstractEntity {
         this.timecards = timecards;
     }
 
-    @ManyToMany(mappedBy="consultants")
+    @ManyToMany(mappedBy="consultants")//,fetch=FetchType.EAGER)
     @Audited(targetAuditMode=RelationTargetAuditMode.NOT_AUDITED)
     public List<Task> getTasks() {
         return tasks;
@@ -261,7 +261,10 @@ public class Person extends AbstractEntity {
     public void addTask(Task task) {
         this.tasks.add(task);
     }
-
+    public void removeTask(Task task) {
+        this.tasks.remove(task);
+    }
+    
     /**
      *  null some attributes, so when this person is copied to a personDTO some attributes are not sent to the rest responde for security reasons.
      */

@@ -9,7 +9,7 @@
     servicesApp.factory("consultantService",consultantService);
     function consultantService( $http){
         var service = {};
-        var endpoint="/timekeeper/svc/person/consultants";
+        var endpoint="/timekeeper/svc/person/consultant-list";
         
         /**
          * Get project by id

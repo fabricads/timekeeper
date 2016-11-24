@@ -24,6 +24,13 @@
         service.getTaks=function(id){
             return $http.get(endpoint+'/'+id+"/tasks");
         };
+
+        /**
+         * get task info by project id and task id
+         */
+        service.getTask=function(projectId,taskId){
+            return $http.get(endpoint+'/'+projectId+"/task/"+taskId);
+        }
         
         service.all=function(enabled){
             return $http.get(endpoint+'/list?e='+enabled);
