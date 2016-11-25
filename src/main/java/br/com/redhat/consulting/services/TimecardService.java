@@ -35,7 +35,7 @@ public class TimecardService {
         consultant.setId(personId);
         filter.setConsultant(consultant);
         filter.setClausulasJoinPesquisa(true);
-        timecardDao.setOrderBy("order by ENT2.day");
+        timecardDao.setOrderBy("order by day");
         List<Timecard> res = timecardDao.find(filter);
         return res;
     }
@@ -79,7 +79,8 @@ public class TimecardService {
     public List<Timecard> findAll() throws GeneralException {
         TimecardSearchFilter filter = new TimecardSearchFilter();
         filter.setClausulasJoinPesquisa(true);
-        timecardDao.setOrderBy("order by ENT2.day");
+        //timecardDao.setOrderBy("order by ENT2.day");
+        timecardDao.setOrderBy("order by day");
         List<Timecard> res = timecardDao.find(filter);
         return res;
     }

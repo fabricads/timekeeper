@@ -42,21 +42,6 @@ timecardApp.controller("modal_instance", function($rootScope, $scope, $http, $wi
     
 });
 
-timecardApp.controller("timecard_list_ctrl", function($scope, $http, $routeParams) {
-    
-    $scope.loading = true;
-    $http.get('/timekeeper/svc/timecard/list').
-        success(function(data) {
-            $scope.timecards = data;
-            $scope.loading = false;
-        }).
-        error(function(data) {
-            $scope.timecards = data;
-            $scope.loading = false;
-        });
-    
-});
-
 timecardApp.controller("timecard_cs_list_ctrl", function($rootScope, $scope, $http, $window) {
     
     $scope.loading = true;

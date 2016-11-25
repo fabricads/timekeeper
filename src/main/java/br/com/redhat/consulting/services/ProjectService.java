@@ -34,6 +34,7 @@ public class ProjectService {
     public Project findByIdAndConsultant(Integer prjId, Integer consultantId) throws GeneralException {
         ProjectSearchFilter filter = new ProjectSearchFilter();
         filter.setId(prjId);
+        filter.setJoinTasks(true);
         Person consultant = new Person();
         consultant.setId(consultantId);
         filter.addConsultant(consultant);

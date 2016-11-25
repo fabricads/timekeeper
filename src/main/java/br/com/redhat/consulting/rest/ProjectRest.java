@@ -395,10 +395,13 @@ public class ProjectRest {
                 if (task != null) {
                 	//this cleans the join table so we can add the updated date to it
                 	task.getConsultants().clear();
+                	//List<Person>persons= new ArrayList<Person>(taskDTO.getConsultants().size());
                     for(PersonDTO consultant : taskDTO.getConsultants()){
                     	task.addConsultant(consultant.toPerson());
+                    	//persons.add(consultant.toPerson());
                     	LOG.info("Saving consultant : " + consultant.getName()+" to the task "+task.getName());
                     }
+                    //task.getConsultants().retainAll(persons);
                     taskService.save(task);
                 } else {
                     LOG.error("User manipulated task id " + taskDTO.getId());

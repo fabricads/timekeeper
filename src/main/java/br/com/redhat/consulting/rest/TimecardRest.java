@@ -275,7 +275,7 @@ public class TimecardRest {
         return response.build();
     }
     
-    @Path("/app-rej/{tcId}")
+    @Path("/app-rej/{tcId}")
     @Produces(MediaType.APPLICATION_JSON)
     @POST
     @RolesAllowed({"admin", "redhat_manager"})
