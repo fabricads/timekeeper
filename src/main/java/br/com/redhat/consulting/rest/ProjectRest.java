@@ -320,10 +320,10 @@ public class ProjectRest {
                 projectDto.setProjectManagerDTO(pmDto);
 
                 Date lastFilledDate = projectService.lastFilledTimecard(projectId);
-                LOG.debug(projectId + " ultimo dia preenchido " + lastFilledDate);
+                LOG.info(projectId + " ultimo dia preenchido " + lastFilledDate);
                 projectDto.setLastFilledDay(lastFilledDate);
 
-                for (Task task : projectEnt.getTasks()) {
+                for (Task task : taskService.findByConsultantAndProject(projectId,loggedUser.getId())) {
                     TaskDTO taskDto = new TaskDTO(task);
                     projectDto.addTask(taskDto);
                 }

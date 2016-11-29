@@ -47,6 +47,10 @@ public class TaskService {
             task = res.get(0);
         return task;
     }
+
+    public List<Task> findByConsultantAndProject(Integer projectId, Integer consultantId){
+        return taskDao.findByConsultantAndProject(projectId, consultantId);
+    }
     
     public void delete(Integer taskId) throws GeneralException {
         taskDao.remove(taskId);

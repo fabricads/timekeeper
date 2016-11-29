@@ -21,7 +21,7 @@
         /**
          * Get project
          */
-        service.get= function(od){
+        service.get= function(id){
             return $http.get("/timekeeper/svc/project/"+id+"/tc");
             
         };

@@ -97,10 +97,11 @@ public class TimecardRest {
                 timecards = timecardService.findAll();
             }
             if (timecards.size() == 0) {
-                Map<String, Object> responseObj = new HashMap<>();
+                /*Map<String, Object> responseObj = new HashMap<>();
                 responseObj.put("msg", "No timecards found");
                 responseObj.put("timecards", new ArrayList());
-                response = Response.status(Status.NOT_FOUND).entity(responseObj);
+                response = Response.status(Status.NOT_FOUND).entity(responseObj);*/
+                timecardsDto = new ArrayList<TimecardDTO>(0);
             } else {
                 timecardsDto = new ArrayList<TimecardDTO>(timecards.size());
                 LOG.info("Total of timecards= "+timecards.size());
@@ -121,7 +122,7 @@ public class TimecardRest {
                     tcDto.setTimecardEntriesDTO(tceDtos);
                     timecardsDto.add(tcDto);
                 }
-                response = Response.ok(timecardsDto);
+                //response = Response.ok(timecardsDto);
             }
         } catch (GeneralException e) {
             LOG.error("Error to find projects.", e);
@@ -129,6 +130,7 @@ public class TimecardRest {
             responseObj.put("error", e.getMessage());
             response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
         }
+        response = Response.ok(timecardsDto);
         return response.build();
     }
     
