@@ -18,6 +18,13 @@
             return $http.get(endpoint+"/list?pm="+pm);
         };
         
+        /**
+         * Get project
+         */
+        service.get= function(od){
+            return $http.get("/timekeeper/svc/project/"+id+"/tc");
+            
+        };
 
         return service;
     }

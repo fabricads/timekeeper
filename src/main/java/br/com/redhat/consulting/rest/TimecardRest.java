@@ -103,6 +103,7 @@ public class TimecardRest {
                 response = Response.status(Status.NOT_FOUND).entity(responseObj);
             } else {
                 timecardsDto = new ArrayList<TimecardDTO>(timecards.size());
+                LOG.info("Total of timecards= "+timecards.size());
                 for (Timecard timecard: timecards) {
                     TimecardDTO tcDto = new TimecardDTO(timecard);
                     ProjectDTO prjDto = new ProjectDTO(timecard.getProject());

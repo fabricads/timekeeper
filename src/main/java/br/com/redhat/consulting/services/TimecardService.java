@@ -35,7 +35,9 @@ public class TimecardService {
         consultant.setId(personId);
         filter.setConsultant(consultant);
         filter.setClausulasJoinPesquisa(true);
-        timecardDao.setOrderBy("order by day");
+        //timecardDao.setOrderBy("order by day");
+        timecardDao.setDistinct(true);
+        //timecardDao.setOrderBy("");
         List<Timecard> res = timecardDao.find(filter);
         return res;
     }
