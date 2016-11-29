@@ -34,6 +34,15 @@
             </div>
         </div>
 
+        <div class="form-group" ng-class="{'has-error': form.period.$invalid}">
+            <label for="pediod" class="col-md-2 control-label">Task</label>
+            <div class="col-md-5">
+                <select class="form-control" ng-options="task.name for task in tasks" required ng-model="task">
+                </select>
+            </div>
+            <button type="button" class="btn btn-primary" ng-click="addTask()">Add Task</button>
+        </div>
+
         <div class="panel panel-default" ng-repeat="tcEntry in timecard.project.tasksDTO">
             <div class="panel-heading">
             <h3 class="panel-title">Task: {{tcEntry.name}} - {{tcEntry.tcEntries | sumOfValue:'workedHours'}} hours</h3>

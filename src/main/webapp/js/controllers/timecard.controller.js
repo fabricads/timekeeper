@@ -35,7 +35,8 @@
         
         $scope.timecard = {};
         $scope.timecard.consultant = {};
-        $scope.period={};
+        $scope.periods={};
+        $scope.tasks={}
 
         /**
          * Gets monday
@@ -100,7 +101,32 @@
         };
 
 
+        $scope.addTask= function(){
+            $log.debug("User has added task "+$scope.task.name);
+            var project = $scope.timecard.project;
+            project.tasksDTO.push($scope.task);
+            $scope.task.tcEntries=createEntries($scope.task);
+        };
 
+        function createEntries(task){
+             // set the sunday day of the starting week
+            var initDayWeek = new Date($scope.periods[0].getTime());                  
+            var tcEntries = [];
+            for (var j = 0; j < 7; j++) {
+                var tcEntry = {};
+                tcEntry.day = new Date(initDayWeek.getTime());
+                tcEntry.workedHours = 0;
+                tcEntry.workDescription = "";
+                tcEntry.taskDTO = {};
+                tcEntry.taskDTO.id = task.id;
+                if ($scope.timecard.lastDate == null && j == 6) {
+                    $scope.timecard.lastDate =  new Date(initDayWeek.getTime());
+                }
+                initDayWeek.setDate(initDayWeek.getDate() + 1);
+                tcEntries.push(tcEntry);
+            }
+            return tcEntries;
+        }
         timecardService.get($routeParams.projectId).
             success(function(data) {
                 var project = data;
@@ -111,8 +137,9 @@
                 $scope.days = $filter('dateDiffInDays')(start_date, end_date);
                 $scope.weeks = $filter('dateNumOfWeeks')(start_date, end_date);
 
-                var tasks = project.tasksDTO;
-                for (var i = 0; i < tasks.length; i++) {
+                $scope.tasks = project.tasksDTO;
+                project.tasksDTO=[];
+                /*for (var i = 0; i < tasks.length; i++) {
                     var task = tasks[i];
 
                     // set the sunday day of the starting week
@@ -132,7 +159,7 @@
                         tcEntries.push(tcEntry);
                     }
                     task.tcEntries = tcEntries;
-                }
+                }*/
             }).
             error(function(data, status, header, config) {
                 $scope.error_msg = data;
