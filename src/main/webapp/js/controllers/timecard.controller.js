@@ -31,11 +31,76 @@
         
     })
 
-    .controller("timecard_new_ctrl", function($scope, $http, $routeParams, $filter,timecardService) {
+    .controller("timecard_new_ctrl", function($log,$scope, $http, $routeParams, $filter,timecardService) {
         
         $scope.timecard = {};
         $scope.timecard.consultant = {};
-        
+        $scope.period={};
+
+        /**
+         * Gets monday
+         */
+        function getMonday(){
+            var date = new Date();
+            date.setDate(date.getDate()-date.getDay());
+            return date;
+        }
+
+        /**
+         * GetsEndDate
+         */
+        $scope.getEndDate = function(date){
+            return (new Date()).setDate(date.getDate()+6);
+        }
+        /**
+         * 2 weeks would be the maximum period... the current one and the one before
+         */
+        function getPeriods(){
+            var periods = [];
+            periods.push(getMonday());
+            $log.debug(periods[0].getDay());
+            periods.push(getMonday());
+            periods[0].setDate(periods[0].getDate()-7);
+            //$scope.period=periods[1];
+            //$log.debug("User has select the date "+$scope.period.getDate());
+            return periods;
+        }
+        $scope.periods = getPeriods();
+        $scope.period = 0;
+
+        /**
+         * Get Entries according to the start date
+         */
+        function getEntries(date){
+            var project = $scope.timecard.project;
+            var tasks = project.tasksDTO;
+            for (var i = 0; i < tasks.length; i++) {
+                var task = tasks[i];
+                var initDayWeek = new Date(date.getTime());
+                for (var j = 0; j < task.tcEntries.length; j++) {
+                    var tcEntry = task.tcEntries[j];
+                    tcEntry.day = new Date(initDayWeek.getTime());
+                    if ($scope.timecard.lastDate == null && j == 6) {
+                        $scope.timecard.lastDate =  new Date(initDayWeek.getTime());
+                    }
+                    initDayWeek.setDate(initDayWeek.getDate() + 1);
+                }
+            }
+
+        }
+
+        /**
+         * Changes the period of the entries for each task
+         */
+        $scope.changePeriod=function(index){
+            $log.debug("User has select the date "+$scope.periods[index]);
+            if($scope.period!==undefined){
+                getEntries($scope.periods[index]);
+            }
+        };
+
+
+
         timecardService.get($routeParams.projectId).
             success(function(data) {
                 var project = data;
@@ -51,18 +116,7 @@
                     var task = tasks[i];
 
                     // set the sunday day of the starting week
-                    var initDayWeek = new Date();
-                    if ($scope.timecard.project.lastFilledDay == null) {
-                        initDayWeek.setDate(start_date.getDate() - start_date.getDay());
-                    } else {
-                        var sunday = new Date($scope.timecard.project.lastFilledDay);
-                        sunday.setDate(sunday.getDate() + 2);
-                        initDayWeek = sunday;
-                    }
-                    if ($scope.timecard.firstDate == null) {
-                        $scope.timecard.firstDate =  new Date(initDayWeek.getTime());
-                    }
-                    
+                    var initDayWeek = new Date($scope.periods[0].getTime());                  
                     var tcEntries = [];
                     for (var j = 0; j < 7; j++) {
                         var tcEntry = {};
