@@ -150,15 +150,13 @@ public class ProjectRest {
                     // OU verifica se o ultimo timecardentry lancado e menor que
                     // a data fim do projeto
 
-                	
-                	
-                    if (project.getTimecards().size() == 0 || projectService.checkProjectCanFillMoreTimecards(project.getId())) {
-                        LOG.debug(loggedUser.getName() + " can fill more timecards to project: " + project.getName());
-                        ProjectDTO prjDto = new ProjectDTO(project);
-                        projectsDto.add(prjDto);
-                    } else {
+                    //if (project.getTimecards().size() == 0 || projectService.checkProjectCanFillMoreTimecards(project.getId())) {
+                    LOG.debug(loggedUser.getName() + " can fill more timecards to project: " + project.getName());
+                    ProjectDTO prjDto = new ProjectDTO(project);
+                    projectsDto.add(prjDto);
+                    /*} else {
                         LOG.debug(loggedUser.getName() + " CANNOT fill new timecards to project: " + project.getName());
-                    }
+                    }*/
                 }
                 response = Response.ok(projectsDto);
             }

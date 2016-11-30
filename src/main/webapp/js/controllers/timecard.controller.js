@@ -104,8 +104,15 @@
         $scope.addTask= function(){
             $log.debug("User has added task "+$scope.task.name);
             var project = $scope.timecard.project;
-            project.tasksDTO.push($scope.task);
-            $scope.task.tcEntries=createEntries($scope.task);
+            if ($scope.task.id != null ) {
+                var found = $filter('findById')(project.tasksDTO, $scope.task.id);
+                if (found == null) {
+                    project.tasksDTO.push($scope.task);
+                    $scope.task.tcEntries=createEntries($scope.task);
+                }else{
+                    $log.debug("You already selected it!!!");
+                }
+            }
         };
 
         function createEntries(task){
