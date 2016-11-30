@@ -172,9 +172,11 @@ public class TimecardRest {
                     for (TimecardEntry tce: timecard.getTimecardEntries()) {
                         TimecardEntryDTO tceDto = new TimecardEntryDTO(tce);
                         tceDto.setTaskDTO(new TaskDTO(tce.getTask()));
-                        tceDtos.add(tceDto);
+                        tceDtos.add(tceDto); 
                     }
                     Collections.sort(tceDtos, new TimecardEntryDateComparator());
+                    tcDto.setFirstDate(tceDtos.get(0).getDay());
+                    tcDto.setLastDate(tceDtos.get(tceDtos.size() - 1).getDay());
                     tcDto.setTimecardEntriesDTO(tceDtos);
                     response = Response.ok(tcDto);
                 }
