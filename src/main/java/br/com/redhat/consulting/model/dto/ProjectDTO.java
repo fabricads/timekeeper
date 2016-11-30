@@ -211,7 +211,9 @@ public class ProjectDTO  {
         prj.setEndDate(endDate);
         prj.setRegistered(registered);
         prj.setLastModification(lastModification);
-        prj.setProjectManager(new Person(getProjectManagerDTO().getId()));
+        if(projectManager!=null){
+            prj.setProjectManager(new Person(getProjectManagerDTO().getId()));
+        }
         return prj;
     }
 

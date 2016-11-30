@@ -334,7 +334,7 @@
         };
     })
 
-    .controller("timecard_edit_ctrl", function($scope, $http, $routeParams, $filter) {
+    .controller("timecard_edit_ctrl", function($scope, $http, $routeParams, $filter,$log) {
         $http.get('/timekeeper/svc/timecard/' + $routeParams.tcId).
         success(function(data) {
             $scope.timecard = data
@@ -375,6 +375,8 @@
         });
         
         $scope.save = function(timecard) {
+            $log.debug("Salvando timecard");
+            $log.debug(timecard);
             timecard.timecardEntriesDTO = [];
             //it makes a complete copy
             var tasksDTOBk =  JSON.parse( JSON.stringify(timecard.project.tasksDTO)); 

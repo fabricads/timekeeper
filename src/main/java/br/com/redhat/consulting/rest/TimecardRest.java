@@ -38,6 +38,7 @@ import br.com.redhat.consulting.model.dto.TaskDTO;
 import br.com.redhat.consulting.model.dto.TimecardDTO;
 import br.com.redhat.consulting.model.dto.TimecardEntryDTO;
 import br.com.redhat.consulting.services.AlertService;
+import br.com.redhat.consulting.services.ProjectService;
 import br.com.redhat.consulting.services.TimecardService;
 import br.com.redhat.consulting.util.GeneralException;
 import br.com.redhat.consulting.util.TimecardEntryDateComparator;
@@ -52,6 +53,9 @@ public class TimecardRest {
     
     @Inject
     private TimecardService timecardService;
+
+    @Inject
+    private ProjectService projectService;
     
     @Context
     private HttpServletRequest httpReq;
@@ -117,6 +121,10 @@ public class TimecardRest {
                         TimecardEntryDTO tceDto = new TimecardEntryDTO(tce);
                         tceDtos.add(tceDto);
                     }
+                    /**
+                    *needs to sort time card entries
+                    */
+                    Collections.sort(tceDtos, new TimecardEntryDateComparator());
                     tcDto.setFirstDate(tceDtos.get(0).getDay());
                     tcDto.setLastDate(tceDtos.get(tceDtos.size() - 1).getDay());
                     tcDto.setTimecardEntriesDTO(tceDtos);
@@ -139,6 +147,7 @@ public class TimecardRest {
     @GET
     @RolesAllowed({"partner_consultant", "redhat_manager", "admin"})
     public Response getTimecard(@PathParam("tcId") Integer tcId) {
+
         Timecard timecard = null;
         Response.ResponseBuilder response = null;
         PersonDTO loggedUser = Util.loggedUser(httpReq);
@@ -153,6 +162,7 @@ public class TimecardRest {
                 if (timecard != null) {
                     TimecardDTO tcDto = new TimecardDTO(timecard);
                     ProjectDTO prjDto = new ProjectDTO(timecard.getProject());
+    
                     for (Task task: timecard.getProject().getTasks()) {
                         TaskDTO taskDto = new TaskDTO(task);
                         prjDto.addTask(taskDto);
@@ -226,7 +236,9 @@ public class TimecardRest {
             } else {
                 Timecard timecardEnt = timecardDto.toTimecard();
                 timecardEnt.setConsultant(loggedUser.toPerson());
+                LOG.info("Received project "+timecardDto.getProject().toString());
                 Project prj = timecardDto.getProject().toProject();
+                LOG.info("Cast of the project "+prj.toString());
                 timecardEnt.setProject(prj);
                 for (TimecardEntryDTO tcEntryDto: timecardDto.getTimecardEntriesDTO()) {
                     TimecardEntry tcEntry = tcEntryDto.toTimecardEntry();
