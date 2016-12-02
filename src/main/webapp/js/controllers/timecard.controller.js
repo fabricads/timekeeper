@@ -19,7 +19,7 @@
         timecardService.getAllByPm(1).then(
             function(response){
                 $log.debug("recebeu timecards ");
-                $log.debug(reponse);
+                $log.debug(response);
                 $scope.timecards=response.data;
                 $scope.loading = false;
             },function(error){
@@ -41,7 +41,7 @@
         /**
          * Gets monday
          */
-        function getMonday(){
+        function getSunDay(){
             var date = new Date();
             date.setDate(date.getDate()-date.getDay());
             return date;
@@ -51,16 +51,22 @@
          * GetsEndDate
          */
         $scope.getEndDate = function(date){
-            return (new Date()).setDate(date.getDate()+6);
+            var dataFinal = new Date(date);
+            dataFinal.setDate(date.getDate()+6);
+            $log.debug("Date inicial: "+date.getDate());
+            $log.debug("Data inicial: "+date);
+            $log.debug("Data final:" +dataFinal);
+            $log.debug("Date final:" +dataFinal.getDate());
+            return dataFinal;
         }
         /**
          * 2 weeks would be the maximum period... the current one and the one before
          */
         function getPeriods(){
             var periods = [];
-            periods.push(getMonday());
+            periods.push(getSunDay());
             $log.debug(periods[0].getDay());
-            periods.push(getMonday());
+            periods.push(getSunDay());
             periods[0].setDate(periods[0].getDate()-7);
             //$scope.period=periods[1];
             //$log.debug("User has select the date "+$scope.period.getDate());
@@ -117,7 +123,7 @@
 
         function createEntries(task){
              // set the sunday day of the starting week
-            var initDayWeek = new Date($scope.periods[0].getTime());                  
+            var initDayWeek = new Date($scope.periods[$scope.period].getTime());                  
             var tcEntries = [];
             for (var j = 0; j < 7; j++) {
                 var tcEntry = {};

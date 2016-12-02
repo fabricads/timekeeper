@@ -275,13 +275,14 @@ public class TimecardRest {
         
         try {
             if (tcId != null) {
+                Timecard timecard = timecardService.findByIdAndConsultant(tcId, loggedUser.getId());
                 timecardService.delete(tcId, loggedUser.getId());
                 response = Response.ok();
             } else  {
                 Map<String, Object> responseObj = new HashMap<>();
-                responseObj.put("msg", "Timecard not found");
+                responseObj.put("msg", "Error trying to delete timecard "+ tcId);
                 responseObj.put("timecards", new ArrayList());
-                response = Response.status(Status.NOT_FOUND).entity(responseObj);
+                response = Response.status(Status.INTERNAL_SERVER_ERROR).entity(responseObj);
             }
         } catch (GeneralException e) {
             LOG.error("Error to delete timecard.", e);

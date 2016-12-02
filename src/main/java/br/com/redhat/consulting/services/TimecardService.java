@@ -82,7 +82,8 @@ public class TimecardService {
         TimecardSearchFilter filter = new TimecardSearchFilter();
         filter.setClausulasJoinPesquisa(true);
         //timecardDao.setOrderBy("order by ENT2.day");
-        timecardDao.setOrderBy("order by day");
+        //timecardDao.setOrderBy("order by day");
+        timecardDao.setDistinct(true);
         List<Timecard> res = timecardDao.find(filter);
         return res;
     }
@@ -126,6 +127,7 @@ public class TimecardService {
         filter.setId(tcId);
         filter.setConsultant(new Person());
         filter.getConsultant().setId(consultantId);
+        filter.setClausulasJoinPesquisa(true);
         List<Timecard> res = timecardDao.find(filter);
         if (res.size() > 0) {
             Timecard tc = res.get(0);

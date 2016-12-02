@@ -100,7 +100,8 @@ public class Timecard extends AbstractEntity {
         this.commentPM = commentPM;
     }
 
-    @OneToMany(mappedBy="timecard", cascade=CascadeType.REMOVE)
+
+    @OneToMany(mappedBy="timecard", cascade=CascadeType.ALL,orphanRemoval=true)
     public List<TimecardEntry> getTimecardEntries() {
         return timecardEntries;
     }

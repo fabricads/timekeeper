@@ -138,10 +138,10 @@ public class ProjectRest {
             if (consultantId != null)
                 projects = projectService.findByConsultantToFill(consultantId);
             if (projects == null || projects.size() == 0) {
-                Map<String, Object> responseObj = new HashMap<>();
+                /*Map<String, Object> responseObj = new HashMap<>();
                 responseObj.put("msg", "No projects found");
-                responseObj.put("projects", new ArrayList());
-                response = Response.ok(responseObj);
+                responseObj.put("projects", new ArrayList());*/
+                response = Response.ok(new ArrayList());
             } else {
                 projectsDto = new ArrayList<ProjectDTO>(projects.size());
                 for (Project project : projects) {
