@@ -2,9 +2,6 @@ package br.com.redhat.consulting.model;
 
 import java.util.Date;
 
-import javax.persistence.CascadeType;
-
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -65,7 +62,7 @@ public class TimecardEntry extends AbstractEntity {
         this.workedHours = workedHours;
     }
     
-    @ManyToOne(cascade=CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name="id_timecard")
     public Timecard getTimecard() {
         return timecard;
