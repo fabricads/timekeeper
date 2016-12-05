@@ -16,8 +16,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 
 @Table(name="timecard")
@@ -103,7 +101,6 @@ public class Timecard extends AbstractEntity {
     }
 
     @OneToMany(mappedBy="timecard", cascade=CascadeType.ALL)
-    @Fetch(value = FetchMode.SUBSELECT)
     public List<TimecardEntry> getTimecardEntries() {
         return timecardEntries;
     }

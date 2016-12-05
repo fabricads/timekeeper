@@ -86,13 +86,16 @@ public class BaseDao<ENTITY, SEARCH_FILTER> {
     @TransactionalMode
     public void remove(Integer id) throws GeneralException {
         try {
-            String ql = "delete from " + entityClassName + " ENT where ENT.id = ? ";
+            /*String ql = "delete from " + entityClassName + " ENT where ENT.id = ? ";
             Query q = em.createQuery(ql);
             q.setParameter(1, id);
             int num = q.executeUpdate();
             if (num == 0) {
                 LOG.warn(entityClassName + " not found with id=" + id);
-            }
+            }*/
+            Object entity  = em.find(entityClass,id);
+            em.remove(entity);
+
         } catch (Exception e) {
             String msg = "Error to remove " + entityClassName + ", id=" + id +" of database.";
             LOG.error(msg, e);

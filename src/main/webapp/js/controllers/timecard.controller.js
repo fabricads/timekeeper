@@ -53,10 +53,6 @@
         $scope.getEndDate = function(date){
             var dataFinal = new Date(date);
             dataFinal.setDate(date.getDate()+6);
-            $log.debug("Date inicial: "+date.getDate());
-            $log.debug("Data inicial: "+date);
-            $log.debug("Data final:" +dataFinal);
-            $log.debug("Date final:" +dataFinal.getDate());
             return dataFinal;
         }
         /**
@@ -65,7 +61,7 @@
         function getPeriods(){
             var periods = [];
             periods.push(getSunDay());
-            $log.debug(periods[0].getDay());
+            //$log.debug(periods[0].getDay());
             periods.push(getSunDay());
             periods[0].setDate(periods[0].getDate()-7);
             //$scope.period=periods[1];
@@ -100,7 +96,7 @@
          * Changes the period of the entries for each task
          */
         $scope.changePeriod=function(index){
-            $log.debug("User has select the date "+$scope.periods[index]);
+           // $log.debug("User has select the date "+$scope.periods[index]);
             if($scope.period!==undefined){
                 getEntries($scope.periods[index]);
             }
@@ -115,6 +111,7 @@
                 if (found == null) {
                     project.tasksDTO.push($scope.task);
                     $scope.task.tcEntries=createEntries($scope.task);
+
                 }else{
                     $log.debug("You already selected it!!!");
                 }
@@ -123,6 +120,7 @@
 
         function createEntries(task){
              // set the sunday day of the starting week
+            $log.debug(task);
             var initDayWeek = new Date($scope.periods[$scope.period].getTime());                  
             var tcEntries = [];
             for (var j = 0; j < 7; j++) {
@@ -188,6 +186,8 @@
                     timecard.timecardEntriesDTO.push(tcEntry);
                 }
             }
+            $log.debug("Saving timecard: ");
+            $log.debug(timecard);
             $http.post("/timekeeper/svc/timecard/save", timecard).
                 success(function(data, status, header, config) {
                     $scope.saved = true;
