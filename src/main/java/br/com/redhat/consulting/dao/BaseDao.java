@@ -93,6 +93,13 @@ public class BaseDao<ENTITY, SEARCH_FILTER> {
             if (num == 0) {
                 LOG.warn(entityClassName + " not found with id=" + id);
             }
+            /*Object entity = em.find(entityClass, id);
+            if (entity == null)
+            {
+                LOG.warn(entityClassName + " not found with id=" + id);
+            }else{
+                em.remove(entity);   
+            }*/
         } catch (Exception e) {
             String msg = "Error to remove " + entityClassName + ", id=" + id +" of database.";
             LOG.error(msg, e);
