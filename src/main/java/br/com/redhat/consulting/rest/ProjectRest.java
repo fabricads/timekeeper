@@ -94,7 +94,7 @@ public class ProjectRest {
                 Map<String, Object> responseObj = new HashMap<>();
                 responseObj.put("msg", "No projects found");
                 responseObj.put("projects", new ArrayList());
-                response = Response.ok(responseObj);
+                response = Response.ok(new ArrayList());
             } else {
                 projectsDto = new ArrayList<ProjectDTO>(projects.size());
                 for (Project project : projects) {
@@ -184,7 +184,7 @@ public class ProjectRest {
                 Map<String, Object> responseObj = new HashMap<>();
                 responseObj.put("msg", "No tasks found");
                 responseObj.put("projects", new ArrayList());
-                response = Response.ok(responseObj);
+                response = Response.ok(new ArrayList());
             } else {
                 tasksDto = new ArrayList<TaskDTO>(tasks.size());
                 for (Task task : tasks) {

@@ -19,7 +19,7 @@
         timecardService.getAllByPm(1).then(
             function(response){
                 $log.debug("recebeu timecards ");
-                $log.debug(reponse);
+                $log.debug(response);
                 $scope.timecards=response.data;
                 $scope.loading = false;
             },function(error){
