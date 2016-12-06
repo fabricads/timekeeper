@@ -154,7 +154,7 @@
                 </datasource>
                 <datasource jta="true" jndi-name="java:/jdbc/partners_timekeeper" pool-name="timekeeper" enabled="true">
                     <connection-url>jdbc:postgresql://172.30.151.159:5432/brazil</connection-url>
-                    <driver>postgresql-9.4.1212.jar</driver>
+                    <driver>postgresql</driver>
                     <security>
                         <user-name>redhat</user-name>
                         <password>redhat</password>
@@ -167,6 +167,7 @@
                     <driver name="h2" module="com.h2database.h2">
                         <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>
                     </driver>
+                    <driver name="postgresql" module="org.postgresql"/>
                 </drivers>
             </datasources>
         </subsystem>
@@ -350,7 +351,7 @@
 
     <interfaces>
         <interface name="management">
-            <inet-address value="${jboss.bind.address.management:127.0.0.1}"/>
+            <inet-address value="${jboss.bind.address.management:0.0.0.0}"/>
         </interface>
         <interface name="public">
             <inet-address value="${jboss.bind.address:0.0.0.0}"/>
