@@ -2,9 +2,6 @@ FROM registry.access.redhat.com/jboss-eap-6/eap64-openshift
 
 MAINTAINER Vitor Silva Lima <vlima@redhat.com>
 
-ADD postgresql $JBOSS_HOME/modules/org/postgresql
-ADD standalone-openshift.xml /opt/eap/standalone/configuration/standalone-openshift.xml
-
 #ADD postgresql-9.4.1212.jar /opt/eap/standalone/deployments/postgresql-9.4.1212.jar
 #RUN touch /opt/eap/standalone/deployments/postgresql-9.4.1212.jar.dodeploy
 
