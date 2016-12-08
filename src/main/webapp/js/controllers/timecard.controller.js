@@ -43,6 +43,7 @@
          */
         function getMonday(){
             var date = new Date();
+            date.getDate
             date.setDate(date.getDate()-date.getDay());
             return date;
         }
@@ -51,7 +52,7 @@
          * GetsEndDate
          */
         $scope.getEndDate = function(date){
-            return (new Date()).setDate(date.getDate()+6);
+            return (new Date(date.getFullYear(),date.getMonth(),date.getDate()+6));
         }
         /**
          * 2 weeks would be the maximum period... the current one and the one before
