@@ -79,6 +79,51 @@ public class TimecardRest {
         }
         return response;
     }
+
+    @Path("/list-partner")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @RolesAllowed({"partner_manager"})
+    public Response listTimecardsByPartner() {
+        Response.ResponseBuilder response = null;
+        try{
+            List<Timecard> timecards = timecardService.findByOrganization(1);
+            if(timecards!=null){
+                List<TimecardDTO> timecardDTOs = new ArrayList<>(timecards.size());
+                
+                 for (Timecard timecard: timecards) {
+                    TimecardDTO tcDto = new TimecardDTO(timecard);
+                    ProjectDTO prjDto = new ProjectDTO(timecard.getProject());
+                    PersonDTO consultantDto = new PersonDTO(timecard.getConsultant());
+                    timecard.getConsultant().nullifyAttributes();
+                    tcDto.setConsultantDTO(consultantDto);
+                    tcDto.setProjectDTO(prjDto);
+                    List<TimecardEntryDTO> tceDtos = new ArrayList<>(timecard.getTimecardEntries().size());
+                    for (TimecardEntry tce: timecard.getTimecardEntries()) {
+                        TimecardEntryDTO tceDto = new TimecardEntryDTO(tce);
+                        tceDtos.add(tceDto);
+                    }
+                    /**
+                    *needs to sort time card entries
+                    */
+                    Collections.sort(tceDtos, new TimecardEntryDateComparator());
+                    tcDto.setFirstDate(tceDtos.get(0).getDay());
+                    tcDto.setLastDate(tceDtos.get(tceDtos.size() - 1).getDay());
+                    tcDto.setTimecardEntriesDTO(tceDtos);
+                    timecardDTOs.add(tcDto);
+                }
+                response=Response.ok(timecardDTOs);
+            }else{
+                response=Response.ok(new ArrayList());
+            }
+        } catch (GeneralException e) {
+            LOG.error("Error to find projects.", e);
+            Map<String, String> responseObj = new HashMap<>();
+            responseObj.put("error", e.getMessage());
+            response=Response.ok(responseObj);
+        }
+        return response.build();
+    }
     
     
     @Path("/list")

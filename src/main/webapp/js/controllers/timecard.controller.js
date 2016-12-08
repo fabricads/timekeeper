@@ -31,6 +31,26 @@
         
     })
 
+    .controller("timecardPartnerCtrl", function($scope, $log, $http, $routeParams,timecardService) {
+        $scope.loading = true;
+
+        timecardService.getAllByPartner().then(
+            function(response){
+                $log.debug("recebeu timecards ");
+                $log.debug(response);
+                $scope.timecards=response.data;
+                $scope.loading = false;
+            },function(error){
+                $log.debug("An error has occured "+error.data);
+                $scope.timecards = data;
+                $scope.loading = false;
+            }
+        )
+        
+    })
+
+
+
     .controller("timecard_new_ctrl", function($log,$scope, $http, $routeParams, $filter,timecardService) {
         
         $scope.timecard = {};

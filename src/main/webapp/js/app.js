@@ -21,6 +21,11 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 	when("/timecards", {
 		templateUrl : "timecards.html",
 	}).
+
+	when("/timecards-partner", {
+		templateUrl : "timecards-partner.html",
+	}).
+
 	when("/timecards-cs", {
 	    templateUrl : "timecards-cs.html",
 	}).
@@ -54,6 +59,8 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 	when("/organizations", {
 		templateUrl : "organizations.html",
 	}).
+
+
 	when("/organization-new", {
 		templateUrl : "organization-new.html",
 	}).

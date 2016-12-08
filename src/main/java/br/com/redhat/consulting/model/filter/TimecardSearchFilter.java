@@ -3,6 +3,7 @@ package br.com.redhat.consulting.model.filter;
 import java.util.Date;
 
 import br.com.redhat.consulting.model.Timecard;
+import br.com.redhat.consulting.model.PartnerOrganization;
 
 public class TimecardSearchFilter extends Timecard {
 
@@ -34,4 +35,7 @@ public class TimecardSearchFilter extends Timecard {
         this.clausulasJoinPesquisa = clausulasJoinPesquisa;
     }
 
+    public boolean getClausulasJoinPesquisa(boolean clausulasJoinPesquisa) {
+        return this.clausulasJoinPesquisa;
+    }
 }

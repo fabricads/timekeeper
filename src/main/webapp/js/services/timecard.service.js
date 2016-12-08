@@ -17,6 +17,14 @@
         service.getAllByPm=function(pm){
             return $http.get(endpoint+"/list?pm="+pm);
         };
+
+
+        /**
+         * Get project by id
+         */
+        service.getAllByPartner=function(){
+            return $http.get(endpoint+"/list-partner");
+        };
         
         /**
          * Get project

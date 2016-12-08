@@ -87,7 +87,11 @@ public class TimecardService {
         List<Timecard> res = timecardDao.find(filter);
         return res;
     }
-    
+    public List<Timecard> findByOrganization(Integer orgId) throws GeneralException {
+       
+        List<Timecard> res = timecardDao.getByOrganization(orgId);
+        return res;
+    }
     public List<Timecard> findByProject(Integer prjId) throws GeneralException {
         TimecardSearchFilter filter = new TimecardSearchFilter();
         Project project = new Project();
