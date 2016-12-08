@@ -181,6 +181,7 @@ public class PersonRest {
         List<Map<String, Object>> types = new ArrayList<>();
         types.add(PersonType.CONSULTANT_PARTNER.toMap());
         types.add(PersonType.MANAGER_REDHAT.toMap());
+        types.add(PersonType.MANAGER_PARTNER.toMap());
         return types;
     }
 
