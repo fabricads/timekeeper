@@ -32,7 +32,7 @@ import br.com.redhat.consulting.util.Util;
 
 @RequestScoped
 @Path("/profile")
-@RolesAllowed({"redhat_manager", "admin", "partner_consultant"})
+@RolesAllowed({"redhat_manager", "admin", "partner_consultant","partner_manager"})
 @Authenticated
 public class ProfileRest {
 

@@ -4,7 +4,8 @@ public enum RoleEnum {
 
     ADMIN               (1, "admin", "Admin"),
     PARTNER_CONSULTANT  (2, "partner_consultant", "Partner Consultant"),
-    REDHAT_MANAGER      (3, "redhat_manager", "Red Hat Manager");
+    REDHAT_MANAGER      (3, "redhat_manager", "Red Hat Manager"),
+    PARTNER_MANAGER      (4, "partner_manager", "PartnerManager");
     
     private int id;
     private String shortName;

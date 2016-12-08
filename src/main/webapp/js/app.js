@@ -75,7 +75,8 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
  */
 
 timekeeperApp.controller("menu_ctrl", function(MessageService, $scope, $rootScope, $window, $http) {
-    console.log("rootScope.user = " + $rootScope.user);
+    console.log("rootScope.user = ")
+	console.log($rootScope.user);
     if ($rootScope.user != null) {
         $scope.user = $rootScope.user;
 
