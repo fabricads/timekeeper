@@ -38,6 +38,7 @@ import br.com.redhat.consulting.model.dto.TaskDTO;
 import br.com.redhat.consulting.model.dto.TimecardDTO;
 import br.com.redhat.consulting.model.dto.TimecardEntryDTO;
 import br.com.redhat.consulting.services.AlertService;
+import br.com.redhat.consulting.services.PersonService;
 import br.com.redhat.consulting.services.ProjectService;
 import br.com.redhat.consulting.services.TimecardService;
 import br.com.redhat.consulting.util.GeneralException;
@@ -56,6 +57,9 @@ public class TimecardRest {
 
     @Inject
     private ProjectService projectService;
+
+    @Inject
+    private  PersonService personService;
     
     @Context
     private HttpServletRequest httpReq;
@@ -87,7 +91,10 @@ public class TimecardRest {
     public Response listTimecardsByPartner() {
         Response.ResponseBuilder response = null;
         try{
-            List<Timecard> timecards = timecardService.findByOrganization(1);
+            PersonDTO loggedUser = Util.loggedUser(httpReq);
+            Person person = personService.findById(loggedUser.getId());
+            int orgId = person.getPartnerOrganization().getId();
+            List<Timecard> timecards = timecardService.findByOrganization(orgId);
             if(timecards!=null){
                 List<TimecardDTO> timecardDTOs = new ArrayList<>(timecards.size());
                 
