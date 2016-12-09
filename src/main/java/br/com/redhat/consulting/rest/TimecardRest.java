@@ -190,7 +190,7 @@ public class TimecardRest {
     @Path("/{tcId}")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    @RolesAllowed({"partner_consultant", "redhat_manager", "admin"})
+    @RolesAllowed({"partner_consultant", "redhat_manager","partner_manager", "admin"})
     public Response getTimecard(@PathParam("tcId") Integer tcId) {
 
         Timecard timecard = null;
@@ -199,7 +199,7 @@ public class TimecardRest {
         
         try {
             if (tcId != null) {
-                if (loggedUser.isAdminOrProjectManager()) {
+                if (loggedUser.isAdminOrProjectManager() || loggedUser.isPartnerManager()) {
                     timecard = timecardService.findByIdAndConsultant(tcId, null);
                 } else {
                     timecard = timecardService.findByIdAndConsultant(tcId, loggedUser.getId());

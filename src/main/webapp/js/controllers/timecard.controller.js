@@ -7,15 +7,7 @@
 
     timekeeperControllers.controller("timecard_list_ctrl", function($scope, $log, $http, $routeParams,timecardService) {
         $scope.loading = true;
-        /*$http.get('/timekeeper/svc/timecard/list?').
-            success(function(data) {
-                $scope.timecards = data;
-                $scope.loading = false;
-            }).
-            error(function(data) {
-                $scope.timecards = data;
-                $scope.loading = false;
-            });*/
+        
         timecardService.getAllByPm(1).then(
             function(response){
                 $log.debug("recebeu timecards ");
@@ -33,6 +25,7 @@
 
     .controller("timecardPartnerCtrl", function($scope, $log, $http, $routeParams,timecardService) {
         $scope.loading = true;
+
 
         timecardService.getAllByPartner().then(
             function(response){

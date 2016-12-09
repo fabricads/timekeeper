@@ -13,16 +13,14 @@
                 <th>Project</th>
                 <th>Status</th>
                 <th>Period</th>
-                <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             <tr ng-repeat="tc in timecards">
-                <td style="vertical-align: middle;"><a ng-href="#/timecard-view/{{tc.id}}">{{tc.consultant.name}}</a></td>
+                <td style="vertical-align: middle;"><a ng-href="#/timecard-partner-view/{{tc.id}}">{{tc.consultant.name}}</a></td>
                 <td style="vertical-align: middle;">{{tc.project.name}}</td>
                 <td style="vertical-align: middle;">{{tc.statusDescription}}</td>
                 <td style="vertical-align: middle;">{{tc.firstDate|date:'dd-MMMM-yyyy'}} to {{tc.lastDate|date:'dd-MMMM-yyyy'}}</td>
-                <td style="vertical-align: middle;"></td>
             </tr>
         </tbody>
     </table>

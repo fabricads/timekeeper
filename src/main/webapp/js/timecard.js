@@ -43,8 +43,10 @@ timecardApp.controller("modal_instance", function($rootScope, $scope, $http, $wi
 });
 
 
-timecardApp.controller("timecard_view_ctrl", function($scope, $http, $routeParams, $filter, $window) {
-    
+timecardApp.controller("timecard_view_ctrl", function($log, $rootScope, $scope, $http, $routeParams, $filter, $window) {
+
+    $scope.role=$scope.user.role.shortName;
+
     $http.get('/timekeeper/svc/timecard/' + $routeParams.tcId).
     success(function(data) {
         $scope.timecard = data

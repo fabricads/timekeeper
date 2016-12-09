@@ -26,6 +26,10 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 		templateUrl : "timecards-partner.html",
 	}).
 
+	when("/timecard-partner-view/:tcId", {
+		templateUrl : "timecard-partner-view.html",
+	}).
+
 	when("/timecards-cs", {
 	    templateUrl : "timecards-cs.html",
 	}).

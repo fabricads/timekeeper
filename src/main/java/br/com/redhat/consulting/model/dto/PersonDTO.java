@@ -269,6 +269,13 @@ public class PersonDTO  {
         return permit;
     }
 
+    @JsonIgnore
+    public boolean isPartnerManager(){
+        RoleEnum currentRole = RoleEnum.find(getRole().getId());
+        boolean permit = currentRole.equals(RoleEnum.PARTNER_MANAGER);
+        return permit;
+    }
+
     public String getHash() {
         return hash;
     }
