@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
 
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
@@ -21,6 +22,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import java.text.SimpleDateFormat;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -245,6 +247,33 @@ public class TimecardRest {
             Map<String, String> responseObj = new HashMap<>();
             responseObj.put("error", e.getMessage());
             response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+        }
+        return response.build();
+    }
+
+    @Path("/count/{projectId}/{fistDate}/{lastDate}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @RolesAllowed({"partner_consultant"})
+    public Response countByProjectPeriod(@PathParam("projectId") Integer projectId,@PathParam("fistDate") String fistDate,@PathParam("lastDate") String lastDate) {
+        Response.ResponseBuilder response = null;
+        try {    
+            PersonDTO loggedUser = Util.loggedUser(httpReq);
+            response = null;
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date fisrtD = simpleDateFormat.parse(fistDate);
+            Date lastD = simpleDateFormat.parse(lastDate);
+            Long count = timecardService.countByDate(loggedUser.getId(), projectId, fisrtD, lastD);
+            Map<String, Object> responseObj = new HashMap<>();
+            responseObj.put("count", count);
+            responseObj.put("date", fisrtD);        
+            response = Response.status(Response.Status.OK).entity(responseObj);
+        } catch (Exception e) {
+            LOG.error("Error to insert project.", e);
+            Map<String, String> responseObj = new HashMap<String, String>();
+            responseObj.put("error", e.getMessage());
+            response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(responseObj);
         }
         return response.build();
     }

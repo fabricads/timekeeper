@@ -54,7 +54,7 @@
         /**
          * Gets monday
          */
-        function getMonday(){
+        function getSunday(){
             var date = new Date();
             date.getDate
             date.setDate(date.getDate()-date.getDay());
@@ -72,10 +72,23 @@
          */
         function getPeriods(){
             var periods = [];
-            periods.push(getMonday());
-            $log.debug(periods[0].getDay());
-            periods.push(getMonday());
-            periods[0].setDate(periods[0].getDate()-7);
+            for(var i = 0;i<2;i++){
+                var monday = getSunday();
+                var firstDate = new Date(monday.getFullYear(),monday.getMonth(),monday.getDate()-(i*7));
+                var lastDate= new Date(firstDate.getFullYear(),firstDate.getMonth(),firstDate.getDate()+6); 
+                $log.debug("Searching period: "+$filter('date')(firstDate, "yyyy-MM-dd"));
+                $http.get("/timekeeper/svc/timecard/count/"+$routeParams.projectId+"/"+$filter('date')(firstDate, "yyyy-MM-dd")+"/"+$filter('date')(lastDate, "yyyy-MM-dd")).then(function(response){
+                    $log.debug("Recebeu a seguinte response: ");
+                    $log.debug(response);
+                    if(response.data.count===0){
+                        periods.push(new Date(response.data.date));
+                    }
+                });
+            }
+            //periods.push(getSunday());
+            //$log.debug(periods[0].getDay());
+            //periods.push(getSunday());
+            //periods[0].setDate(periods[0].getDate()-7);
             //$scope.period=periods[1];
             //$log.debug("User has select the date "+$scope.period.getDate());
             return periods;
