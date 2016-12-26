@@ -16,12 +16,20 @@
     </div>
 
     <form class="form-horizontal" name="form">
-        <div class="form-group" >
-            <label for="prj_pm" class="col-md-2 control-label">Project</label>
-            <div class="col-md-5">
-                <label>{{timecard.project.name}} - {{timecard.project.initialDate|date:'dd-MMMM-yyyy'}} to {{timecard.project.endDate|date:'dd-MMMM-yyyy'}} - {{days}} days - {{weeks}} weeks</label>
-            </div>
+    <div class="form-group" >
+        <label for="prj_pm" class="col-md-2 control-label">Project</label>
+        <div class="col-md-5">
+            <label>{{timecard.project.name}} - {{timecard.project.initialDate|date:'dd-MMMM-yyyy'}} to {{timecard.project.endDate|date:'dd-MMMM-yyyy'}} - {{days}} days - {{weeks}} weeks</label>
         </div>
+    </div>
+    <div class="form-group" ng-class="{'has-error': form.period.$invalid}">
+            <label for="pediod" class="col-md-2 control-label">Task</label>
+            <div class="col-md-5">
+                <select class="form-control" ng-options="task.name for task in tasks" ng-model="task">
+                </select>
+            </div>
+            <button type="button" class="btn btn-primary" ng-click="addTask()">Add Task</button>
+    </div>
       <div class="panel panel-default" ng-repeat="tcEntry in timecard.project.tasksDTO">
         <div class="panel-heading">
           <h3 class="panel-title">Task: {{tcEntry.name}} - {{tcEntry.tcEntries | sumOfValue:'workedHours'}} hours</h3>

@@ -34,6 +34,11 @@
             
         };
 
+
+        service.getById=function(id){
+             return $http.get(endpoint + '/'+id);
+        };
+
         return service;
     }
 })();

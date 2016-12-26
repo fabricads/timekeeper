@@ -1,4 +1,9 @@
-var timekeeperApp = angular.module("timekeeperApp", [ "ngRoute", "ngResource", "ui.bootstrap", "servicesApp", "org_ctrl", "person_ctrl", "project_ctrl", "timecard_ctrl","timekeeperControllers"]);
+var timekeeperApp = angular.module("timekeeperApp", 
+			[ 
+				"ngRoute", "ngResource", "ui.bootstrap",'patternfly',
+				"servicesApp", "org_ctrl", "person_ctrl", 
+				"project_ctrl", "timecard_ctrl","timekeeperControllers"
+			]);
 
 timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 
@@ -37,7 +42,7 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 	    templateUrl : "timecard-new.html",
 	}).
 	when("/timecard-view/:tcId", {
-	    templateUrl : "timecard-view1.html",
+	    templateUrl : "timecard-table-view.html",
 	}).
 	when("/timecard-edit/:tcId", {
 	    templateUrl : "timecard-edit.html",
@@ -202,6 +207,8 @@ timekeeperApp.filter('sumOfValue', function () {
         return sum;
     };
 });
+
+
 
 // from http://weeknumber.net/how-to/javascript
 // used on timecard pages, to calculate the number of weeks to present to the user.

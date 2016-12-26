@@ -43,7 +43,7 @@ timecardApp.controller("modal_instance", function($rootScope, $scope, $http, $wi
 });
 
 
-timecardApp.controller("timecard_view_ctrl", function($log, $rootScope, $scope, $http, $routeParams, $filter, $window) {
+timecardApp.controller("timecard_view_ctrl", function($log, $rootScope, $scope, $http, $routeParams, $filter, $window,$uibModal) {
 
     $scope.role=$scope.user.role.shortName;
 
@@ -53,9 +53,31 @@ timecardApp.controller("timecard_view_ctrl", function($log, $rootScope, $scope, 
         var start_date = new Date($scope.timecard.project.initialDate);
         var end_date = new Date($scope.timecard.project.endDate);
         
+
+        var y = $scope.timecard.firstDate.substring(0,4);
+        var m = $scope.timecard.firstDate.substring(5,7);
+        var d = $scope.timecard.firstDate.substring(8,10);
+        m--;
+        
+        var tc_start_date = new Date(y,m,d);
+        y = $scope.timecard.firstDate.substring(0,4);
+        m = $scope.timecard.firstDate.substring(5,7);
+        d = $scope.timecard.firstDate.substring(8,10);
+        m--;
+
+        var tc_last_date = new Date(y,m,d);
+
+        $scope.dates=[];
+        for(var i=0;i<7;i++){
+            var item = {};
+            item.hours=0;
+            item.date = new Date(tc_start_date.getFullYear(),tc_start_date.getMonth(),tc_start_date.getDate()+i);
+            $scope.dates.push(item);
+        }
+        
         $scope.days = $filter('dateDiffInDays')(start_date, end_date);
         $scope.weeks = $filter('dateNumOfWeeks')(start_date, end_date);
-        
+        $scope.totalHours=0;
         var tasks = $scope.timecard.project.tasksDTO;
         for (var i = 0; i < tasks.length; i++) {
             var task = tasks[i];
@@ -68,17 +90,31 @@ timecardApp.controller("timecard_view_ctrl", function($log, $rootScope, $scope, 
                     var m = tcEntry.day.substring(5,7);
                     var d = tcEntry.day.substring(8,10);
                     m = m - 1;
+                    $scope.totalHours+=tcEntry.workedHours;
                     tcEntry.day = new Date(y, m, d)
                     tcEntries.push(tcEntry);
+                    $scope.dates[tcEntries.length-1].hours+=tcEntry.workedHours;
                 }
             }
             task.tcEntries = tcEntries;
         }
+        console.log($scope.dates);
     }).
     error(function(data, status, header, config) {
         $scope.error_msg = data;
     });
     
+    $scope.getDetail=function(item){
+        $log.debug(item);
+        var modalInstance = $uibModal.open({
+            templateUrl: 'timecard-view.html',
+            controller: 'timecard_view_ctrl',
+            size: 'lg',
+            scope: $scope
+        });
+    };
+
+
     $scope.approve = function(timecard) {
         $http.post("/timekeeper/svc/timecard/app-rej/" + timecard.id + "?op=1", timecard.commentPM).
         success(function(data, status, header, config) {

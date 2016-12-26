@@ -1,0 +1,30 @@
+{
+  "name": "timekeeper",
+  "authors": [
+    "vitorsilvalima <vitor.lima2@fatec.sp.gov.br>"
+  ],
+  "description": "This application manages worked hours of partner consultants",
+  "main": "index.html",
+  "keywords": [
+    "timekeeper",
+    "consultant"
+  ],
+  "license": "MIT",
+  "homepage": "index.html",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "1.5.0-rc.0",
+    "angular-resource": "1.5.0-rc.0",
+    "angular-route": "1.5.0-rc.0",
+    "angular-patternfly": "^3.16.0"
+  },
+  "resolutions": {
+    "angular": "1.5.0-rc.0"
+  }
+}
