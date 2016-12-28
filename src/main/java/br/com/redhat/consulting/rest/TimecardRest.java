@@ -173,6 +173,7 @@ public class TimecardRest {
                     List<TimecardEntryDTO> tceDtos = new ArrayList<>(timecard.getTimecardEntries().size());
                     for (TimecardEntry tce: timecard.getTimecardEntries()) {
                         TimecardEntryDTO tceDto = new TimecardEntryDTO(tce);
+                        tceDto.setTaskDTO(new TaskDTO(tce.getTask()));
                         tceDtos.add(tceDto);
                     }
                     /**
@@ -195,6 +196,7 @@ public class TimecardRest {
         response = Response.ok(timecardsDto);
         return response.build();
     }
+
     
     @Path("/{tcId}")
     @Produces(MediaType.APPLICATION_JSON)

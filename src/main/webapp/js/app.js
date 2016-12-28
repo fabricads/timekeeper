@@ -1,6 +1,6 @@
 var timekeeperApp = angular.module("timekeeperApp", 
 			[ 
-				"ngRoute", "ngResource", "ui.bootstrap",'patternfly',
+				'ngSanitize', 'ngCsv',"ngRoute", "ngResource", "ui.bootstrap",'patternfly',
 				"servicesApp", "org_ctrl", "person_ctrl", 
 				"project_ctrl", "timecard_ctrl","timekeeperControllers"
 			]);

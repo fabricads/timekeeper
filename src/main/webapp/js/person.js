@@ -7,7 +7,7 @@ var personApp = angular.module("person_ctrl", [ "ngRoute", "ngResource", "ui.boo
  * ********************************************************
  */
 
-personApp.controller("person_listing_ctrl", function($scope, $http, $window) {
+personApp.controller("person_listing_ctrl", function($filter,$scope, $http, $window,timecardService) {
 	
     $scope.list_enabled = 1;
     $scope.loading = true;
@@ -32,6 +32,50 @@ personApp.controller("person_listing_ctrl", function($scope, $http, $window) {
 		$http.get("/timekeeper/svc/person/"+personId+"/delete");
 		$window.location.reload();
 	};
+
+	$scope.getTimecard = function(person){
+		$scope.buttonTimecardText="Processing";
+		$scope.buttonEnable=false;
+		timecardService.getAllByPm(person.id).then(function(response){
+			var timecards = [];
+			var timecardsData = response.data;
+			for(var i=0 ; i < timecardsData.length ; i++){
+				var oraclepaidId = timecardsData[i].consultant.oraclePAId;
+				var name = timecardsData[i].consultant.name;
+				var pa=timecardsData[i].project.paNumber;
+				for(var j=0 ; j < timecardsData[i].timecardEntriesDTO.length ; j++){
+					var task = timecardsData[i].timecardEntriesDTO[j].taskDTO.name;
+					var day = timecardsData[i].timecardEntriesDTO[j].day;
+					var hours = timecardsData[i].timecardEntriesDTO[j].workedHours;
+					var description = timecardsData[i].timecardEntriesDTO[j].workDescription;
+					var row = {
+						oraclepaidId:oraclepaidId,
+						name:name,
+						pa:pa,
+						task:task,
+						day:formatData(day),
+						hours:hours,
+						description:description || ""
+					};
+					timecards.push(row);
+				}
+			}
+			console.log(timecards);
+			person.timecards=timecards;
+			person.getHeader = function () {
+				return ["0racle Paid ID", "Name","PA","Task","Data","Worked Hours","Description"]
+			};
+			person.buttonEnable=true;
+		});
+	};
+
+	function formatData(data){
+		var y = data.substring(0,4);
+		var m = data.substring(5,7);
+		var d = data.substring(8,10);
+		m--;
+		return $filter('date')(new Date(y,m,d), 'dd/MM/yyyy');
+	}
 	
 });
 

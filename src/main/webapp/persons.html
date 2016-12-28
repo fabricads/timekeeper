@@ -31,6 +31,9 @@
                     <a class="btn btn-default" ng-show="person.enabled" ng-click="disable(person.id)">Disable</a> 
                     <a class="btn btn-default" ng-show="!person.enabled" ng-click="enable(person.id)">Enable</a>
                     <a class="btn btn-danger" ng-show="person.numberOfProjects == 0" ng-click="delete(person.id)">Delete</a>
+                    <a class="btn btn-danger" ng-if="!person.buttonEnable" ng-click="getTimecard(person)">Process Timecard</a>
+
+                   <button class="btn btn-dange" ng-if="person.buttonEnable" ng-csv="person.timecards" csv-header="person.getHeader()" lazy-load="true" filename="timecard.{{person.name}}.csv" field-separator=",">Download Timecard</button>
                 </td>
             </tr>
         </tbody>
