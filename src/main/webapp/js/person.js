@@ -39,10 +39,13 @@ personApp.controller("person_listing_ctrl", function($filter,$scope, $http, $win
 		timecardService.getAllByPm(person.id).then(function(response){
 			var timecards = [];
 			var timecardsData = response.data;
+
+			var oraclepaidId = timecardsData[0].consultant.oraclePAId;
+			var name = timecardsData[0].consultant.name;
+			var pa=timecardsData[0].project.paNumber;
+
 			for(var i=0 ; i < timecardsData.length ; i++){
-				var oraclepaidId = timecardsData[i].consultant.oraclePAId;
-				var name = timecardsData[i].consultant.name;
-				var pa=timecardsData[i].project.paNumber;
+
 				for(var j=0 ; j < timecardsData[i].timecardEntriesDTO.length ; j++){
 					var task = timecardsData[i].timecardEntriesDTO[j].taskDTO.name;
 					var day = timecardsData[i].timecardEntriesDTO[j].day;
