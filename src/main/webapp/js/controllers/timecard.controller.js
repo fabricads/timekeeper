@@ -50,6 +50,7 @@
         $scope.timecard.consultant = {};
         $scope.periods=[];
         $scope.tasks=[];
+        $scope.btnSaveEnbl=false;
 
         /**
          * Gets monday
@@ -125,6 +126,9 @@
 
 
         $scope.addTask= function(){
+            if(!$scope.btnSaveEnbl){
+                $scope.btnSaveEnbl=true;
+            }
             $log.debug("User has added task "+$scope.task.name);
             var project = $scope.timecard.project;
             if ($scope.task.id != null ) {
@@ -190,6 +194,7 @@
                 success(function(data, status, header, config) {
                     $scope.saved = true;
                     $scope.error_msg = null;
+                    $window.location.reload();
                 }).
                 error(function(data, status, header, config) {
                     $scope.error_msg = data;
@@ -210,6 +215,7 @@
             success(function(data, status, header, config) {
                 $scope.saved = true;
                 $scope.error_msg = null;
+                $window.location.reload();
             }).
             error(function(data, status, header, config) {
                 $scope.error_msg = data;
