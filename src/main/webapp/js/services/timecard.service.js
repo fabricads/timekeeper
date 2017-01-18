@@ -39,6 +39,10 @@
              return $http.get(endpoint + '/'+id);
         };
 
+        service.getByConsultant=function(id){
+            return $http.get(endpoint+"/list-cs?id="+id);
+        }
+
         return service;
     }
 })();

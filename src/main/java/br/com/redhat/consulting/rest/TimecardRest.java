@@ -72,7 +72,7 @@ public class TimecardRest {
     @Path("/list-cs")
     @Produces(MediaType.APPLICATION_JSON)
     @GET
-    @RolesAllowed({"partner_consultant"})
+    @RolesAllowed({"partner_consultant","redhat_manager"})
     public Response listTimecardsByCS(@QueryParam("id") Integer consultantId) {
         Response response = null;
         if (consultantId == null) {

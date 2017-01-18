@@ -36,7 +36,9 @@ personApp.controller("person_listing_ctrl", function($filter,$scope, $http, $win
 	$scope.getTimecard = function(person){
 		$scope.buttonTimecardText="Processing";
 		$scope.buttonEnable=false;
-		timecardService.getAllByPm(person.id).then(function(response){
+		
+		//timecardService.getAllByPm(person.id).then(function(response){
+		timecardService.getByConsultant(person.id).then(function(response){
 			var timecards = [];
 			var timecardsData = response.data;
 
