@@ -103,6 +103,9 @@ public class TimecardRest {
                  for (Timecard timecard: timecards) {
                     TimecardDTO tcDto = new TimecardDTO(timecard);
                     ProjectDTO prjDto = new ProjectDTO(timecard.getProject());
+                    for (Task task: timecard.getProject().getTasks()) {
+                    	prjDto.addTask(new TaskDTO(task));
+                    }
                     PersonDTO consultantDto = new PersonDTO(timecard.getConsultant());
                     timecard.getConsultant().nullifyAttributes();
                     tcDto.setConsultantDTO(consultantDto);
@@ -166,6 +169,9 @@ public class TimecardRest {
                 for (Timecard timecard: timecards) {
                     TimecardDTO tcDto = new TimecardDTO(timecard);
                     ProjectDTO prjDto = new ProjectDTO(timecard.getProject());
+                    for (Task task: timecard.getProject().getTasks()) {
+                    	prjDto.addTask(new TaskDTO(task));
+                    }
                     PersonDTO consultantDto = new PersonDTO(timecard.getConsultant());
                     timecard.getConsultant().nullifyAttributes();
                     tcDto.setConsultantDTO(consultantDto);

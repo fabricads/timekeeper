@@ -23,6 +23,164 @@
         
     })
 
+    timekeeperControllers.controller("timecard_dashboard_ctrl", function($element, $filter, $scope, 
+                                            $timeout, $log, $http, $routeParams,timecardService) {
+
+
+        $scope.loading = true;
+        $scope.consultants = [];
+        timecardService.getAllByPm(1).then(
+            function(response){
+                $log.debug("recebeu timecards ");
+                $log.debug(response);
+                $scope.timecards=response.data;
+                   $timeout(function() {      
+      $element.selectpicker();
+   },1000);
+                $scope.consultants = getConsultants($scope.timecards);
+                $scope.loading = false;
+            },function(error){
+                $log.debug("An error has occured "+error.data);
+                $scope.timecards = data;
+                $scope.loading = false;
+            }
+        )
+
+        function clone(obj) {
+			if (null == obj || "object" != typeof obj) return obj;
+			var copy = obj.constructor();
+			for (var attr in obj) {
+				if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+			}
+			return copy;
+		};
+
+        $scope.getTimecardsByPeriod = function(consultant,periodIndex){
+            
+            var p = new Date($scope.periods[periodIndex].date.getTime());
+            var timecards = clone($scope.timecards);
+            var t = [];
+            for(var i=0; i<timecards.length; i++){
+                if(compareDates(timecards[i].firstDate,p) && consultant.id==timecards[i].consultant.id){
+                    t.push(timecards[i]);
+                }
+            }
+            
+            $scope.dates=[];
+
+            for(var i=0;i<7;i++){
+                var item = {};
+                item.hours=0;
+                item.date = new Date(p.getFullYear(),p.getMonth(),p.getDate()+i);
+                $scope.dates.push(item);
+            }
+
+            $scope.viewTimecards=[];
+            console.log(t);
+            for(var i=0; i<t.length; i++){
+                $scope.viewTimecards.push(getTimecards(t[i],p));
+            }
+
+            console.log(t);
+        };
+
+        function compareDates(dateString,date){
+                var y = dateString.substring(0,4);
+                var m = dateString.substring(5,7);
+                var d = dateString.substring(8,10);
+                m = m - 1;
+                return (date.getDate()==d && date.getMonth()==m);
+        }
+
+        function getTimecards(tc,period){
+
+            var timecard=clone(tc);
+            timecard.totalHours=0;
+
+            timecard.dates=[];
+
+            for(var i=0;i<7;i++){
+                var item = {};
+                item.hours=0;
+                item.date = new Date(period.getFullYear(),period.getMonth(),period.getDate()+i);
+                timecard.dates.push(item);
+            }
+
+
+            var tasks = timecard.project.tasksDTO;
+            for (var i = 0; i < tasks.length; i++) {
+                var task = tasks[i];
+                var tcEntries = [];
+                for (var j = 0; j < timecard.timecardEntriesDTO.length; j++) {
+                    var tcEntry = clone(timecard.timecardEntriesDTO[j]);
+                    if (task.id == tcEntry.taskDTO.id) {
+    
+                        tcEntry.day = getDate(tcEntry.day);
+                        timecard.totalHours+=tcEntry.workedHours;
+                        tcEntries.push(tcEntry);
+ 
+                    }
+                }
+                task.tcEntries = tcEntries;
+            }
+            //console.log(timecard);
+            return timecard;
+        }
+
+
+        $scope.getPeriods=function(consultant){
+            console.log(consultant);
+            $scope.selectedPeriod="";
+            var timecards = $scope.timecards;
+            var periods = [];
+            var o=0;
+            for(var i=0; i<timecards.length; i++){
+                if(timecards[i].consultant.id==consultant.id){
+                    var found = false;
+                    for(var j=0; j<periods.length && !found; j++){
+                        if(compareDates(timecards[i].firstDate,periods[j].date)){
+                            found=true;
+                        }
+                    }
+                    if(!found){
+                        periods.push({
+                            index:o,
+                            date:getDate(timecards[i].firstDate)
+                        });
+                        o++;
+                    }
+                }
+            }
+            $scope.periods=periods;
+        };
+
+        /**
+         * GetsEndDate
+         */
+        $scope.getEndDate = function(date){
+            return (new Date(date.getFullYear(),date.getMonth(),date.getDate()+6));
+        };
+
+        function getConsultants(data){
+            var result = [];
+            for(var i=0; i< data.length; i++){
+                result.push(data[i].consultant);
+            }
+            result=$filter('uniqueID')(result);
+            console.log(result);
+            return result;
+        }
+        
+        function getDate(date){
+                console.log(date);
+                var y = date.substring(0,4);
+                var m = date.substring(5,7);
+                var d = date.substring(8,10);
+                m = m - 1;
+                return new Date(y, m, d)
+        }
+    })
+
     .controller("timecardPartnerCtrl", function($scope, $log, $http, $routeParams,timecardService) {
         $scope.loading = true;
 

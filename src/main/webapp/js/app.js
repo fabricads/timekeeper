@@ -1,6 +1,6 @@
 var timekeeperApp = angular.module("timekeeperApp", 
 			[ 
-				'ngSanitize', 'ngCsv',"ngRoute", "ngResource", "ui.bootstrap",'patternfly',
+				'smart-table','ngSanitize', 'ngCsv',"ngRoute", "ngResource", "ui.bootstrap",'patternfly',
 				"servicesApp", "org_ctrl", "person_ctrl", 
 				"project_ctrl", "timecard_ctrl","timekeeperControllers"
 			]);
@@ -25,6 +25,10 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 	
 	when("/timecards", {
 		templateUrl : "timecards.html",
+	}).
+
+	when("/dashboard", {
+		templateUrl : "dashboard.html",
 	}).
 
 	when("/timecards-partner", {
@@ -191,6 +195,29 @@ timekeeperApp.filter('dateNumOfWeeks', function () {
     };
 });
 
+timekeeperApp.filter("uniqueID", function(){
+  return function(data) {
+    if(angular.isArray(data)) {
+      var result = [];
+      for(var i=0; i<data.length; i++) {
+		var found = false;
+        for(var j=0; j<result.length && found==false; j++) {
+			if(data[i].id==result[j].id){
+				console.log("iguais");
+				found=true;
+			}
+		}
+		if(found==false){
+			result.push(data[i]);
+		}
+      }
+      if(result.length > 0) {
+        return result;
+      }
+    }
+    return [];
+  }
+})
 
 timekeeperApp.filter('sumOfValue', function () {
     return function (data, key) {

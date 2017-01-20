@@ -18,8 +18,8 @@
         <properties>
             <property name="hibernate.hbm2ddl.auto" value="validate" />
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
-            <property name="org.hibernate.envers.audit_table_prefix" value="audit_" />
-            <property name="org.hibernate.envers.audit_table_suffix" value="" />
+            <!-- property name="org.hibernate.envers.audit_table_prefix" value="audit_" />
+            <property name="org.hibernate.envers.audit_table_suffix" value="" /-->
 
             <property name="javax.persistence.jdbc.url"     value="jdbc:postgresql://localhost/postgres" />
             <property name="javax.persistence.jdbc.driver"  value="org.postgresql.Driver" />

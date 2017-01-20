@@ -22,6 +22,8 @@ public class TimecardDTO  {
     private List<TimecardEntryDTO> timecardEntries = new ArrayList<>();
     private Date firstDate;
     private Date lastDate;
+    private boolean onPA;
+    
 
     public TimecardDTO() {}
     
@@ -30,6 +32,7 @@ public class TimecardDTO  {
         this.status = timecard.getStatus();
         this.commentConsultant = timecard.getCommentConsultant();
         this.commentPM = timecard.getCommentPM();
+        this.onPA =timecard.isOnPA();
     }
     
     public Integer getId() {
@@ -39,7 +42,15 @@ public class TimecardDTO  {
     public void setId(Integer id) {
         this.id = id;
     }
+    
+    public boolean isOnPA() {
+        return onPA;
+    }
 
+    public void setOnPA(boolean onPA) {
+        this.onPA = onPA;
+    } 
+    
     public ProjectDTO getProject() {
         return project;
     }
@@ -132,6 +143,7 @@ public class TimecardDTO  {
         tc.setCommentPM(commentPM);
         tc.setId(id);
         tc.setStatus(status);
+        tc.setOnPA(onPA);
         return tc;
     }
     

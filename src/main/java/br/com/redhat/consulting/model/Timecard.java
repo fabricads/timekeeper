@@ -16,6 +16,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.ejb.criteria.predicate.BooleanExpressionPredicate;
 import org.hibernate.envers.Audited;
 
 @Table(name="timecard")
@@ -31,6 +32,7 @@ public class Timecard extends AbstractEntity {
     private Integer status;
     private String commentConsultant;
     private String commentPM;
+    private boolean onPA;
     private List<TimecardEntry> timecardEntries = new ArrayList<>();
     
     @Id
@@ -49,7 +51,16 @@ public class Timecard extends AbstractEntity {
     public void setProject(Project project) {
         this.project = project;
     }
+    	
+    @Column(name = "on_pa", columnDefinition = "boolean default false", nullable = false)
+    public boolean isOnPA() {
+        return onPA;
+    }
 
+    public void setOnPA(boolean onPA) {
+        this.onPA = onPA;
+    } 
+    	
     @ManyToOne
     @JoinColumn(name="id_consultant")
     public Person getConsultant() {
