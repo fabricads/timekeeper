@@ -10,6 +10,7 @@ public class TimecardSearchFilter extends Timecard {
     private Date initDate;
     private Date endDate;
     private boolean clausulasJoinPesquisa;
+    private boolean onPa;
 
     public Date getInitDate() {
         return initDate;
@@ -18,6 +19,15 @@ public class TimecardSearchFilter extends Timecard {
     public void setInitDate(Date initDate) {
         this.initDate = initDate;
     }
+    
+    public void setOnPA(boolean onPa){
+    	this.onPa=onPa;
+    }
+    
+    public boolean getOnPA(){
+    	return this.onPa;
+    }
+    
 
     public Date getEndDate() {
         return endDate;

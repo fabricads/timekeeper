@@ -23,22 +23,86 @@
         
     })
 
+    timekeeperControllers.controller("modelCtrl",function(id, $log, $scope, $http, $filter) {
+        
+
+        $http.get('/timekeeper/svc/timecard/' + id).
+        success(function(data) {
+            $scope.timecard = data
+            var start_date = new Date($scope.timecard.project.initialDate);
+            var end_date = new Date($scope.timecard.project.endDate);
+            
+
+            var y = $scope.timecard.firstDate.substring(0,4);
+            var m = $scope.timecard.firstDate.substring(5,7);
+            var d = $scope.timecard.firstDate.substring(8,10);
+            m--;
+            
+            var tc_start_date = new Date(y,m,d);
+            y = $scope.timecard.firstDate.substring(0,4);
+            m = $scope.timecard.firstDate.substring(5,7);
+            d = $scope.timecard.firstDate.substring(8,10);
+            m--;
+
+            var tc_last_date = new Date(y,m,d);
+
+            $scope.dates=[];
+            for(var i=0;i<7;i++){
+                var item = {};
+                item.hours=0;
+                item.date = new Date(tc_start_date.getFullYear(),tc_start_date.getMonth(),tc_start_date.getDate()+i);
+                $scope.dates.push(item);
+            }
+            
+            $scope.days = $filter('dateDiffInDays')(start_date, end_date);
+            $scope.weeks = $filter('dateNumOfWeeks')(start_date, end_date);
+            $scope.totalHours=0;
+            var tasks = $scope.timecard.project.tasksDTO;
+            for (var i = 0; i < tasks.length; i++) {
+                var task = tasks[i];
+                var tcEntries = [];
+                for (var j = 0; j < $scope.timecard.timecardEntriesDTO.length; j++) {
+                    var tcEntry = $scope.timecard.timecardEntriesDTO[j];
+                    if (task.id == tcEntry.taskDTO.id) {
+                        // datas estao no formato yyyy-mm-dd
+                        var y = tcEntry.day.substring(0,4);
+                        var m = tcEntry.day.substring(5,7);
+                        var d = tcEntry.day.substring(8,10);
+                        m = m - 1;
+                        $scope.totalHours+=tcEntry.workedHours;
+                        tcEntry.day = new Date(y, m, d)
+                        tcEntries.push(tcEntry);
+                        $scope.dates[tcEntries.length-1].hours+=tcEntry.workedHours;
+                    }
+                }
+                task.tcEntries = tcEntries;
+            }
+            console.log($scope.dates);
+        }).
+        error(function(data, status, header, config) {
+            $scope.error_msg = data;
+        });
+        
+    });
     timekeeperControllers.controller("timecard_dashboard_ctrl", function($element, $filter, $scope, 
-                                            $timeout, $log, $http, $routeParams,timecardService) {
+                                            $uibModal, $log, $http, $routeParams,timecardService,$window) {
 
 
         $scope.loading = true;
         $scope.consultants = [];
-        timecardService.getAllByPm(1).then(
+        timecardService.getPending().then(
             function(response){
                 $log.debug("recebeu timecards ");
                 $log.debug(response);
                 $scope.timecards=response.data;
-                   $timeout(function() {      
-      $element.selectpicker();
-   },1000);
+               
                 $scope.consultants = getConsultants($scope.timecards);
                 $scope.loading = false;
+                $scope.viewTimecards=[];
+                for(var i=0; i<$scope.timecards.length; i++){
+                    $scope.viewTimecards.push(
+                        getTimecards(clone($scope.timecards[i])));
+                }
             },function(error){
                 $log.debug("An error has occured "+error.data);
                 $scope.timecards = data;
@@ -47,12 +111,7 @@
         )
 
         function clone(obj) {
-			if (null == obj || "object" != typeof obj) return obj;
-			var copy = obj.constructor();
-			for (var attr in obj) {
-				if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
-			}
-			return copy;
+            return  JSON.parse(JSON.stringify(obj));
 		};
 
         $scope.getTimecardsByPeriod = function(consultant,periodIndex){
@@ -92,11 +151,11 @@
                 return (date.getDate()==d && date.getMonth()==m);
         }
 
-        function getTimecards(tc,period){
+        function getTimecards(tc){
 
             var timecard=clone(tc);
             timecard.totalHours=0;
-
+            var period = getDate(tc.firstDate);
             timecard.dates=[];
 
             for(var i=0;i<7;i++){
@@ -118,6 +177,7 @@
                         tcEntry.day = getDate(tcEntry.day);
                         timecard.totalHours+=tcEntry.workedHours;
                         tcEntries.push(tcEntry);
+                        timecard.dates[tcEntries.length-1].hours+=tcEntry.workedHours;
  
                     }
                 }
@@ -127,6 +187,43 @@
             return timecard;
         }
 
+        $scope.getDetail=function(id){
+
+            var timecard = null ;
+            for(var i = 0; i<$scope.timecards.length && timecard==null ; i++){
+                if(id==$scope.timecards[i].id){
+                    timecard = $scope.timecards[i];
+                }
+            }
+            console.log(timecard);
+
+            if(timecard!= null){
+                console.log(id);
+                var modalInstance = $uibModal.open({
+                    templateUrl: 'model-timecard.html',
+                    controller: "modelCtrl",
+                    resolve:{
+                        id:function(){
+                            console.log(timecard.id);
+                            return timecard.id;
+                        }
+                    },
+                    size: 'lg'
+                });
+
+            }
+        };
+
+        $scope.save = function(id){
+
+            timecardService.setOnPA(id).then(function(){
+                console.log("saved");
+                $window.location.reload();
+            },function(){
+                console.log("error trying to save the timecard");
+            });
+
+        }
 
         $scope.getPeriods=function(consultant){
             console.log(consultant);

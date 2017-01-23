@@ -36,31 +36,36 @@
 
     </form>
         <div ng-repeat="timecard in viewTimecards">
-        <h2>Project: {{timecard.project.name}} </h2>
-        <table class="table table-striped table-bordered">
-            <thead>
-                <tr >
-                    <th>Task</th>
-                    <th ng-repeat="tcDayEntry in timecard.project.tasksDTO[0].tcEntries">{{tcDayEntry.day|date:"EEE, MMMM d, y"}}</th>
-                    <th>Total</th>
-                    <th>Additional Details</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr ng-repeat="tcEntry in timecard.project.tasksDTO" ng-if="tcEntry.tcEntries.length==7">
-                    <td>{{tcEntry.name}}</td>
-                    <td ng-repeat="tcDayEntry in tcEntry.tcEntries">{{tcDayEntry.workedHours}}</td>
-                    <td class="tb-header">{{tcEntry.tcEntries | sumOfValue:'workedHours'}}</td>
-                    <td> <button class="btn btn-danger" ng-click="getDetail()">Details</button></td>
-                </tr>
-                <tr class="tb-header">
-                    <td></td>
-                    <td ng-repeat="date in timecard.dates">{{date.hours}}</td>
-                    <td>{{timecard.totalHours}}</td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
 
-    </div>
+            <h2> Project: {{timecard.project.name}} </h2>
+            <table class = "table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>PA Number</th>
+                        <th>Task</th>
+                        <th ng-repeat="tcDayEntry in timecard.project.tasksDTO[0].tcEntries">{{tcDayEntry.day|date:"EEE, MMMM d, y"}}</th>
+                        <th>Total</th>
+                        <th>Additional Details</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="tcEntry in timecard.project.tasksDTO" ng-if="tcEntry.tcEntries.length==7">
+                        <td>{{timecard.project.paNumber}}</td>
+                        <td>{{tcEntry.name}}</td>
+                        <td ng-repeat="tcDayEntry in tcEntry.tcEntries">{{tcDayEntry.workedHours}}</td>
+                        <td class="tb-header">{{tcEntry.tcEntries | sumOfValue:'workedHours'}}</td>>
+                        <td><button class="btn btn-danger" ng-click="getDetail(timecard.id)">Details</button></td>
+                    </tr>
+                    <tr class="tb-header">
+                        <td></td>
+                        <td></td>
+                        <td ng-repeat="date in timecard.dates">{{date.hours}}</td>
+                        <td>{{timecard.totalHours}}</td>
+                        <td>On PA :<input ng-click="save(timecard.id)" type="checkbox" ng-model="timecard.onPA" id="selectAll" name="selectAll"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
 </div>

@@ -31,6 +31,11 @@ public class TimecardDao extends BaseDao<Timecard, TimecardSearchFilter> {
             params.add(filter.getConsultant().getId());
         }
         
+        if (filter.getOnPA() == true) {
+            query.append(" and ENT.onPA is false ");
+           // params.add(false);
+        }
+        
         if (filter.getInitDate() != null && filter.getEndDate() != null) {
             query.append(" and ENT2.day between ? and ? ");
             params.add(filter.getInitDate());

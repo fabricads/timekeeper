@@ -18,6 +18,13 @@
             return $http.get(endpoint+"/list?pm="+pm);
         };
 
+         /**
+         * Get project by id
+         */
+        service.setOnPA=function(id){
+            return $http.post(endpoint+"/on-pa/"+id);
+        };
+
 
         /**
          * Get project by id
@@ -41,6 +48,10 @@
 
         service.getByConsultant=function(id){
             return $http.get(endpoint+"/list-cs?id="+id);
+        }
+
+        service.getPending=function(id){
+            return $http.get(endpoint+"/list-pending");
         }
 
         return service;

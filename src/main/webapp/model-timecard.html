@@ -1,0 +1,47 @@
+<h1>New timecard</h1>
+
+<div>
+
+    <form class="form-horizontal" name="form">
+        
+        <div class="panel panel-default" ng-repeat="tcEntry in timecard.project.tasksDTO">
+            <div class="panel-heading">
+            <h3 class="panel-title">Task: {{tcEntry.name}} - {{tcEntry.tcEntries | sumOfValue:'workedHours'}} hours</h3>
+            </div>
+            <div class="panel-body" ng-repeat="tcDayEntry in tcEntry.tcEntries">
+                <div class="form-group">
+                    <label for="prj_pm" class="col-md-2 control-label">{{tcDayEntry.day|date:'EEEE'}}</label>
+                    <div class="col-md-5">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <p>{{tcDayEntry.day|date:'dd-MMMM-yyyy'}}</p>
+                            </div>
+                            <div class="col-md-1">
+                                <input type="text" style="width: 3em!important;" class="form-control" name="workedHours"  ng-model="tcDayEntry.workedHours" title="Input hours">
+                            </div>
+                            <div class="col-md-6">
+                                <textarea class="form-control" rows="1" cols="50" ng-model="tcDayEntry.workDescription" maxlength="512" placeholder="Work description"></textarea>
+                            </div>
+                        </div>
+                    </div>        
+                </div>
+            </div>
+        </div>          
+          
+        <div class="form-group">
+            <label for="prj_desc" class="col-md-2 control-label">Comment</label>
+            <div class="col-md-3">
+                <textarea class="form-control" rows="3" cols="50" ng-model="timecard.commentConsultant" maxlength="512"></textarea>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <button type="submit" class="btn btn-primary" ng-if="btnSaveEnbl" ng-click="save(timecard)">Save</button>
+                <button type="submit" class="btn btn-primary" ng-if="btnSaveEnbl" ng-click="submit(timecard)">Submit for approval</button>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+<a class="btn btn-default" href="#/timecards-cs">Go to main timecard list page.</a>

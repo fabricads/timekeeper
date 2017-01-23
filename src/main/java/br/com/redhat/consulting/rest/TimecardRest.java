@@ -146,6 +146,14 @@ public class TimecardRest {
         return listTimecards(pmId, null);
     }
     
+    @Path("/list-pending")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @RolesAllowed({"redhat_manager", "admin"})
+    public Response listTimecardsAllPending() {
+        return listPending();
+    }
+    
     public Response listTimecards(Integer pmId, Integer consultantId) {
         List<Timecard> timecards = null;
         List<TimecardDTO> timecardsDto = null;
@@ -203,6 +211,54 @@ public class TimecardRest {
         return response.build();
     }
 
+    public Response listPending() {
+        List<Timecard> timecards = null;
+        List<TimecardDTO> timecardsDto = null;
+        Response.ResponseBuilder response = null;
+       
+        try {
+            timecards = timecardService.findPending();
+           
+            if (timecards.size() == 0) {
+                timecardsDto = new ArrayList<TimecardDTO>(0);
+            } else {
+                timecardsDto = new ArrayList<TimecardDTO>(timecards.size());
+                LOG.info("Total of timecards= "+timecards.size());
+                for (Timecard timecard: timecards) {
+                    TimecardDTO tcDto = new TimecardDTO(timecard);
+                    ProjectDTO prjDto = new ProjectDTO(timecard.getProject());
+                    for (Task task: timecard.getProject().getTasks()) {
+                    	prjDto.addTask(new TaskDTO(task));
+                    }
+                    PersonDTO consultantDto = new PersonDTO(timecard.getConsultant());
+                    timecard.getConsultant().nullifyAttributes();
+                    tcDto.setConsultantDTO(consultantDto);
+                    tcDto.setProjectDTO(prjDto);
+                    List<TimecardEntryDTO> tceDtos = new ArrayList<>(timecard.getTimecardEntries().size());
+                    for (TimecardEntry tce: timecard.getTimecardEntries()) {
+                        TimecardEntryDTO tceDto = new TimecardEntryDTO(tce);
+                        tceDto.setTaskDTO(new TaskDTO(tce.getTask()));
+                        tceDtos.add(tceDto);
+                    }
+                    /**
+                    *needs to sort time card entries
+                    */
+                    Collections.sort(tceDtos, new TimecardEntryDateComparator());
+                    tcDto.setFirstDate(tceDtos.get(0).getDay());
+                    tcDto.setLastDate(tceDtos.get(tceDtos.size() - 1).getDay());
+                    tcDto.setTimecardEntriesDTO(tceDtos);
+                    timecardsDto.add(tcDto);
+                }
+            }
+        } catch (GeneralException e) {
+            LOG.error("Error to find projects.", e);
+            Map<String, String> responseObj = new HashMap<>();
+            responseObj.put("error", e.getMessage());
+            response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+        }
+        response = Response.ok(timecardsDto);
+        return response.build();
+    }
     
     @Path("/{tcId}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -290,7 +346,7 @@ public class TimecardRest {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @POST
-    @RolesAllowed({"partner_consultant"})
+    @RolesAllowed({"partner_consultant", "redhat_manager" , "admin"})
     public Response save(TimecardDTO timecardDto) {
         LOG.debug(timecardDto.toString());
         LOG.debug("timecard status: " + timecardDto.getStatus());
@@ -381,7 +437,33 @@ public class TimecardRest {
         return response.build();
     }
     
-    @Path("/app-rej/{tcId}")
+    @Path("/on-pa/{tcId}")
+    @Produces(MediaType.APPLICATION_JSON)
+    @POST
+    @RolesAllowed({"admin", "redhat_manager"})
+    public Response setOnPa(@PathParam("tcId") Integer tcId) {
+        Response.ResponseBuilder response = null;
+        
+        try {
+            if (tcId != null) {
+                timecardService.setOnPa(tcId);
+                response = Response.ok();
+            } else  {
+                Map<String, Object> responseObj = new HashMap<>();
+                responseObj.put("error", "Timecard not found");
+                responseObj.put("timecards", new ArrayList());
+                response = Response.status(Status.NOT_FOUND).entity(responseObj);
+            }
+        } catch (GeneralException e) {
+            LOG.error("Error to delete timecard.", e);
+            Map<String, String> responseObj = new HashMap<>();
+            responseObj.put("error", e.getMessage());
+            response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+        }
+        return response.build();
+    }
+    
+    @Path("/app-rej/{tcId}")
     @Produces(MediaType.APPLICATION_JSON)
     @POST
     @RolesAllowed({"admin", "redhat_manager"})

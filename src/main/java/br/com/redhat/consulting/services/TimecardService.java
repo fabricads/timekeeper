@@ -87,6 +87,16 @@ public class TimecardService {
         List<Timecard> res = timecardDao.find(filter);
         return res;
     }
+    
+    public List<Timecard> findPending() throws GeneralException {
+        TimecardSearchFilter filter = new TimecardSearchFilter();
+        filter.setClausulasJoinPesquisa(true);
+        filter.setOnPA(true);
+        timecardDao.setDistinct(true);
+        List<Timecard> res = timecardDao.find(filter);
+        return res;
+    }
+    
     public List<Timecard> findByOrganization(Integer orgId) throws GeneralException {
        
         List<Timecard> res = timecardDao.getByOrganization(orgId);
@@ -103,6 +113,7 @@ public class TimecardService {
     
     @TransactionalMode
     public void persist(Timecard timecard) throws GeneralException {
+    	timecard.setOnPA(false);
         if (timecard.getId() != null) {
             timecardDao.update(timecard);
         } else {
@@ -148,11 +159,25 @@ public class TimecardService {
         Timecard tc = null;
         if (res.size() > 0) {
             tc = res.get(0);
+            tc.setOnPA(false);
             tc.setStatusEnum(TimecardStatusEnum.APPROVED);
             tc.setCommentPM(commentPM);
             timecardDao.update(tc);
         }
     }
+    
+    public void setOnPa(Integer tcId) throws GeneralException {
+        TimecardSearchFilter filter = new TimecardSearchFilter();
+        filter.setId(tcId);
+        List<Timecard> res = timecardDao.find(filter);
+        Timecard tc = null;
+        if (res.size() > 0) {
+            tc = res.get(0);
+            tc.setOnPA(true);
+            timecardDao.update(tc);
+        }
+    }
+    
 
     public void reject(Integer tcId, String commentPM) throws GeneralException {
         TimecardSearchFilter filter = new TimecardSearchFilter();
