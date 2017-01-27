@@ -42,9 +42,15 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 	when("/timecards-cs", {
 	    templateUrl : "timecards-cs.html",
 	}).
-	when("/timecard-new/:projectId", {
+/*	when("/timecard-new/:projectId", {
 	    templateUrl : "timecard-new.html",
+	}).*/
+	when("/timecard-new/:projectId", {
+	    templateUrl : "timecard-new2.html",
 	}).
+
+
+
 	when("/timecard-view/:tcId", {
 	    templateUrl : "timecard-table-view.html",
 	}).

@@ -9,6 +9,7 @@ import java.util.Date;
 
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.New;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -311,6 +312,24 @@ public class TimecardRest {
             Map<String, String> responseObj = new HashMap<>();
             responseObj.put("error", e.getMessage());
             response = Response.status(Response.Status.BAD_REQUEST).entity(responseObj);
+        }
+        return response.build();
+    }
+    
+    @Path("/today")
+    @Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @RolesAllowed({"partner_consultant"})
+    public Response getToday() {
+        Response.ResponseBuilder response = null;
+        try {
+        	Date date = new Date();
+            response = Response.status(Response.Status.OK).entity(date);
+        } catch (Exception e) {
+            LOG.error("Error to insert project.", e);
+            Map<String, String> responseObj = new HashMap<String, String>();
+            responseObj.put("error", e.getMessage());
+            response = Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(responseObj);
         }
         return response.build();
     }

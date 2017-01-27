@@ -278,6 +278,195 @@
         }
     })
 
+    .controller("timecard_new_ctrl2", function($log,$scope, $http, $routeParams, $filter,timecardService) {
+        
+        $scope.timecard = {};
+        $scope.timecard.consultant = {};
+        $scope.periods = getPeriods();
+        $scope.tasks=[];
+        $scope.btnSaveEnbl=false;
+
+        /**
+         * Gets monday
+         */
+        function getSunday(date){
+            var date = new Date(date);
+            date.setDate(date.getDate()-date.getDay());
+            return date;
+        }
+
+        /**
+         * GetsEndDate
+         */
+        $scope.getEndDate = function(date){
+            return (new Date(date.getFullYear(),date.getMonth(),date.getDate()+6));
+        }
+
+        /**
+         * 2 weeks would be the maximum period... the current one and the one before
+         */
+        function getPeriods(){
+            
+            var periods = [];
+            
+            $http.get("/timekeeper/svc/timecard/today").then(function(response){
+
+                for(var i = -1, j = 0; j < 3; j++, i++){
+
+                    var monday = getSunday(response.data);
+                    var firstDate = new Date(monday.getFullYear(),monday.getMonth(),monday.getDate()-(i*7));
+                    var lastDate= new Date(firstDate.getFullYear(),firstDate.getMonth(),firstDate.getDate()+6); 
+
+                    $log.debug("Searching period: "+$filter('date')(firstDate, "yyyy-MM-dd"));
+                    $http.get("/timekeeper/svc/timecard/count/"+$routeParams.projectId+"/"+$filter('date')(firstDate, "yyyy-MM-dd")+"/"+$filter('date')(lastDate, "yyyy-MM-dd"))
+                    .then(function(response){
+                        $log.debug("Recebeu a seguinte response: ");
+                        $log.debug(response);
+                        if(response.data.count===0){
+                            periods.push(new Date(response.data.date));
+                        }
+                    });
+
+                }
+
+            });
+
+            $log.debug("Periods: ");
+            $log.debug(periods);
+            return periods;
+        }
+
+        $scope.period = 0;
+
+        /**
+         * Get Entries according to the start date
+         */
+        function getEntries(date){
+            var project = $scope.timecard.project;
+            var tasks = project.tasksDTO;
+            for (var i = 0; i < tasks.length; i++) {
+                var task = tasks[i];
+                var initDayWeek = new Date(date.getTime());
+                for (var j = 0; j < task.tcEntries.length; j++) {
+                    var tcEntry = task.tcEntries[j];
+                    tcEntry.day = new Date(initDayWeek.getTime());
+                    if ($scope.timecard.lastDate == null && j == 6) {
+                        $scope.timecard.lastDate =  new Date(initDayWeek.getTime());
+                    }
+                    initDayWeek.setDate(initDayWeek.getDate() + 1);
+                }
+            }
+
+        }
+
+        /**
+         * Changes the period of the entries for each task
+         */
+        $scope.changePeriod=function(index){
+            $log.debug("User has select the date "+$scope.periods[index]);
+            if($scope.period!==undefined){
+                getEntries($scope.periods[index]);
+            }
+        };
+
+
+        $scope.addTask= function(){
+            if(!$scope.btnSaveEnbl){
+                $scope.btnSaveEnbl=true;
+            }
+            $log.debug("User has added task "+$scope.task.name);
+            var project = $scope.timecard.project;
+            if ($scope.task.id != null ) {
+                var found = $filter('findById')(project.tasksDTO, $scope.task.id);
+                if (found == null) {
+                    project.tasksDTO.push($scope.task);
+                    $scope.task.tcEntries=createEntries($scope.task);
+                }else{
+                    $log.debug("You already selected it!!!");
+                }
+            }
+        };
+
+        function createEntries(task){
+             // set the sunday day of the starting week
+            var initDayWeek = new Date($scope.periods[$scope.period]);                  
+            var tcEntries = [];
+            for (var j = 0; j < 7; j++) {
+                var tcEntry = {};
+                tcEntry.day = new Date(initDayWeek.getTime());
+                tcEntry.workedHours = 0;
+                tcEntry.workDescription = "";
+                tcEntry.taskDTO = {};
+                tcEntry.taskDTO.id = task.id;
+                if ($scope.timecard.lastDate == null && j == 6) {
+                    $scope.timecard.lastDate =  new Date(initDayWeek.getTime());
+                }
+                initDayWeek.setDate(initDayWeek.getDate() + 1);
+                tcEntries.push(tcEntry);
+            }
+            return tcEntries;
+        }
+
+        timecardService.get($routeParams.projectId).
+            success(function(data) {
+                var project = data;
+                $scope.timecard.project = data
+                var start_date = new Date(project.initialDate);
+                var end_date = new Date(project.endDate);
+                
+                $scope.days = $filter('dateDiffInDays')(start_date, end_date);
+                $scope.weeks = $filter('dateNumOfWeeks')(start_date, end_date);
+
+                $scope.tasks = project.tasksDTO;
+                project.tasksDTO=[];
+
+            }).
+            error(function(data, status, header, config) {
+                $scope.error_msg = data;
+            });
+        
+        $scope.save = function(timecard) {
+            timecard.status = 1;
+            timecard.timecardEntriesDTO = [];
+            while (timecard.project.tasksDTO.length > 0) {
+                var task = timecard.project.tasksDTO.shift();
+                while (task.tcEntries.length > 0) {
+                    var tcEntry = task.tcEntries.shift();
+                    timecard.timecardEntriesDTO.push(tcEntry);
+                }
+            }
+            $http.post("/timekeeper/svc/timecard/save", timecard).
+                success(function(data, status, header, config) {
+                    $scope.saved = true;
+                    $scope.error_msg = null;
+                    $window.location.reload();
+                }).
+                error(function(data, status, header, config) {
+                    $scope.error_msg = data;
+                });
+        };
+        
+        $scope.submit = function(timecard) {
+            timecard.timecardEntriesDTO = [];
+            timecard.status = 4;
+            while (timecard.project.tasksDTO.length > 0) {
+                var task = timecard.project.tasksDTO.shift();
+                while (task.tcEntries.length > 0) {
+                    var tcEntry = task.tcEntries.shift();
+                    timecard.timecardEntriesDTO.push(tcEntry);
+                }
+            }
+            $http.post("/timekeeper/svc/timecard/save", timecard).
+            success(function(data, status, header, config) {
+                $scope.saved = true;
+                $scope.error_msg = null;
+                $window.location.reload();
+            }).
+            error(function(data, status, header, config) {
+                $scope.error_msg = data;
+            });
+        };
+    })
     .controller("timecardPartnerCtrl", function($scope, $log, $http, $routeParams,timecardService) {
         $scope.loading = true;
 
