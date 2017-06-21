@@ -53,7 +53,7 @@ loginApp.controller("reset_password_ctrl", function($scope, $rootScope, $locatio
     console.log("url reset-password ctrl");
     $scope.password_confirmation = null;
     
-    $http.get('/timekeeper/svc/auth/check/' + $routeParams.hash).
+    $http.get('svc/auth/check/' + $routeParams.hash).
         success(function(data) {
             $scope.person = data;
         }).
@@ -64,7 +64,7 @@ loginApp.controller("reset_password_ctrl", function($scope, $rootScope, $locatio
     
     $scope.reset = function(person) {
         person.hash = $routeParams.hash;
-        $http.post("/timekeeper/svc/auth/reset", person)
+        $http.post("svc/auth/reset", person)
             .success(function(data, status, header, config) {
                 $scope.resetOk = true;
             }).
@@ -79,7 +79,7 @@ loginApp.controller("reset_password_ctrl", function($scope, $rootScope, $locatio
 loginApp.controller("modal_instance", function($rootScope, $scope, $http, $window, $uibModalInstance) {
 
     $scope.send = function () {
-        $http.get("/timekeeper/svc/auth/forgot/" + $scope.email).success(
+        $http.get("svc/auth/forgot/" + $scope.email).success(
             function(data, status, header, config) {
                 $scope.msg = "Check your e-mail";
                 $uibModalInstance.close();

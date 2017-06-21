@@ -66,7 +66,7 @@
     
     $scope.project_submit = function() {
         $log.debug($scope.temp_task);
-        $http.post("/timekeeper/svc/project/associate-consultants", $scope.temp_task).success(
+        $http.post("svc/project/associate-consultants", $scope.temp_task).success(
             function(data, status, header, config) {
                 $scope.saved = true;
                 $scope.error_msg = null;

@@ -9,7 +9,7 @@
     servicesApp.factory("timecardService",timecardService);
     function timecardService( $http){
         var service = {};
-        var endpoint="/timekeeper/svc/timecard";
+        var endpoint="svc/timecard";
         
         /**
          * Get project by id
@@ -37,7 +37,7 @@
          * Get project
          */
         service.get= function(id){
-            return $http.get("/timekeeper/svc/project/"+id+"/tc");
+            return $http.get("svc/project/"+id+"/tc");
             
         };
 

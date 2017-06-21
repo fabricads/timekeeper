@@ -9,7 +9,7 @@
     servicesApp.factory("projectService",projectService);
     function projectService( $http){
         var service = {};
-        var endpoint="/timekeeper/svc/project";
+        var endpoint="svc/project";
         
         /**
          * Get project by id

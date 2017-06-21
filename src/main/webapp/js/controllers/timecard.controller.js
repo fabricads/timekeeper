@@ -26,7 +26,7 @@
     timekeeperControllers.controller("modelCtrl",function(id, $log, $scope, $http, $filter) {
         
 
-        $http.get('/timekeeper/svc/timecard/' + id).
+        $http.get('svc/timecard/' + id).
         success(function(data) {
             $scope.timecard = data
             var start_date = new Date($scope.timecard.project.initialDate);
@@ -309,7 +309,7 @@
             
             var periods = [];
             
-            $http.get("/timekeeper/svc/timecard/today").then(function(response){
+            $http.get("svc/timecard/today").then(function(response){
 
                 for(var i = -1, j = 0; j < 3; j++, i++){
 
@@ -318,7 +318,7 @@
                     var lastDate= new Date(firstDate.getFullYear(),firstDate.getMonth(),firstDate.getDate()+6); 
 
                     $log.debug("Searching period: "+$filter('date')(firstDate, "yyyy-MM-dd"));
-                    $http.get("/timekeeper/svc/timecard/count/"+$routeParams.projectId+"/"+$filter('date')(firstDate, "yyyy-MM-dd")+"/"+$filter('date')(lastDate, "yyyy-MM-dd"))
+                    $http.get("svc/timecard/count/"+$routeParams.projectId+"/"+$filter('date')(firstDate, "yyyy-MM-dd")+"/"+$filter('date')(lastDate, "yyyy-MM-dd"))
                     .then(function(response){
                         $log.debug("Recebeu a seguinte response: ");
                         $log.debug(response);
@@ -435,7 +435,7 @@
                     timecard.timecardEntriesDTO.push(tcEntry);
                 }
             }
-            $http.post("/timekeeper/svc/timecard/save", timecard).
+            $http.post("svc/timecard/save", timecard).
                 success(function(data, status, header, config) {
                     $scope.saved = true;
                     $scope.error_msg = null;
@@ -456,7 +456,7 @@
                     timecard.timecardEntriesDTO.push(tcEntry);
                 }
             }
-            $http.post("/timekeeper/svc/timecard/save", timecard).
+            $http.post("svc/timecard/save", timecard).
             success(function(data, status, header, config) {
                 $scope.saved = true;
                 $scope.error_msg = null;
@@ -522,7 +522,7 @@
                 var firstDate = new Date(monday.getFullYear(),monday.getMonth(),monday.getDate()-(i*7));
                 var lastDate= new Date(firstDate.getFullYear(),firstDate.getMonth(),firstDate.getDate()+6); 
                 $log.debug("Searching period: "+$filter('date')(firstDate, "yyyy-MM-dd"));
-                $http.get("/timekeeper/svc/timecard/count/"+$routeParams.projectId+"/"+$filter('date')(firstDate, "yyyy-MM-dd")+"/"+$filter('date')(lastDate, "yyyy-MM-dd")).then(function(response){
+                $http.get("svc/timecard/count/"+$routeParams.projectId+"/"+$filter('date')(firstDate, "yyyy-MM-dd")+"/"+$filter('date')(lastDate, "yyyy-MM-dd")).then(function(response){
                     $log.debug("Recebeu a seguinte response: ");
                     $log.debug(response);
                     if(response.data.count===0){
@@ -634,7 +634,7 @@
                     timecard.timecardEntriesDTO.push(tcEntry);
                 }
             }
-            $http.post("/timekeeper/svc/timecard/save", timecard).
+            $http.post("svc/timecard/save", timecard).
                 success(function(data, status, header, config) {
                     $scope.saved = true;
                     $scope.error_msg = null;
@@ -655,7 +655,7 @@
                     timecard.timecardEntriesDTO.push(tcEntry);
                 }
             }
-            $http.post("/timekeeper/svc/timecard/save", timecard).
+            $http.post("svc/timecard/save", timecard).
             success(function(data, status, header, config) {
                 $scope.saved = true;
                 $scope.error_msg = null;
@@ -669,7 +669,7 @@
     
     .controller("timecard_cs_list_ctrl", function($rootScope, $scope, $http, $window,$log) {
         $scope.loading = true;
-        $http.get('/timekeeper/svc/timecard/list-cs?id=' + $rootScope.user.id).
+        $http.get('svc/timecard/list-cs?id=' + $rootScope.user.id).
             success(function(data) {
                 $scope.timecards = data;
                 $log.debug("Retrieved the following timecards:");
@@ -683,7 +683,7 @@
             });
 
         $scope.delete = function(tcId) {
-            $http.get("/timekeeper/svc/timecard/delete/" + tcId).
+            $http.get("svc/timecard/delete/" + tcId).
                 success(function(data, status, header, config) {
                     $scope.saved = true;
                     $scope.error_msg = null;
@@ -821,7 +821,7 @@
                     timecard.timecardEntriesDTO.push(tcEntry);
                 }
             }
-            $http.post("/timekeeper/svc/timecard/save", timecard).
+            $http.post("svc/timecard/save", timecard).
             success(function(data, status, header, config) {
                 timecard.project.tasksDTO = tasksDTOBk;
                 $scope.saved = true;
@@ -845,7 +845,7 @@
                 }
             }
             console.log("timecard.status: " + timecard.status);
-            $http.post("/timekeeper/svc/timecard/save", timecard).
+            $http.post("svc/timecard/save", timecard).
             success(function(data, status, header, config) {
                 timecard.project.tasksDTO = tasksDTOBk;
                 $scope.saved = true;

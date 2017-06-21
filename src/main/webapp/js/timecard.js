@@ -23,7 +23,7 @@ timecardApp.controller("modal_instance", function($rootScope, $scope, $http, $wi
 
     $scope.timecard = {};
     
-    $http.get('/timekeeper/svc/project/list-by-cs-fill?cs=' + $rootScope.user.id).
+    $http.get('svc/project/list-by-cs-fill?cs=' + $rootScope.user.id).
         success(function(data) {
             $scope.projects = data;
         }).
@@ -47,7 +47,7 @@ timecardApp.controller("timecard_view_ctrl", function($log, $rootScope, $scope, 
 
     $scope.role=$scope.user.role.shortName;
 
-    $http.get('/timekeeper/svc/timecard/' + $routeParams.tcId).
+    $http.get('svc/timecard/' + $routeParams.tcId).
     success(function(data) {
         $scope.timecard = data
         var start_date = new Date($scope.timecard.project.initialDate);
@@ -116,7 +116,7 @@ timecardApp.controller("timecard_view_ctrl", function($log, $rootScope, $scope, 
 
 
     $scope.approve = function(timecard) {
-        $http.post("/timekeeper/svc/timecard/app-rej/" + timecard.id + "?op=1", timecard.commentPM).
+        $http.post("svc/timecard/app-rej/" + timecard.id + "?op=1", timecard.commentPM).
         success(function(data, status, header, config) {
             $scope.saved = true;
             $scope.error_msg = null;
@@ -128,7 +128,7 @@ timecardApp.controller("timecard_view_ctrl", function($log, $rootScope, $scope, 
     };
     
     $scope.reject = function(timecard) {
-        $http.post("/timekeeper/svc/timecard/app-rej/" + timecard.id + "?op=2", timecard.commentPM).
+        $http.post("svc/timecard/app-rej/" + timecard.id + "?op=2", timecard.commentPM).
         success(function(data, status, header, config) {
             $scope.saved = true;
             $scope.error_msg = null;

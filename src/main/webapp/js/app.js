@@ -122,7 +122,7 @@ timekeeperApp.controller("menu_ctrl", function(MessageService, $scope, $rootScop
     
     
     $scope.logout = function() {
-        $http.get("/timekeeper/svc/auth/logout").
+        $http.get("svc/auth/logout").
         success(function(data, status, header, config) {
             sessionStorage.removeItem("user");
             $window.location.href = "pub.html";
