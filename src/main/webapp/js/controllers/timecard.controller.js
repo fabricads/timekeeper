@@ -278,7 +278,7 @@
         }
     })
 
-    .controller("timecard_new_ctrl2", function($log,$scope, $http, $routeParams, $filter,timecardService) {
+    .controller("timecard_new_ctrl2", function($log,$scope, $http, $routeParams, $filter,timecardService, $window) {
         
         $scope.timecard = {};
         $scope.timecard.consultant = {};
