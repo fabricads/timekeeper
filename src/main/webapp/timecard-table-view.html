@@ -1,0 +1,78 @@
+<h1>View timecard</h1>
+
+<div ng-controller="timecard_view_ctrl">
+
+    <div class="alert alert-warning" ng-show="error_msg != null">
+        <span class="pficon-layered">
+          <span class="pficon pficon-warning-triangle"></span>
+          <span class="pficon pficon-warning-exclamation"></span>
+        </span> 
+            {{error_msg.error}}
+    </div>
+    
+    <div class="alert alert-success" ng-show="saved">
+      <span class="pficon pficon-ok"></span>
+            Timecard was successfully saved.
+    </div>
+
+    <form class="form-horizontal" name="form">
+        <div class="form-group" >
+            <label for="prj_pm" class="col-md-2 control-label">Project</label>
+            <div class="col-md-5">
+                <label>{{timecard.project.name}} - {{timecard.project.initialDate|date:'dd-MMMM-yyyy'}} to {{timecard.project.endDate|date:'dd-MMMM-yyyy'}} - {{days}} days - {{weeks}} weeks</label>
+            </div>
+        </div>
+
+        <div class="form-group" >
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr >
+                        <th>Task</th>
+                        <th ng-repeat="tcDayEntry in timecard.project.tasksDTO[0].tcEntries">{{tcDayEntry.day|date:"EEE, MMMM d, y"}}</th>
+                        <th>Total</th>
+                        <th>Additional Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="tcEntry in timecard.project.tasksDTO" ng-if="::tcEntry.tcEntries.length==7">
+                        <td>{{tcEntry.name}}</td>
+                        <td ng-repeat="tcDayEntry in tcEntry.tcEntries">{{tcDayEntry.workedHours}}</td>
+                        <td class="tb-header">{{tcEntry.tcEntries | sumOfValue:'workedHours'}}</td>
+                        <td> <button class="btn btn-danger" ng-click="getDetail()">Details</button></td>
+                    </tr>
+                    <tr class="tb-header">
+                        <td></td>
+                        <td ng-repeat="date in dates">{{date.hours}}</td>
+                        <td>{{totalHours}}</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div >      
+            <div class="form-group">
+                <label for="prj_desc" class="col-md-2 control-label">Consultant Comment</label>
+                <div class="col-md-3">
+                    <p class="form-control-static">{{timecard.commentConsultant}}</p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="prj_desc" class="col-md-2 control-label">Project Manager Comment</label>
+                <div class="col-md-3">
+                    <textarea class="form-control" rows="3" cols="50" ng-model="timecard.commentPM" maxlength="512"></textarea>
+                </div>
+            </div>
+            <div class="form-group" ng-if="timecard.status == 4">
+                <div class="col-md-offset-2 col-md-10">
+                    <button type="submit" class="btn btn-primary" ng-click="approve(timecard)">Approve</button>
+                    <button type="submit" class="btn btn-primary" ng-click="reject(timecard)">Reject</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+<a class="btn btn-default" href="#/timecards">Go to main timecard list page.</a>
+

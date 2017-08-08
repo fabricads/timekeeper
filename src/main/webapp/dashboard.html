@@ -1,0 +1,71 @@
+<script src="js/lib/jquery.dataTables.js"></script>
+<h1>Dashboard</h1>
+
+<div ng-controller="timecard_dashboard_ctrl" ng-cloak>
+    <div ng-show="loading">Loading..</div>
+    <div class="alert alert-info" ng-show="timecards.timecards.length == 0">
+        <span class="pficon pficon-info"></span> There is no timecard to list.<br> {{timecard.msg}}<br>
+    </div>
+
+    <form class="form-horizontal" name="form">
+    
+       <div class="form-group" ng-class="{'has-error': form.period.$invalid}">
+
+            <label for="pediod" class="col-md-2 control-label">Consultant</label>
+            <div class="col-md-5">
+                <select class="form-control" required ng-model="selectedConsultant" 
+                        ng-options="consultant.name for consultant in consultants" 
+                        ng-change="getPeriods(selectedConsultant)">
+                    <!--option value"{{consultant}}" ng-repeat="consultant in consultants">{{consultant.name}}</option-->
+                </select>
+            </div>
+
+        </div>
+
+         <div class="form-group" ng-class="{'has-error': form.period.$invalid}">
+            <label for="pediod" class="col-md-2 control-label">Period</label>
+            <div class="col-md-5">
+                <select class="form-control" name="period" 
+                        ng-change="getTimecardsByPeriod(selectedConsultant,selectedPeriod)"
+                        required ng-model="selectedPeriod">
+                    <option ng-repeat="p in periods"
+                    value="{{p.index}}">{{p.date | date:'dd-MMM-yyyy'}} - {{getEndDate(p.date) | date:'dd-MMM-yyyy'}}</option>
+                </select>
+            </div>
+        </div>
+
+    </form>
+        <div ng-repeat="timecard in viewTimecards">
+
+            <h2>Consultant: {{timecard.consultant.name}} - Project: {{timecard.project.name}} </h2>
+            <table class = "table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>PA Number</th>
+                        <th>Task</th>
+                        <th ng-repeat="tcDayEntry in timecard.project.tasksDTO[0].tcEntries">{{tcDayEntry.day|date:"EEE, MMMM d, y"}}</th>
+                        <th>Total</th>
+                        <th>Additional Details</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="tcEntry in timecard.project.tasksDTO" ng-if="tcEntry.tcEntries.length==7">
+                        <td>{{timecard.project.paNumber}}</td>
+                        <td>{{tcEntry.name}}</td>
+                        <td ng-repeat="tcDayEntry in tcEntry.tcEntries">{{tcDayEntry.workedHours}}</td>
+                        <td class="tb-header">{{tcEntry.tcEntries | sumOfValue:'workedHours'}}</td>>
+                        <td><button class="btn btn-danger" ng-click="getDetail(timecard.id)">Details</button></td>
+                    </tr>
+                    <tr class="tb-header">
+                        <td></td>
+                        <td></td>
+                        <td ng-repeat="date in timecard.dates">{{date.hours}}</td>
+                        <td>{{timecard.totalHours}}</td>
+                        <td>On PA :<input ng-click="save(timecard.id)" type="checkbox" ng-model="timecard.onPA" id="selectAll" name="selectAll"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+</div>

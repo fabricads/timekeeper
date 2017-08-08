@@ -1,4 +1,9 @@
-var timekeeperApp = angular.module("timekeeperApp", [ "ngRoute", "ngResource", "ui.bootstrap", "servicesApp", "org_ctrl", "person_ctrl", "project_ctrl", "timecard_ctrl","timekeeperControllers"]);
+var timekeeperApp = angular.module("timekeeperApp", 
+			[ 
+				'smart-table','ngSanitize', 'ngCsv',"ngRoute", "ngResource", "ui.bootstrap",'patternfly',
+				"servicesApp", "org_ctrl", "person_ctrl", 
+				"project_ctrl", "timecard_ctrl","timekeeperControllers"
+			]);
 
 timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 
@@ -21,14 +26,33 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 	when("/timecards", {
 		templateUrl : "timecards.html",
 	}).
+
+	when("/dashboard", {
+		templateUrl : "dashboard.html",
+	}).
+
+	when("/timecards-partner", {
+		templateUrl : "timecards-partner.html",
+	}).
+
+	when("/timecard-partner-view/:tcId", {
+		templateUrl : "timecard-partner-view.html",
+	}).
+
 	when("/timecards-cs", {
 	    templateUrl : "timecards-cs.html",
 	}).
-	when("/timecard-new/:projectId", {
+/*	when("/timecard-new/:projectId", {
 	    templateUrl : "timecard-new.html",
+	}).*/
+	when("/timecard-new/:projectId", {
+	    templateUrl : "timecard-new2.html",
 	}).
+
+
+
 	when("/timecard-view/:tcId", {
-	    templateUrl : "timecard-view.html",
+	    templateUrl : "timecard-table-view.html",
 	}).
 	when("/timecard-edit/:tcId", {
 	    templateUrl : "timecard-edit.html",
@@ -54,6 +78,8 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
 	when("/organizations", {
 		templateUrl : "organizations.html",
 	}).
+
+
 	when("/organization-new", {
 		templateUrl : "organization-new.html",
 	}).
@@ -75,7 +101,8 @@ timekeeperApp.config([ "$routeProvider", function($routeProvider) {
  */
 
 timekeeperApp.controller("menu_ctrl", function(MessageService, $scope, $rootScope, $window, $http) {
-    console.log("rootScope.user = " + $rootScope.user);
+    console.log("rootScope.user = ")
+	console.log($rootScope.user);
     if ($rootScope.user != null) {
         $scope.user = $rootScope.user;
 
@@ -95,7 +122,7 @@ timekeeperApp.controller("menu_ctrl", function(MessageService, $scope, $rootScop
     
     
     $scope.logout = function() {
-        $http.get("/timekeeper/svc/auth/logout").
+        $http.get("svc/auth/logout").
         success(function(data, status, header, config) {
             sessionStorage.removeItem("user");
             $window.location.href = "pub.html";
@@ -174,6 +201,29 @@ timekeeperApp.filter('dateNumOfWeeks', function () {
     };
 });
 
+timekeeperApp.filter("uniqueID", function(){
+  return function(data) {
+    if(angular.isArray(data)) {
+      var result = [];
+      for(var i=0; i<data.length; i++) {
+		var found = false;
+        for(var j=0; j<result.length && found==false; j++) {
+			if(data[i].id==result[j].id){
+				console.log("iguais");
+				found=true;
+			}
+		}
+		if(found==false){
+			result.push(data[i]);
+		}
+      }
+      if(result.length > 0) {
+        return result;
+      }
+    }
+    return [];
+  }
+})
 
 timekeeperApp.filter('sumOfValue', function () {
     return function (data, key) {
@@ -190,6 +240,8 @@ timekeeperApp.filter('sumOfValue', function () {
         return sum;
     };
 });
+
+
 
 // from http://weeknumber.net/how-to/javascript
 // used on timecard pages, to calculate the number of weeks to present to the user.

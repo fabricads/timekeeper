@@ -31,6 +31,11 @@ public class TimecardDao extends BaseDao<Timecard, TimecardSearchFilter> {
             params.add(filter.getConsultant().getId());
         }
         
+        if (filter.getOnPA() == true) {
+            query.append(" and ENT.onPA is false ");
+           // params.add(false);
+        }
+        
         if (filter.getInitDate() != null && filter.getEndDate() != null) {
             query.append(" and ENT2.day between ? and ? ");
             params.add(filter.getInitDate());
@@ -41,6 +46,7 @@ public class TimecardDao extends BaseDao<Timecard, TimecardSearchFilter> {
             query.append(" and ENT.status = ? ");
             params.add(filter.getStatus());
         }
+
         query.append(getOrderBy());
 
     }
@@ -86,4 +92,12 @@ public class TimecardDao extends BaseDao<Timecard, TimecardSearchFilter> {
         return res; 
     }
     
+    public List<Timecard> getByOrganization(Integer orgId) {
+         TypedQuery<Timecard> findAllQuery = getEntityManager()
+         .createQuery("SELECT DISTINCT t from Timecard t "
+         +"inner join FETCH t.timecardEntries INNER JOIN FETCH "
+         +"t.consultant c INNER JOIN FETCH c.partnerOrganization where c.partnerOrganization.id=?0 ", Timecard.class);
+         findAllQuery.setParameter(0, orgId);
+         return findAllQuery.getResultList();
+    }
 }

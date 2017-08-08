@@ -24,7 +24,7 @@ orgApp.controller("organization_new_ctrl", function($scope, $http) {
 	    if ($scope.contact2 && $scope.contact2.name && $scope.contact2.name.trim() != '') {
 	        org.contacts.push($scope.contact2);
 	    }
-		$http.post("/timekeeper/svc/organization/save", org)
+		$http.post("svc/organization/save", org)
 			.success(function(data, status, header, config) {
 				$scope.saved = true;
 				$scope.error_msg = null;
@@ -43,7 +43,7 @@ orgApp.controller("organization_edit_ctrl", function($scope, $http, $routeParams
     $scope.contact1 = {}
     $scope.contact2 = {}
     
-	$http.get('/timekeeper/svc/organization/'+$routeParams.orgId).
+	$http.get('svc/organization/'+$routeParams.orgId).
 	    success(function(data) {
     		$scope.org = data;
     		if ($scope.org.contacts.length > 0) {
@@ -64,7 +64,7 @@ orgApp.controller("organization_edit_ctrl", function($scope, $http, $routeParams
         if ($scope.contact2 && $scope.contact2.name && $scope.contact2.name.trim() != '') {
             org.contacts.push($scope.contact2);
         }
-		$http.post("/timekeeper/svc/organization/save", org).
+		$http.post("svc/organization/save", org).
 	        success(function(data, status, header, config) {
 	            $scope.saved = true;
 	            $scope.error_msg = null;
@@ -83,7 +83,7 @@ orgApp.controller("org_listing_ctrl", function($scope, $http, $routeParams, $win
     $scope.loading = true;
     
 	$scope.refresh = function() {
-	    $http.get('/timekeeper/svc/organization/list?e='+$scope.list_enabled).
+	    $http.get('svc/organization/list?e='+$scope.list_enabled).
     	    success(function(data) {
         		$scope.orgs = data;
         		$scope.loading = false;
@@ -97,15 +97,15 @@ orgApp.controller("org_listing_ctrl", function($scope, $http, $routeParams, $win
 	$scope.refresh();
 	
 	$scope.disable = function(orgId) {
-	    $http.get("/timekeeper/svc/organization/"+orgId+"/disable");
+	    $http.get("svc/organization/"+orgId+"/disable");
 	    $window.location.reload();
 	};
 	$scope.enable = function(orgId) {
-		$http.get("/timekeeper/svc/organization/"+orgId+"/enable");
+		$http.get("svc/organization/"+orgId+"/enable");
 		$window.location.reload();
 	};
 	$scope.delete = function(orgId) {
-		$http.get("/timekeeper/svc/organization/"+orgId+"/delete");
+		$http.get("svc/organization/"+orgId+"/delete");
 		$window.location.reload();
 	};
 	

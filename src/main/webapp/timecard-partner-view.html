@@ -1,0 +1,54 @@
+<h1>View timecard</h1>
+
+<div ng-controller="timecard_view_ctrl">
+
+    <div class="alert alert-warning" ng-show="error_msg != null">
+        <span class="pficon-layered">
+          <span class="pficon pficon-warning-triangle"></span>
+          <span class="pficon pficon-warning-exclamation"></span>
+        </span> 
+            {{error_msg.error}}
+    </div>
+    
+    <div class="alert alert-success" ng-show="saved">
+      <span class="pficon pficon-ok"></span>
+            Timecard was successfully saved.
+    </div>
+
+    <form class="form-horizontal" name="form">
+        <div class="form-group" >
+            <label for="prj_pm" class="col-md-2 control-label">Project</label>
+            <div class="col-md-5">
+                <label>{{timecard.project.name}} - {{timecard.project.initialDate|date:'dd-MMMM-yyyy'}} to {{timecard.project.endDate|date:'dd-MMMM-yyyy'}} - {{days}} days - {{weeks}} weeks</label>
+            </div>
+        </div>
+      <div class="panel panel-default" ng-repeat="tcEntry in timecard.project.tasksDTO">
+        <div class="panel-heading">
+          <h3 class="panel-title">Task: {{tcEntry.name}} - {{tcEntry.tcEntries | sumOfValue:'workedHours'}} hours</h3>
+        </div>
+        <div class="panel-body" ng-repeat="tcDayEntry in tcEntry.tcEntries">
+            <div class="form-group">
+                <label for="prj_pm" class="col-md-2 control-label">{{tcDayEntry.day|date:'EEEE'}}</label>
+                <div class="col-md-5">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <p class="form-control-static">{{tcDayEntry.day|date:'dd-MMMM-yyyy'}}</p>
+                        </div>
+                        <div class="col-md-1">
+                            <p class="form-control-static">{{tcDayEntry.workedHours}}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="form-control-static">{{tcDayEntry.workDescription}}</p>
+                        </div>
+                    </div>
+                </div>        
+            </div>
+        </div>
+      </div>          
+
+    </form>
+
+</div>
+
+<a class="btn btn-default" href="#/timecards-partner">Go to main timecard list page.</a>
+

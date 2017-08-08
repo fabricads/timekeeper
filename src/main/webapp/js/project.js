@@ -30,7 +30,7 @@ projectApp.controller("project_list_ctrl", function($scope, $http, $window,proje
             });
 
 
-        /*$http.get('/timekeeper/svc/project/list?e='+$scope.list_enabled).
+        /*$http.get('svc/project/list?e='+$scope.list_enabled).
             success(function(data) {
                 $scope.projects = data;
                 $scope.loading = false;
@@ -45,15 +45,15 @@ projectApp.controller("project_list_ctrl", function($scope, $http, $window,proje
 
 	
 	$scope.disable = function(projectId) {
-        $http.get("/timekeeper/svc/project/"+projectId+"/disable");
+        $http.get("svc/project/"+projectId+"/disable");
         $window.location.reload();
     };
     $scope.enable = function(projectId) {
-        $http.get("/timekeeper/svc/project/"+projectId+"/enable");
+        $http.get("svc/project/"+projectId+"/enable");
         $window.location.reload();
     };
     $scope.delete = function(projectId) {
-        $http.get("/timekeeper/svc/project/"+projectId+"/delete");
+        $http.get("svc/project/"+projectId+"/delete");
         $window.location.reload();
     };
 
@@ -63,7 +63,7 @@ projectApp.controller("project_list_ctrl", function($scope, $http, $window,proje
 projectApp.controller("project_cs_list_ctrl", function($rootScope, $scope, $http, $window) {
     
     $scope.loading = true;
-    $http.get('/timekeeper/svc/project/list-by-cs?cs=' + $rootScope.user.id).
+    $http.get('svc/project/list-by-cs?cs=' + $rootScope.user.id).
     success(function(data) {
         $scope.projects = data;
         $scope.loading = false;
@@ -77,20 +77,20 @@ projectApp.controller("project_new_ctrl", function($scope, $http, $filter) {
 	$scope.project.enabled = true;
 	
 	// retrieve all project managers
-	$http.get('/timekeeper/svc/person/pms').success(function(data) {
+	$http.get('svc/person/pms').success(function(data) {
         console.log(data);
 		$scope.pms = data;
 	});
 	
 	// retrieve all task types
-    $http.get('/timekeeper/svc/project/task_types').success(function(data) {
+    $http.get('svc/project/task_types').success(function(data) {
         $scope.taskTypes = data;
     });
 
     // save a new project
 	$scope.project_submit = function(project) {
 		project.tasksDTO = $scope.selected_tasks;
-		$http.post("/timekeeper/svc/project/save", project).success(
+		$http.post("svc/project/save", project).success(
 			function(data, status, header, config) {
 			    $scope.saved = true;
                 $scope.error_msg = null;
@@ -154,7 +154,7 @@ projectApp.controller("project_new_ctrl", function($scope, $http, $filter) {
 projectApp.controller("project_edit_ctrl", function($scope, $http, $routeParams, $filter) {
 
     
-    $http.get('/timekeeper/svc/project/'+$routeParams.projectId).
+    $http.get('svc/project/'+$routeParams.projectId).
         success(function(data) {
             $scope.project = data;
             $scope.selected_tasks = $scope.project.tasksDTO;
@@ -163,11 +163,11 @@ projectApp.controller("project_edit_ctrl", function($scope, $http, $routeParams,
             $scope.error_msg = data;
         });
 
-    $http.get('/timekeeper/svc/person/pms').success(function(data) {
+    $http.get('svc/person/pms').success(function(data) {
         $scope.pms = data;
     });
     
-    $http.get('/timekeeper/svc/project/task_types').success(function(data) {
+    $http.get('svc/project/task_types').success(function(data) {
         $scope.taskTypes = data;
     });
     
@@ -183,7 +183,7 @@ projectApp.controller("project_edit_ctrl", function($scope, $http, $routeParams,
         }
         
         // alert(project.endDate + ' ' + JSON.stringify(project.endDate));
-        $http.post("/timekeeper/svc/project/save", project).success(
+        $http.post("svc/project/save", project).success(
             function(data, status, header, config) {
                 $scope.saved = true;
                 $scope.error_msg = null;

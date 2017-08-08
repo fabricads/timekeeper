@@ -17,17 +17,45 @@
     <link href="css/rcue.css" rel="stylesheet" media="screen, print">
     <link href="css/rcue-additions.css" rel="stylesheet" media="screen, print">
     <link href="css/smoothness/jquery-ui-1.10.3.custom.min.css" rel="stylesheet">
+    <link href="bower_components/bootstrap-select/dist/css/bootstrap-select.min.css" rel="stylesheet">
+    <link href="css/table-timecard.css" rel="stylesheet">
     
     <script src="js/lib/jquery.min.js"></script>
     <script src="js/lib/jquery-ui-1.10.3.custom.min.js"></script>
     <script src="js/lib/jquery.mask.min.js"></script>
     <script src="js/lib/bootstrap.min.js"></script>
-    <script src="js/lib/angular.js"></script>
-    <script src="js/lib/angular-resource.min.js"></script>
-    <script src="js/lib/angular-route.min.js"></script>
-    <script src="js/lib/patternfly.min.js"></script>
-    <script src="js/lib/ui-bootstrap-tpls-0.14.3.js"></script>
+    <script src="bower_components/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+
+    <!-- PatternFly Custom Componets -  Sidebar, Popovers and Datatables Customizations -->
+    <!-- Note: jquery.dataTables.js must occur in the html source before patternfly*.js.-->
+    <script src="bower_components/patternfly/dist/js/patternfly.min.js"></script>
+    
+    <script src="bower_components/angular/angular.min.js"></script>
+    <script src="bower_components/angular-resource/angular-resource.min.js"></script>
+    <script src="bower_components/angular-route/angular-route.min.js"></script>
+
+
+    <!-- Angular-Bootstrap -->
+    <script src="bower_components/angular-bootstrap/ui-bootstrap.min.js"></script>
+    <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+
+    <!-- Angular-Sanitize -->
+    <script src="bower_components/angular-sanitize/angular-sanitize.min.js"></script>
+
+    <!-- Angular-PatternFly  -->
+    <script src="bower_components/angular-patternfly/dist/angular-patternfly.min.js"></script>
+
+    <!-- CSV  -->
+    <script src="bower_components/ng-csv/build/ng-csv.min.js"></script>
+
+    <!-- C3, D3 - Charting Libraries. Only required if you are using the 'patternfly.charts' module-->
+    <!--script src="bower_components/patternfly/components/c3/c3.min.js"></script>
+    <script src="bower_components/patternfly/components/d3/d3.min.js"></script-->
+
+    <!--script src="js/lib/patternfly.min.js"></script-->
     <script src="js/lib/angular-validation-match.min.js"></script>
+
+    <script src="bower_components/angular-smart-table/dist/smart-table.min.js"></script>
     
 
     <!-- Services -->
@@ -63,10 +91,12 @@
 
         <ul class="nav navbar-nav navbar-primary">
           <li><a href="#/persons" ng-show="role(['redhat_manager', 'admin'])">Consultant</a></li>
+          <li><a href="#/dashboard" ng-show="role(['redhat_manager', 'admin'])">Dashboard</a></li>
           <li><a href="#/organizations" ng-show="role(['redhat_manager', 'admin'])">Organization</a></li>
           <li><a href="#/projects" ng-show="role(['redhat_manager', 'admin'])">Project</a></li>
           <li><a href="#/projects-cs" ng-show="role(['partner_consultant'])">Project</a></li>
           <li><a href="#/timecards" ng-show="role(['redhat_manager', 'admin'])">Timecard</a></li>
+          <li><a href="#/timecards-partner" ng-show="role(['partner_manager'])">Timecard</a></li>
           <li><a href="#/timecards-cs" ng-show="role(['partner_consultant'])">Timecard</a></li>
           <li><a href="#/profile/{{user.id}}">{{user.name}}</a></li>
           <li><a href="#/" ng-click="logout()">Logout</a></li>

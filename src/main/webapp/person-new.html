@@ -70,7 +70,7 @@
         <div class="form-group" ng-class="{'has-error': form.oracleId.$invalid}">
             <label for="prj_name" class="col-md-2 control-label">Oracle PA ID</label>
             <div class="col-md-2">
-                <input type="text" ui-mask="?9?9?9?9?9?9?9?9?9?9?9" class="form-control" name="oracleId" required ng-model="person.oraclePAId">
+                <input type="text" ui-mask="?9?9?9?9?9?9?9?9?9?9?9" class="form-control" name="oracleId" ng-model="person.oraclePAId">
             </div>
             <div class="col-md-4">
                 <span class="help-block" ng-show="form.oracleId.$error.required">Required field</span>
