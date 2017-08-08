@@ -8,7 +8,7 @@
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
         <jta-data-source>java:/jdbc/partners_timekeeper</jta-data-source>
         <properties>
-            <property name="hibernate.hbm2ddl.auto" value="validate" />
+            <!--property name="hibernate.hbm2ddl.auto" value="validate" /-->
             <property name="hibernate.format_sql" value="true"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
             <property name="org.hibernate.envers.audit_table_prefix" value="audit_" />

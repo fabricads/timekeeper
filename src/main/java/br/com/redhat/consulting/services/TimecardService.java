@@ -142,6 +142,7 @@ public class TimecardService {
         filter.setId(tcId);
         filter.setConsultant(new Person());
         filter.getConsultant().setId(consultantId);
+        filter.setClausulasJoinPesquisa(true);
         List<Timecard> res = timecardDao.find(filter);
         if (res.size() > 0) {
             Timecard tc = res.get(0);

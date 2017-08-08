@@ -372,33 +372,23 @@ public class TimecardRest {
         Response.ResponseBuilder response = null;
         PersonDTO loggedUser = Util.loggedUser(httpReq);
         timecardDto.setStatusEnum(TimecardStatusEnum.find(timecardDto.getStatus()));
-        try {
-            
+        try {  
             if (timecardDto.getId() == null) {
                 Timecard timecardEnt = timecardDto.toTimecard();
                 Person cs = loggedUser.toPerson();
                 timecardEnt.setConsultant(cs);
-                Long count = timecardService.countByDate(timecardDto.getConsultant().getId(), timecardDto.getProject().getId(), timecardDto.getFirstDate(), timecardDto.getLastDate());
-                if (count > 0) {
-                    Map<String, String> responseObj = new HashMap<String, String>();
-                    responseObj.put("error", "Cannot save timecard existant with start date "+ timecardDto.getFirstDate() + " and end date "+ timecardDto.getLastDate() + " specified.");
-                    response = Response.status(Response.Status.CONFLICT).entity(responseObj);
-                } else {
-                    Project prj = new Project();
-                    prj.setId(timecardDto.getProject().getId());
-                    timecardEnt.setProject(prj);
-                    for (TimecardEntryDTO tcEntryDto: timecardDto.getTimecardEntriesDTO()) {
-                        TimecardEntry tcEntry = tcEntryDto.toTimecardEntry();
-//                        BeanUtils.copyProperties(tcEntry, tcEntryDto);
-                        timecardEnt.addTimecardEntry(tcEntry);
-                        Task task = new Task();
-                        task.setId(tcEntryDto.getTaskDTO().getId());
-                        tcEntry.setTask(task);
-                    }
-                    
-                    timecardService.persist(timecardEnt);
-                    response = Response.ok();
+                Project prj = new Project();
+                prj.setId(timecardDto.getProject().getId());
+                timecardEnt.setProject(prj);
+                for (TimecardEntryDTO tcEntryDto: timecardDto.getTimecardEntriesDTO()) {
+                    TimecardEntry tcEntry = tcEntryDto.toTimecardEntry();
+                    timecardEnt.addTimecardEntry(tcEntry);
+                    Task task = new Task();
+                    task.setId(tcEntryDto.getTaskDTO().getId());
+                    tcEntry.setTask(task);
                 }
+                timecardService.persist(timecardEnt);
+                response = Response.ok();
             } else {
                 Timecard timecardEnt = timecardDto.toTimecard();
                 timecardEnt.setConsultant(loggedUser.toPerson());
@@ -439,13 +429,14 @@ public class TimecardRest {
         
         try {
             if (tcId != null) {
+                Timecard timecard = timecardService.findByIdAndConsultant(tcId, loggedUser.getId());
                 timecardService.delete(tcId, loggedUser.getId());
                 response = Response.ok();
             } else  {
                 Map<String, Object> responseObj = new HashMap<>();
-                responseObj.put("msg", "Timecard not found");
+                responseObj.put("msg", "Error trying to delete timecard "+ tcId);
                 responseObj.put("timecards", new ArrayList());
-                response = Response.status(Status.NOT_FOUND).entity(responseObj);
+                response = Response.status(Status.INTERNAL_SERVER_ERROR).entity(responseObj);
             }
         } catch (GeneralException e) {
             LOG.error("Error to delete timecard.", e);

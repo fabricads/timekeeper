@@ -86,7 +86,7 @@ public class BaseDao<ENTITY, SEARCH_FILTER> {
     @TransactionalMode
     public void remove(Integer id) throws GeneralException {
         try {
-            String ql = "delete from " + entityClassName + " ENT where ENT.id = ? ";
+            /*String ql = "delete from " + entityClassName + " ENT where ENT.id = ? ";
             Query q = em.createQuery(ql);
             q.setParameter(1, id);
             int num = q.executeUpdate();

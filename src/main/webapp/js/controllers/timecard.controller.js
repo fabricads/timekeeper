@@ -562,7 +562,7 @@
          * Changes the period of the entries for each task
          */
         $scope.changePeriod=function(index){
-            $log.debug("User has select the date "+$scope.periods[index]);
+           // $log.debug("User has select the date "+$scope.periods[index]);
             if($scope.period!==undefined){
                 getEntries($scope.periods[index]);
             }
@@ -580,6 +580,7 @@
                 if (found == null) {
                     project.tasksDTO.push($scope.task);
                     $scope.task.tcEntries=createEntries($scope.task);
+
                 }else{
                     $log.debug("You already selected it!!!");
                 }
@@ -634,6 +635,7 @@
                     timecard.timecardEntriesDTO.push(tcEntry);
                 }
             }
+          
             $http.post("svc/timecard/save", timecard).
                 success(function(data, status, header, config) {
                     $scope.saved = true;
